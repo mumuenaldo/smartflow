@@ -1,0 +1,167 @@
+{% extends 'registry/base.html' %}
+{% block title %}Notifications{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR NOTIFICATIONS */
+    
+
+    body.dark-mode .page-header h4 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+        color: #ffffff;
+    }
+
+    body.dark-mode .card-body .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .card-body .text-muted.small {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .card-body div[style*="font-size:.92rem;"] {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e; 
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .badge.bg-primary {
+        background: #ffc700 !important; 
+        color: #2d0b1e !important; 
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .text-success {
+        color: #4cff91 !important; 
+    }
+
+    body.dark-mode .text-danger {
+        color: #ff6b6b !important; 
+    }
+
+    body.dark-mode .text-primary {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .text-warning {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .text-secondary {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .bi-info-circle-fill {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-center h6 {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .text-center .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-center .bi-bell-slash {
+        color: #4a1a32 !important; 
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .card:hover {
+        box-shadow: 0 4px 20px rgba(255, 199, 0, 0.1) !important; /* Subtle gold glow */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h4><i class="bi bi-bell me-2"></i>Notifications</h4>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    {% if notifications %}
+      {% for n in notifications %}
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-3 px-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex gap-3 align-items-start">
+
+              <!-- Icon -->
+              <div style="font-size:1.5rem; margin-top:2px;">
+                {% if n.type == 'approval' %}
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                {% elif n.type == 'rejection' %}
+                  <i class="bi bi-x-circle-fill text-danger"></i>
+                {% elif n.type == 'assignment' %}
+                  <i class="bi bi-person-check-fill text-primary"></i>
+                {% elif n.type == 'reminder' %}
+                  <i class="bi bi-alarm-fill text-warning"></i>
+                {% else %}
+                  <i class="bi bi-info-circle-fill text-secondary"></i>
+                {% endif %}
+              </div>
+
+              <div>
+                <div style="font-size:.92rem;">{{ n.message }}</div>
+                {% if n.document %}
+                <div class="mt-1">
+                  <a href="{% url 'document_detail' n.document.pk %}"
+                     class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size:.78rem;">
+                    <i class="bi bi-eye me-1"></i>View Document
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="text-end" style="min-width:110px;">
+              <div class="text-muted small">{{ n.sent_at|date:"d M Y" }}</div>
+              <div class="text-muted" style="font-size:.75rem;">{{ n.sent_at|date:"H:i" }}</div>
+              {% if not n.is_read %}
+                <span class="badge bg-primary mt-1" style="font-size:.68rem;">New</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-bell-slash fs-1 text-muted d-block mb-3"></i>
+          <h6 class="text-muted">No notifications yet</h6>
+          <p class="text-muted small">You will receive alerts here for approvals, rejections, and assignments.</p>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

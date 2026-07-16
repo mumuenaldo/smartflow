@@ -1,0 +1,257 @@
+{% extends 'registry/base.html' %}
+{% block content %}
+
+<div class="dashboard-evolved-gateway">
+    <div class="dashboard-ambient-orb"></div>
+
+    <div class="hero-banner m-0">
+        <div class="hero-banner-content">
+            <div class="hero-banner-left">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-label">System Online</span>
+                </div>
+                
+                <h1 class="hero-banner-title">
+                    <span id="adminGreeting">Welcome, Administrator</span>
+                    <span class="hero-banner-version">v3.0</span>
+                </h1>
+                
+                <div class="admin-clock-badge mb-4">
+                    <i class="bi bi-clock-fill clock-glow-icon"></i>
+                    <span id="adminClockTime">--:--:--</span>
+                    <span class="clock-divider">|</span>
+                    <span class="clock-date-text">{% now "l, d M Y" %}</span>
+                </div>
+
+                <p class="hero-banner-desc mb-4">
+                    Monitor workflows, data streams, and administrative units from your secure unified command center.
+                </p>
+                
+                <div class="hero-banner-stats mb-5">
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-number auto-count" data-target="{{ total_docs|default:'6' }}">{{ total_docs|default:"6" }}</span>
+                        <span class="hero-stat-label">Documents</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-number auto-count" data-target="{{ total_users|default:'7' }}">{{ total_users|default:"7" }}</span>
+                        <span class="hero-stat-label">Users</span>
+                    </div>
+                    <div class="hero-stat-divider"></div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-number auto-count" data-target="{{ total_depts|default:'8' }}">{{ total_depts|default:"8" }}</span>
+                        <span class="hero-stat-label">Departments</span>
+                    </div>
+                </div>
+
+                <div class="action-launch-zone">
+                    <a href="{% url 'admin_workspace' %}" class="btn-get-started-gateway">
+                        <span>Get Started</span>
+                        <i class="bi bi-arrow-right-short button-icon-move"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-banner-right">
+                <div class="hero-avatar-wrapper">
+                    <div class="hero-avatar-ring">
+                        <div class="hero-avatar-icon">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                    </div>
+                    <div class="hero-avatar-badge">
+                        <i class="bi bi-shield-check"></i> Primary Admin
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+    </div>
+
+    <div class="dashboard-footer">
+        <div class="footer-metric">
+            <i class="bi bi-check-circle-fill metric-ok-icon"></i>
+            <span>System Status: <strong class="text-white">Operational</strong></span>
+        </div>
+        <div class="footer-metric">
+            <i class="bi bi-clock-fill metric-sync-icon"></i>
+            <span>Telemetry Pipeline: <strong class="text-white">Active (1s)</strong></span>
+        </div>
+        <div class="footer-metric">
+            <i class="bi bi-database-fill metric-db-icon"></i>
+            <span>Storage Environment: <strong class="text-white">Distributed</strong></span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Locks Viewport to Prevent Scrolling and Unnecessary Line Trails */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden !important;
+}
+
+.dashboard-evolved-gateway {
+    position: relative;
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(180deg, #0b2240 0%, #061324 100%);
+    color: #ffffff;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-sizing: border-box;
+}
+
+body.dark-mode .dashboard-evolved-gateway {
+    background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+}
+
+.dashboard-ambient-orb {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(130px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.12;
+    top: -40px;
+    right: -40px;
+    background: #00f2fe;
+}
+body.dark-mode .dashboard-ambient-orb { background: #ff00d4; opacity: 0.08; }
+
+.hero-banner {
+    position: relative;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 242, 254, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 50px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+body.dark-mode .hero-banner { border-color: rgba(250, 204, 21, 0.15); background: rgba(0, 0, 0, 0.2); }
+
+.hero-banner-content { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.status-indicator { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.status-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 15px #10b981; }
+.status-label { color: #10b981; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.hero-banner-title { font-size: 2.5rem; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+
+.hero-banner-version {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #00e5fe;
+    background: rgba(0, 242, 254, 0.12);
+    padding: 3px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    margin-left: 12px;
+    vertical-align: middle;
+}
+body.dark-mode .hero-banner-version { color: #facc15; background: rgba(250, 204, 21, 0.12); border-color: rgba(250, 204, 21, 0.25); }
+
+.admin-clock-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.25); padding: 6px 16px; border-radius: 12px; font-family: 'Consolas', monospace; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.05); }
+.clock-glow-icon { color: #00f2fe; }
+body.dark-mode .clock-glow-icon { color: #facc15; }
+#adminClockTime { font-weight: 700; color: #00f2fe; }
+body.dark-mode #adminClockTime { color: #facc15; }
+.clock-divider { color: rgba(255,255,255,0.2); }
+.clock-date-text { color: #94a3b8; }
+.hero-banner-desc { color: #94a3b8; font-size: 1.05rem; max-width: 580px; line-height: 1.6; }
+
+.hero-banner-stats { display: flex; align-items: center; gap: 35px; }
+.hero-stat-number { font-size: 1.9rem; font-weight: 800; color: #ffffff; line-height: 1; }
+.hero-stat-label { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
+.hero-stat-divider { width: 1px; height: 35px; background: rgba(255, 255, 255, 0.1); }
+
+/* Custom "Get Started" Design Button */
+.btn-get-started-gateway {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    color: #040d1a !important;
+    padding: 12px 36px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    box-shadow: 0 8px 25px rgba(0, 242, 254, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-get-started-gateway:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(0, 242, 254, 0.4);
+}
+.button-icon-move { font-size: 1.3rem; transition: transform 0.2s ease; }
+.btn-get-started-gateway:hover .button-icon-move { transform: translateX(4px); }
+
+body.dark-mode .btn-get-started-gateway { background: linear-gradient(135deg, #facc15 0%, #eab308 100%); box-shadow: 0 8px 25px rgba(250, 204, 21, 0.2); }
+body.dark-mode .btn-get-started-gateway:hover { box-shadow: 0 12px 35px rgba(250, 204, 21, 0.35); }
+
+/* Interactive Corner Badge Profile Orbs */
+.hero-avatar-ring { width: 100px; height: 100px; border-radius: 50%; padding: 4px; background: conic-gradient(from 0deg, #00f2fe, #4facfe, #ff00d4, #00f2fe); }
+body.dark-mode .hero-avatar-ring { background: conic-gradient(from 0deg, #facc15, #d946ef, #ff00d4, #facc15); }
+.hero-avatar-icon { width: 100%; height: 100%; border-radius: 50%; background: #040d1a; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #00f2fe; }
+body.dark-mode .hero-avatar-icon { background: #12020a; color: #facc15; }
+.hero-avatar-badge { position: absolute; bottom: -4px; right: -4px; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #040d1a; padding: 3px 12px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; border: 2px solid #0b2240; }
+body.dark-mode .hero-avatar-badge { background: linear-gradient(135deg, #facc15, #eab308); color: #12020a; border-color: #2d0b1e; }
+
+.hero-orb { position: absolute; border-radius: 50%; pointer-events: none; }
+.hero-orb-1 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,242,254,0.05), transparent 70%); top: -120px; right: -80px; }
+.hero-orb-2 { width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,0,212,0.03), transparent 70%); bottom: -80px; left: -60px; }
+
+.dashboard-footer { padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: center; gap: 40px; }
+.metric-ok-icon { color: #10b981; margin-right: 6px; }
+.metric-sync-icon { color: #00f2fe; margin-right: 6px; }
+body.dark-mode .metric-sync-icon { color: #facc15; }
+.metric-db-icon { color: #a855f7; margin-right: 6px; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Stat Auto Counter Logic
+    document.querySelectorAll('.auto-count').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target')) || 0;
+        let count = 0;
+        const step = Math.max(1, Math.ceil(target / 15));
+        if (target > 0) {
+            const timer = setInterval(() => {
+                count += step;
+                if (count >= target) { el.textContent = target; clearInterval(timer); }
+                else { el.textContent = count; }
+            }, 40);
+        }
+    });
+
+    // Real-Time Greeting & Live Clock Update Loop
+    function runClock() {
+        const d = new Date();
+        const h = d.getHours();
+        let greet = "Good morning, Administrator";
+        if (h >= 12 && h < 18) greet = "Good afternoon, Administrator";
+        else if (h >= 18 || h < 5) greet = "Good evening, Administrator";
+        
+        const tgt = document.getElementById('adminGreeting');
+        if (tgt) tgt.textContent = greet;
+
+        const clock = document.getElementById('adminClockTime');
+        if (clock) {
+            clock.textContent = String(h).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+        }
+    }
+    runClock(); setInterval(runClock, 1000);
+});
+</script>
+{% endblock %}

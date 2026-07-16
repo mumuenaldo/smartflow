@@ -1,0 +1,302 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}AI Workflow Tools — Registry Clerk — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       CLERK AI DASHBOARD 
+       ============================================ */
+
+    .sf-clerk-ai {
+        padding: 2.5rem 0;
+        min-height: calc(100vh - 160px);
+        background: linear-gradient(180deg, #0b2240 0%, #061324 100%);
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark-mode .sf-clerk-ai {
+        background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+    }
+
+    .sf-clerk-ai .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.15;
+    }
+    .sf-clerk-ai .orb-1 {
+        width: 500px;
+        height: 500px;
+        background: #7c3aed;
+        top: -150px;
+        right: -100px;
+    }
+    body.dark-mode .sf-clerk-ai .orb-1 {
+        background: #facc15;
+    }
+
+    .sf-clerk-ai .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ─── Banner ─── */
+    .sf-ai-banner {
+        background: linear-gradient(135deg, #0f2b48 0%, #1a3d60 100%);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 20px;
+        padding: 32px;
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+        position: relative;
+    }
+    body.dark-mode .sf-ai-banner {
+        background: linear-gradient(135deg, #4c1130 0%, #31071c 100%);
+        border-color: rgba(250, 204, 21, 0.3);
+    }
+    .sf-ai-banner::after {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 6px;
+        background: #7c3aed;
+        border-radius: 20px 0 0 20px;
+    }
+    body.dark-mode .sf-ai-banner::after {
+        background: #facc15;
+    }
+    .sf-ai-banner h2 {
+        margin: 0;
+        font-weight: 800;
+        font-size: 1.6rem;
+        letter-spacing: -0.5px;
+    }
+    .sf-ai-banner p {
+        margin: 4px 0 0 0;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .sf-ai-live-badge {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.3px;
+    }
+
+    /* ─── Tool Cards ─── */
+    .sf-card-base {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .sf-tool-card {
+        padding: 1.75rem 1.5rem;
+        text-align: center;
+        height: 100%;
+    }
+    .sf-tool-card:hover {
+        transform: translateY(-5px);
+        border-color: #7c3aed;
+        box-shadow: 0 12px 40px 0 rgba(124, 58, 237, 0.2);
+    }
+    body.dark-mode .sf-tool-card:hover {
+        border-color: #facc15;
+        box-shadow: 0 12px 40px 0 rgba(250, 204, 21, 0.2);
+    }
+    .sf-tool-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+        background: rgba(124, 58, 237, 0.15);
+        color: #a78bfa;
+    }
+    body.dark-mode .sf-tool-icon {
+        background: rgba(250, 204, 21, 0.12);
+        color: #facc15;
+    }
+    .sf-tool-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+    .sf-tool-desc {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+        min-height: 34px;
+    }
+    .sf-tool-btn {
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #fff;
+        transition: all 0.2s ease;
+    }
+    body.dark-mode .sf-tool-btn {
+        background: linear-gradient(135deg, #facc15, #eab308);
+        color: #12020a;
+    }
+    .sf-tool-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        color: #fff;
+    }
+    body.dark-mode .sf-tool-btn:hover {
+        color: #12020a;
+    }
+    .sf-result-box {
+        margin-top: 1rem;
+        padding: 0.9rem;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.82rem;
+        color: #cbd5e1;
+        text-align: left;
+        min-height: 40px;
+        line-height: 1.5;
+    }
+
+    .sf-run-all-wrap {
+        text-align: center;
+        margin-top: 2rem;
+    }
+    .sf-run-all-btn {
+        padding: 0.8rem 2.2rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+    }
+    body.dark-mode .sf-run-all-btn {
+        background: linear-gradient(135deg, #facc15, #eab308);
+        color: #12020a;
+        box-shadow: 0 8px 24px rgba(250, 204, 21, 0.25);
+    }
+
+    @media (max-width: 600px) {
+        .sf-ai-banner { padding: 20px; flex-direction: column; align-items: flex-start; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sf-clerk-ai">
+    <div class="orb orb-1"></div>
+
+    <div class="container">
+
+        <!-- ─── Banner ─── -->
+        <div class="sf-ai-banner">
+            <div>
+                <h2><i class="bi bi-robot me-2"></i>AI Workflow Tools</h2>
+                <p><i class="bi bi-stars me-1" style="color: #a78bfa;"></i> Predict workload, route documents, and catch duplicates — Registry Clerk</p>
+            </div>
+            <span class="sf-ai-live-badge"><i class="bi bi-shield-check me-1"></i> AI Ready</span>
+        </div>
+
+        <!-- ─── Tool Grid ─── -->
+        <div class="row g-4">
+            <!-- Workload Prediction -->
+            <div class="col-md-6 col-lg-3">
+                <div class="sf-card-base sf-tool-card">
+                    <div class="sf-tool-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="sf-tool-title">Workload Prediction</div>
+                    <div class="sf-tool-desc">Estimated daily submissions &amp; busy periods</div>
+                    <button class="sf-tool-btn" onclick="runAITool('workload-result', '/api/ai/staff/?action=workload')">
+                        <i class="bi bi-graph-up-arrow me-1"></i> Predict
+                    </button>
+                    <div id="workload-result" class="sf-result-box">Click to predict...</div>
+                </div>
+            </div>
+
+            <!-- Smart Routing -->
+            <div class="col-md-6 col-lg-3">
+                <div class="sf-card-base sf-tool-card">
+                    <div class="sf-tool-icon"><i class="bi bi-diagram-3"></i></div>
+                    <div class="sf-tool-title">Smart Routing</div>
+                    <div class="sf-tool-desc">Best supervisor by workload + expertise</div>
+                    <button class="sf-tool-btn" onclick="runAITool('routing-result', '/api/ai/staff/?action=routing')">
+                        <i class="bi bi-diagram-3 me-1"></i> Route
+                    </button>
+                    <div id="routing-result" class="sf-result-box">Click to route...</div>
+                </div>
+            </div>
+
+            <!-- Duplicate Detection -->
+            <div class="col-md-6 col-lg-3">
+                <div class="sf-card-base sf-tool-card">
+                    <div class="sf-tool-icon"><i class="bi bi-copy"></i></div>
+                    <div class="sf-tool-title">Duplicate Detection</div>
+                    <div class="sf-tool-desc">Checks whether a document already exists</div>
+                    <button class="sf-tool-btn" onclick="runAITool('duplicate-result', '/api/ai/staff/?action=duplicate')">
+                        <i class="bi bi-copy me-1"></i> Check
+                    </button>
+                    <div id="duplicate-result" class="sf-result-box">Click to check...</div>
+                </div>
+            </div>
+
+            <!-- Processing Time -->
+            <div class="col-md-6 col-lg-3">
+                <div class="sf-card-base sf-tool-card">
+                    <div class="sf-tool-icon"><i class="bi bi-clock"></i></div>
+                    <div class="sf-tool-title">Processing Time</div>
+                    <div class="sf-tool-desc">Estimates how long a document will take</div>
+                    <button class="sf-tool-btn" onclick="runAITool('time-result', '/api/ai/staff/?action=time')">
+                        <i class="bi bi-clock me-1"></i> Estimate
+                    </button>
+                    <div id="time-result" class="sf-result-box">Click to estimate...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sf-run-all-wrap">
+            <button class="sf-run-all-btn" onclick="runAllClerkTools()">
+                <i class="bi bi-lightning-fill me-1"></i> Run All Tools
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function runAllClerkTools() {
+    runAITool('workload-result', '/api/ai/staff/?action=workload');
+    runAITool('routing-result', '/api/ai/staff/?action=routing');
+    runAITool('duplicate-result', '/api/ai/staff/?action=duplicate');
+    runAITool('time-result', '/api/ai/staff/?action=time');
+}
+</script>
+
+{% include 'registry/ai/_ai_shared.html' %}
+{% endblock %}

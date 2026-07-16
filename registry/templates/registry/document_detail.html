@@ -1,0 +1,482 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Document Details — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-item {
+        display: flex;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        bottom: -20px;
+        width: 2px;
+        background: #dee2e6;
+    }
+    .timeline-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: white;
+    }
+    .timeline-content {
+        flex: 1;
+    }
+
+    
+    /* ===== NIGHT MODE OVERRIDES ===== */
+
+    body.dark-mode .card {
+        background: #1a0a0e !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    body.dark-mode .card-header {
+        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important; /* BURGUNDY */
+        border-bottom: 3px solid #D4AF37 !important; /* SOFT METALLIC GOLD */
+        color: #D4AF37 !important; 
+        font-weight: 700;
+    }
+
+    body.dark-mode .card-header.bg-primary {
+        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important;
+    }
+
+    body.dark-mode .card-body {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .bg-light {
+        background: rgba(212, 175, 55, 0.06) !important;
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+    }
+
+    body.dark-mode .text-muted,
+    body.dark-mode .small,
+    body.dark-mode .helptext {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    body.dark-mode .fw-bold {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .border-bottom {
+        border-color: rgba(212, 175, 55, 0.2) !important;
+    }
+
+    /* SYSTEM STATUS BADGES - NIGHT */
+    body.dark-mode .badge {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .badge.bg-success {
+        background: #0f7b3a !important;
+        border: 1px solid #2ecc71;
+    }
+
+    body.dark-mode .badge.bg-danger {
+        background: #a1222a !important;
+        border: 1px solid #e74c3c;
+    }
+
+    body.dark-mode .badge.bg-warning {
+        background: #b8860b !important;
+        border: 1px solid #D4AF37;
+    }
+
+    body.dark-mode .badge.bg-info {
+        background: #0d5c7a !important;
+        border: 1px solid #17a2b8;
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #3a3a4a !important;
+        border: 1px solid #5a5a6a;
+    }
+
+    body.dark-mode .badge.bg-light {
+        background: rgba(212, 175, 55, 0.15) !important;
+        color: #D4AF37 !important;
+        border: 1px solid #D4AF37;
+        font-weight: 700;
+    }
+
+    /* ACTIONS & BUTTONS - NIGHT */
+    body.dark-mode .btn-outline-primary {
+        color: #D4AF37 !important;
+        border: 2px solid #D4AF37 !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #D4AF37 !important;
+        color: #1a0a0e !important;
+    }
+
+    body.dark-mode .btn-success {
+        background: #28a745 !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-success:hover {
+        background: #218838 !important;
+    }
+
+    body.dark-mode .btn-warning {
+        background: #D4AF37 !important; 
+        border: none !important;
+        color: #1a0a0e !important;
+        font-weight: 800;
+    }
+
+    body.dark-mode .btn-warning:hover {
+        background: #bc962e !important;
+    }
+
+    body.dark-mode .btn-primary {
+        background: #8b1a3a !important;  
+        border: 1px solid #D4AF37 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #4a0e1a !important;
+    }
+
+    body.dark-mode .btn-secondary {
+        border: 2px solid #D4AF37 !important;
+        background: transparent !important;
+        color: #D4AF37 !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-secondary:hover {
+        background: #D4AF37 !important;
+        color: #1a0a0e !important;
+    }
+
+    /* TEXT FIELDS & FORM INPUTS - NIGHT */
+    body.dark-mode .text-dark {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .text-primary {
+        color: #D4AF37 !important;
+    }
+
+    body.dark-mode .text-success {
+        color: #4cff91 !important;
+    }
+
+    body.dark-mode .text-danger {
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .text-warning {
+        color: #D4AF37 !important;
+    }
+
+    body.dark-mode .form-control {
+        background: rgba(212, 175, 55, 0.06) !important;
+        color: #ffffff !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* TIMELINE & UTILITIES - NIGHT */
+    body.dark-mode .timeline-item:not(:last-child)::before {
+        background: rgba(212, 175, 55, 0.3);
+    }
+
+    body.dark-mode .timeline-badge.bg-warning {
+        background: #b8860b !important;
+        border: 1px solid #D4AF37;
+    }
+
+    body.dark-mode .comment-item {
+        border-color: rgba(212, 175, 55, 0.2) !important;
+    }
+
+    body.dark-mode hr {
+        border-color: rgba(212, 175, 55, 0.2);
+        opacity: 1;
+    }
+    
+    /* Specific Bootstrap Icons */
+    body.dark-mode .bi { color: #D4AF37 !important; }
+    body.dark-mode .badge .bi, body.dark-mode .btn .bi { color: inherit !important; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .6; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Document Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-file-text me-2"></i> Document Details
+                    </h4>
+                    <span class="badge bg-light text-dark">{{ doc.reference_no }}</span>
+                </div>
+                <div class="card-body">
+                    <!-- Title -->
+                    <h3 class="fw-bold mb-3">{{ doc.title }}</h3>
+                    
+                    <!-- Status Badge -->
+                    <div class="mb-3">
+                        <span class="badge 
+                            {% if doc.status.status_code == 'approved' %}bg-success
+                            {% elif doc.status.status_code == 'rejected' %}bg-danger
+                            {% elif doc.status.status_code == 'in_review' %}bg-info
+                            {% elif doc.status_code == 'pending' %}bg-warning text-dark
+                            {% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
+                            <i class="bi 
+                                {% if doc.status_code == 'approved' %}bi-check-circle
+                                {% elif doc.status_code == 'rejected' %}bi-x-circle
+                                {% elif doc.status.status_code == 'in_review' %}bi-eye
+                                {% elif doc.status_code == 'pending' %}bi-clock
+                                {% else %}bi-file-text{% endif %} me-1">
+                            </i>
+                            {{ doc.status_name|default:"Processing" }}
+                        </span>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Description</h6>
+                        <p class="text-muted">{{ doc.description|default:"No description provided." }}</p>
+                    </div>
+                    
+                    <!-- Document Info Grid -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Document Type</small>
+                                <strong class="text-dark">{{ doc.document_type|default:"Not specified" }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Department</small>
+                                <strong class="text-dark">{{ doc.department.dept_name|default:"Not assigned" }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Submitted By</small>
+                                <strong class="text-dark">{{ doc.submitted_by.get_full_name|default:doc.submitted_by.username }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Submitted On</small>
+                                <strong class="text-dark">{{ doc.created_at|date:"d M Y, H:i" }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Last Updated</small>
+                                <strong class="text-dark">{{ doc.updated_at|date:"d M Y, H:i" }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small class="text-muted d-block">Requires Approval</small>
+                                <strong class="text-dark">{% if doc.requires_approval %}Yes{% else %}No{% endif %}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QR Code -->
+                    {% if doc.qr_code %}
+                    <div class="text-center mb-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold text-dark"><i class="bi bi-qr-code-scan me-1"></i> Scan to Verify</h6>
+                        <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid bg-white p-2 rounded shadow-sm">
+                        <p class="text-muted small mt-2">Reference: <strong class="text-dark">{{ doc.reference_no }}</strong></p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Attachment -->
+                    {% if doc.file_path %}
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Attachment</h6>
+                        <a href="{{ doc.file_path.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-download me-1"></i> Download File
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Priority Badge -->
+                    {% if doc.priority %}
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Priority</h6>
+                        <span class="badge 
+                            {% if doc.priority == 'low' %}bg-success
+                            {% elif doc.priority == 'medium' %}bg-warning text-dark
+                            {% elif doc.priority == 'high' %}bg-danger
+                            {% elif doc.priority == 'urgent' %}bg-danger{% endif %} px-3 py-2"
+                            {% if doc.priority == 'urgent' %}style="animation: pulse 1s infinite;"{% endif %}>
+                            <i class="bi 
+                                {% if doc.priority == 'low' %}bi-arrow-down-circle
+                                {% elif doc.priority == 'medium' %}bi-dash-circle
+                                {% elif doc.priority == 'high' %}bi-arrow-up-circle
+                                {% elif doc.priority == 'urgent' %}bi-exclamation-triangle-fill{% endif %} me-1"></i>
+                            {{ doc.priority|title }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Action Buttons -->
+                    <hr>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <!-- Export PDF Button -->
+                        <a href="{% url 'export_document' doc.id %}" class="btn btn-success">
+                            <i class="bi bi-file-pdf me-1"></i> Export PDF
+                        </a>
+                        
+                        <!-- Print Button -->
+                        <button onclick="window.print()" class="btn btn-secondary">
+                            <i class="bi bi-printer me-1"></i> Print
+                        </button>
+                        
+                        {% if user.role == 'clerk' or user.role == 'admin' %}
+                            <a href="{% url 'document_assign' doc.id %}" class="btn btn-warning">
+                                <i class="bi bi-person-plus me-1"></i> Assign
+                            </a>
+                        {% endif %}
+                        
+                        {% if user.role == 'supervisor' or user.role == 'admin' %}
+                            <a href="{% url 'approval_view' doc.id %}" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i> Review & Approve
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'document_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workflow Timeline -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-diagram-3 me-2"></i> Workflow Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if workflows %}
+                        <div class="timeline">
+                            {% for workflow in workflows %}
+                            <div class="timeline-item">
+                                <div class="timeline-badge 
+                                    {% if workflow.status == 'approved' %}bg-success
+                                    {% elif workflow.status == 'rejected' %}bg-danger
+                                    {% elif workflow.status == 'in_review' %}bg-info
+                                    {% else %}bg-warning{% endif %}">
+                                    <i class="bi 
+                                        {% if workflow.status == 'approved' %}bi-check-lg
+                                        {% elif workflow.status == 'rejected' %}bi-x-lg
+                                        {% elif workflow.status == 'in_review' %}bi-eye
+                                        {% else %}bi-clock{% endif %}"></i>
+                                </div>
+                                <div class="timeline-content ms-3">
+                                    <div class="d-flex justify-content-between">
+                                        <strong class="text-dark">{{ workflow.current_step }}</strong>
+                                        <small class="text-muted">{{ workflow.started_at|date:"d M Y, H:i" }}</small>
+                                    </div>
+                                    <small class="d-block mt-1">Status: {{ workflow.get_status_display }}</small>
+                                    {% if workflow.assigned_to %}
+                                        <div><small>Assigned to: {{ workflow.assigned_to.get_full_name|default:workflow.assigned_to.username }}</small></div>
+                                    {% endif %}
+                                    {% if workflow.completed_at %}
+                                        <small class="text-muted d-block mt-1">Completed: {{ workflow.completed_at|date:"d M Y, H:i" }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No workflow history yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Comments Section -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots me-2"></i> Comments & Feedback
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Comment Form -->
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="comment_submit" value="1">
+                        <div class="mb-2">
+                            <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="bi bi-send me-1"></i> Post Comment
+                        </button>
+                    </form>
+                    
+                    <!-- Comments List -->
+                    {% if comments %}
+                        <div class="comments-list">
+                            {% for comment in comments %}
+                            <div class="comment-item mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="text-dark">
+                                        <i class="bi bi-person-circle me-1"></i>
+                                        {{ comment.user.get_full_name|default:comment.user.username }}
+                                    </strong>
+                                    <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
+                                </div>
+                                <p class="mb-0 mt-1 text-dark">{{ comment.comment }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No comments yet. Be the first to comment!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

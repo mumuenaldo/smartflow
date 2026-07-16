@@ -1,0 +1,168 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}My Requests — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sf-requests { background: #F7F8FA; min-height: calc(100vh - 160px); }
+    body.dark-mode .sf-requests { background: #1a0a16; } 
+    .sf-requests .sf-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    body.dark-mode .sf-requests .sf-card {
+        background: #2d0b1e; 
+        border: 1px solid #4a1a32;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .sf-requests .back-link {
+        color: var(--sf-muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+    .sf-requests .back-link:hover { color: #7c1f3f; } 
+    body.dark-mode .sf-requests .back-link { color: #c9a96a; } 
+    body.dark-mode .sf-requests .back-link:hover { color: #ffc700; }  
+
+    .sf-requests .empty-state {
+        text-align: center;
+        padding: 3rem 1.5rem;
+    }
+    .sf-requests .empty-state .icon {
+        font-size: 3rem;
+        color: #d1d5db;
+        display: block;
+        margin-bottom: 1rem;
+    }
+    body.dark-mode .sf-requests .empty-state .icon { color: #ffc700; } 
+    .sf-requests .empty-state p { color: var(--sf-muted); }
+    body.dark-mode .sf-requests .empty-state p { color: #c9a96a; }
+
+    /* Table in dark mode */
+    body.dark-mode .sf-table { color: #ffffff; }
+    body.dark-mode .sf-table thead th { color: #ffc700; border-color: #4a1a32; } 
+    body.dark-mode .sf-table tbody td { border-color: #4a1a32; }
+    body.dark-mode .sf-table .text-muted { color: #c9a96a !important; }
+    body.dark-mode .sf-table code { color: #ffc700; background: #3a1428; padding: 2px 6px; border-radius: 4px; }
+
+    /* Buttons in dark mode */
+    body.dark-mode .sf-btn-primary {
+        background: #ffc700;
+        color: #2d0b1e;
+        border: 1px solid #ffc700;
+    }
+    body.dark-mode .sf-btn-primary:hover {
+        background: #ffd700;
+        color: #2d0b1e;
+    }
+    body.dark-mode .sf-btn-outline {
+        color: #ffc700;
+        border: 1px solid #ffc700;
+        background: transparent;
+    }
+    body.dark-mode .sf-btn-outline:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+    body.dark-mode .sf-btn-outline-success {
+        color: #4cff91;
+        border: 1px solid #4cff91;
+        background: transparent;
+    }
+    body.dark-mode .sf-btn-outline-success:hover {
+        background: #4cff91;
+        color: #2d0b1e;
+    }
+
+    /* Status chips in dark mode */
+    body.dark-mode .sf-status-chip.status-pending { background: rgba(255, 199, 0, 0.15); color: #ffc700; border: 1px solid #ffc700; }
+    body.dark-mode .sf-status-chip.status-approved { background: rgba(76, 255, 145, 0.15); color: #4cff91; border: 1px solid #4cff91; }
+    body.dark-mode .sf-status-chip.status-rejected { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; border: 1px solid #ff6b6b; }
+    body.dark-mode .sf-status-chip.status-in_review { background: rgba(124, 31, 63, 0.3); color: #ffc700; border: 1px solid #7c1f3f; }
+    body.dark-mode .sf-status-chip .dot { background: currentColor; }
+
+    body.dark-mode h4[style*="color: #1E3A5F;"] { color: #ffc700 !important; } 
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sf-requests py-4">
+    <div class="container">
+
+        <!-- Back Link -->
+        <div class="mb-3">
+            <a href="{% url 'student_dashboard' %}" class="back-link">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold" style="color: #1E3A5F;">
+                <i class="bi bi-files me-2"></i> My Requests
+            </h4>
+            <a href="{% url 'student_submit' %}" class="sf-btn sf-btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> New Request
+            </a>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="sf-card">
+            {% if my_requests %}
+                <div class="table-responsive">
+                    <table class="table align-middle sf-table">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in my_requests %}
+                            <tr>
+                                <td><code>{{ doc.reference_no }}</code></td>
+                                <td>{{ doc.title|truncatechars:40 }}</td>
+                                <td>
+                                    <span class="sf-status-chip 
+                                        {% if doc.status_code == 'pending' %}status-pending
+                                        {% elif doc.status.status_code == 'approved' %}status-approved
+                                        {% elif doc.status_code == 'rejected' %}status-rejected
+                                        {% elif doc.status_code == 'in_review' %}status-in_review
+                                        {% else %}status-default{% endif %}">
+                                        <span class="dot"></span>
+                                        {{ doc.status.status_name|default:"Processing" }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">{{ doc.created_at|date:"d M Y" }}</td>
+                                <td>
+                                    <a href="{% url 'student_track' doc.id %}" class="sf-btn sf-btn-outline">
+                                        <i class="bi bi-eye"></i> Track
+                                    </a>
+                                    <a href="{% url 'export_document' doc.id %}" class="sf-btn sf-btn-outline-success">
+                                        <i class="bi bi-file-pdf"></i> PDF
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <span class="icon"><i class="bi bi-inbox"></i></span>
+                    <p class="mb-3">No document requests yet.</p>
+                    <a href="{% url 'student_submit' %}" class="sf-btn sf-btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Submit Your First Request
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

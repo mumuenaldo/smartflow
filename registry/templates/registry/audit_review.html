@@ -1,0 +1,421 @@
+{% extends 'registry/base.html' %}
+
+{% block title %}Document Registry{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR DOCUMENT REGISTRY -  */
+    
+
+    body.dark-mode .display-6 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .card-header.bg-primary {
+        background: #3a1428 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-header.bg-light {
+        background: #3a1428 !important;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .card-header h5 {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .card-footer {
+        background: #3a1428 !important;
+        border-top: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important; 
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .table {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .table-dark {
+        background: #3a1428 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .table thead th {
+        color: #ffc700 !important;
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody td {
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table-hover tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05) !important; 
+    }
+
+    body.dark-mode code {
+        color: #ffc700 !important;
+        background: rgba(124, 31, 63, 0.3) !important;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    body.dark-mode a {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode a:hover {
+        color: #ffd700 !important;
+    }
+
+    /* Badges */
+    body.dark-mode .badge.bg-success {
+        background: rgba(76, 255, 145, 0.15) !important;
+        color: #4cff91 !important;
+        border: 1px solid #4cff91;
+    }
+
+    body.dark-mode .badge.bg-danger {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .badge.bg-info {
+        background: rgba(124, 31, 63, 0.4) !important;
+        color: #ffc700 !important;
+        border: 1px solid #7c1f3f;
+    }
+
+    body.dark-mode .badge.bg-warning {
+        background: rgba(255, 199, 0, 0.15) !important;
+        color: #ffc700 !important;
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #4a1a32 !important;
+        color: #c9a96a !important;
+        border: 1px solid #4a1a32;
+    }
+
+    /* Buttons */
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important;
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-success {
+        background: #4cff91 !important;
+        border: 1px solid #4cff91 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-success:hover {
+        background: #2ecc71 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-warning {
+        background: #ffc700 !important;
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    /* Pagination */
+    body.dark-mode .pagination .page-link {
+        background: #3a1428;
+        border-color: #4a1a32;
+        color: #ffc700;
+    }
+
+    body.dark-mode .pagination .page-link:hover {
+        background: #4a1a32;
+        color: #ffffff;
+    }
+
+    body.dark-mode .pagination .page-item.active .page-link {
+        background: #ffc700;
+        border-color: #ffc700;
+        color: #2d0b1e; 
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6"><i class="bi bi-file-earmark-text me-2"></i>Document Registry</h1>
+            <p class="text-muted">Manage and track all documents</p>
+        </div>
+    </div>
+
+    <!-- Upload New Document Section -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Upload New Document</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Document Type</label>
+                        {{ form.document_type }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">File</label>
+                        {{ form.file }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Assign To (Optional)</label>
+                        {{ form.assigned_to }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-cloud-upload me-1"></i>Upload Document
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Search by title or ref..." 
+                           value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>
+                            <i class="bi bi-hourglass-split"></i> Pending
+                        </option>
+                        <option value="under_review" {% if request.GET.status == 'under_review' %}selected{% endif %}>
+                            <i class="bi bi-journal-text"></i> Under Review
+                        </option>
+                        <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>
+                            <i class="bi bi-check-circle"></i> Approved
+                        </option>
+                        <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>
+                            <i class="bi bi-x-circle"></i> Rejected
+                        </option>
+                        <option value="processed" {% if request.GET.status == 'processed' %}selected{% endif %}>
+                            <i class="bi bi-box-seam"></i> Processed
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="assigned_to" class="form-select">
+                        <option value="">All Assignees</option>
+                        {% for staff in staff_list %}
+                            <option value="{{ staff.id }}" {% if request.GET.assigned_to == staff.id|stringformat:"s" %}selected{% endif %}>
+                                {{ staff.get_full_name|default:staff.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Document Records</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Reference</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Assigned To</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><code>{{ doc.reference_number }}</code></td>
+                        <td>
+                            {% if doc.file %}
+                                <a href="{{ doc.file.url }}" target="_blank">
+                                    <i class="bi bi-file-earmark me-1"></i>{{ doc.title }}
+                                </a>
+                            {% else %}
+                                <i class="bi bi-file-earmark me-1"></i>{{ doc.title }}
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-secondary">{{ doc.get_document_type_display }}</span></td>
+                        <td>
+                            {% if doc.assigned_to %}
+                                <i class="bi bi-person me-1"></i>{{ doc.assigned_to.get_full_name|default:doc.assigned_to.username }}
+                            {% else %}
+                                <span class="text-muted">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if doc.status == 'approved' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Approved</span>
+                            {% elif doc.status == 'rejected' %}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Rejected</span>
+                            {% elif doc.status == 'under_review' %}
+                                <span class="badge bg-info"><i class="bi bi-journal-text me-1"></i>Under Review</span>
+                            {% elif doc.status == 'processed' %}
+                                <span class="badge bg-secondary"><i class="bi bi-box-seam me-1"></i>Processed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if doc.file %}
+                                <a href="{{ doc.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                            {% endif %}
+                            {% if user.role == 'supervisor' and doc.status == 'pending' %}
+                                <a href="{% url 'review_document' doc.id %}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-clipboard-check me-1"></i>Review
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            No documents found. Upload your first document!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if documents.has_other_pages %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if documents.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ documents.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.assigned_to %}&assigned_to={{ request.GET.assigned_to }}{% endif %}">
+                                <i class="bi bi-arrow-left me-1"></i>Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in documents.paginator.page_range %}
+                        <li class="page-item {% if documents.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.assigned_to %}&assigned_to={{ request.GET.assigned_to }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if documents.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ documents.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.assigned_to %}&assigned_to={{ request.GET.assigned_to }}{% endif %}">
+                                Next<i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

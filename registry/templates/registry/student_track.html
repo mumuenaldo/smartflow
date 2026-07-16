@@ -1,0 +1,449 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Track Request — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-item {
+        display: flex;
+        margin-bottom: 25px;
+        position: relative;
+    }
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 35px;
+        bottom: -25px;
+        width: 2px;
+        background: #dee2e6;
+    }
+    .timeline-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: white;
+    }
+    .timeline-content {
+        flex: 1;
+    }
+
+    
+    /* DARK MODE FOR TRACK REQUEST  */
+    
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-header h5 {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+        color: #ffffff;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .fw-bold {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode h2.fw-bold {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .bg-light {
+        background: #3a1428 !important; 
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .bg-light.rounded {
+        background: #3a1428 !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .bg-light.rounded p {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .badge {
+        color: #ffffff !important;
+        border: 1px solid;
+    }
+
+    body.dark-mode .badge.bg-warning {
+        background: rgba(255, 199, 0, 0.15) !important;
+        border-color: #ffc700;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .badge.bg-success {
+        background: rgba(76, 255, 145, 0.15) !important;
+        border-color: #4cff91;
+        color: #4cff91 !important;
+    }
+
+    body.dark-mode .badge.bg-danger {
+        background: rgba(255, 107, 107, 0.15) !important;
+        border-color: #ff6b6b;
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .badge.bg-info {
+        background: rgba(124, 31, 63, 0.3) !important;
+        border-color: #7c1f3f;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #4a1a32 !important;
+        border-color: #4a1a32;
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .badge.bg-primary {
+        background: rgba(255, 199, 0, 0.15) !important;
+        border-color: #ffc700;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        color: #c9a96a;
+        border-color: #4a1a32;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #4a1a32;
+        color: #ffffff;
+    }
+
+    body.dark-mode .btn-danger {
+        background: #a1222a !important;
+        border: 1px solid #ff6b6b !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .btn-danger:hover {
+        background: #ff6b6b !important;
+    }
+
+    body.dark-mode .border-bottom {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .border-0 {
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .bg-white {
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode code {
+        color: #ffc700 !important;
+        background: rgba(124, 31, 63, 0.3) !important;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    body.dark-mode .text-center .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-center .bg-light {
+        background: #3a1428 !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .text-center .bg-light h6 {
+        color: #ffc700 !important; /* Gold */
+    }
+
+    body.dark-mode .text-center .bg-light p {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-center .bg-light strong {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .timeline-item:not(:last-child)::before {
+        background: #4a1a32 !important;
+    }
+
+    body.dark-mode .timeline-badge.bg-warning {
+        background: rgba(255, 199, 0, 0.15) !important;
+        border: 1px solid #ffc700;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .timeline-badge.bg-secondary {
+        background: #4a1a32 !important;
+        border: 1px solid #4a1a32;
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .timeline-badge.bg-success {
+        background: rgba(76, 255, 145, 0.15) !important;
+        border: 1px solid #4cff91;
+        color: #4cff91 !important;
+    }
+
+    body.dark-mode .timeline-badge.bg-danger {
+        background: rgba(255, 107, 107, 0.15) !important;
+        border: 1px solid #ff6b6b;
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .timeline-badge.bg-info {
+        background: rgba(124, 31, 63, 0.3) !important;
+        border: 1px solid #7c1f3f;
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .comment-item {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .comment-item strong {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .comment-item .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .comment-item p {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode [style*="color: var(--blue-deep);"] {
+        color: #ffc700 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold" style="color: var(--blue-deep);">
+                        <i class="bi bi-eye me-2"></i> Track Your Request
+                    </h2>
+                    <p class="text-muted">Reference: <code>{{ doc.reference_no }}</code></p>
+                </div>
+                <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Document Details Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h4 class="fw-bold mb-0">{{ doc.title }}</h4>
+                        <div class="d-flex gap-2">
+                            <!-- Priority Badge -->
+                            {% if doc.priority %}
+                                <span class="badge 
+                                    {% if doc.priority == 'low' %}bg-success
+                                    {% elif doc.priority == 'medium' %}bg-warning text-dark
+                                    {% elif doc.priority == 'high' %}bg-danger
+                                    {% elif doc.priority == 'urgent' %}bg-danger{% endif %}">
+                                    {% if doc.priority == 'low' %}<i class="bi bi-circle-fill me-1"></i>Low
+                                    {% elif doc.priority == 'medium' %}<i class="bi bi-circle-fill me-1"></i>Medium
+                                    {% elif doc.priority == 'high' %}<i class="bi bi-exclamation-triangle-fill me-1"></i>High
+                                    {% elif doc.priority == 'urgent' %}<i class="bi bi-lightning-fill me-1"></i>Urgent{% endif %}
+                                </span>
+                            {% endif %}
+                            <!-- Status Badge -->
+                            <span class="badge 
+                                {% if doc.status.status_code == 'approved' %}bg-success
+                                {% elif doc.status.status_code == 'rejected' %}bg-danger
+                                {% elif doc.status.status_code == 'in_review' %}bg-info
+                                {% elif doc.status_code == 'pending' %}bg-warning text-dark
+                                {% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
+                                {{ doc.status_name|default:"Processing" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted mb-4">{{ doc.description|default:"No description provided." }}</p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3">
+                                <div class="small text-muted">Document Type</div>
+                                <div class="fw-bold">{{ doc.document_type|default:"Not specified" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3">
+                                <div class="small text-muted">Submitted</div>
+                                <div class="fw-bold">{{ doc.created_at|date:"d M Y, H:i" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3">
+                                <div class="small text-muted">Last Updated</div>
+                                <div class="fw-bold">{{ doc.updated_at|date:"d M Y, H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attachments -->
+                    {% if doc.file_path %}
+                    <div class="mb-4">
+                        <h6 class="fw-bold"><i class="bi bi-paperclip me-2"></i> Attachment</h6>
+                        <a href="{{ doc.file_path.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-download me-1"></i> Download Document
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- QR CODE DISPLAY -->
+                    {% if doc.qr_code %}
+                    <div class="text-center mt-4 p-3 bg-light rounded">
+                        <h6 class="fw-bold"><i class="bi bi-qr-code-scan me-2"></i>Scan to Verify</h6>
+                        <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid">
+                        <p class="text-muted small mt-2">Reference: <strong>{{ doc.reference_no }}</strong></p>
+                        <p class="text-muted small">Scan this QR code to verify the document status</p>
+                    </div>
+                    {% else %}
+                    <div class="text-center mt-4 p-3 bg-light rounded">
+                        <p class="text-muted">QR code not available for this request.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Workflow Timeline -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-diagram-3 me-2"></i> Workflow Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for workflow in workflows %}
+                        <div class="timeline-item">
+                            <div class="timeline-badge 
+                                {% if workflow.status == 'approved' %}bg-success
+                                {% elif workflow.status == 'rejected' %}bg-danger
+                                {% elif workflow.status == 'in_review' %}bg-info
+                                {% elif workflow.status == 'processed' %}bg-secondary
+                                {% else %}bg-warning{% endif %}">
+                                <i class="bi 
+                                    {% if workflow.status == 'approved' %}bi-check-lg
+                                    {% elif workflow.status == 'rejected' %}bi-x-lg
+                                    {% elif workflow.status == 'in_review' %}bi-eye
+                                    {% else %}bi-clock{% endif %}"></i>
+                            </div>
+                            <div class="timeline-content ms-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold mb-1">{{ workflow.current_step }}</h6>
+                                    <small class="text-muted">{{ workflow.started_at|date:"d M Y, H:i" }}</small>
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    Status: 
+                                    <span class="badge 
+                                        {% if workflow.status == 'approved' %}bg-success
+                                        {% elif workflow.status == 'rejected' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ workflow.get_status_display }}
+                                    </span>
+                                    {% if workflow.assigned_to %}
+                                    • Assigned to: {{ workflow.assigned_to.get_full_name|default:workflow.assigned_to.username }}
+                                    {% endif %}
+                                </p>
+                                {% if workflow.completed_at %}
+                                <small class="text-muted">Completed: {{ workflow.completed_at|date:"d M Y, H:i" }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-hourglass-split fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">Workflow information will appear here as your request is processed.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel Request Button -->
+            {% if doc.status_code == 'pending' %}
+            <form method="post" action="{% url 'cancel_request' doc.id %}" class="d-inline" 
+                  onsubmit="return confirm('Are you sure you want to cancel this request? This action cannot be undone.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-x-circle me-1"></i> Cancel Request
+                </button>
+            </form>
+            {% endif %}
+
+            <!-- Comments Section -->
+            {% if comments %}
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-chat-dots me-2"></i> Comments & Feedback
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in comments %}
+                    <div class="comment-item mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                            <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
+                        </div>
+                        <p class="mb-0">{{ comment.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — SmartFlow{% endblock %}
+
+{% block content %}
+<div style="min-height: calc(100vh - 160px); display: flex; align-items: center; justify-content: center;">
+    <div class="text-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted mt-3">Redirecting to your dashboard...</p>
+    </div>
+</div>
+
+<script>
+    // Redirect based on user role
+    document.addEventListener('DOMContentLoaded', function() {
+        const role = '{{ request.user.role }}';
+        let url = '';
+        
+        switch(role) {
+            case 'admin':
+                url = "{% url 'admin_launchpad' %}";
+                break;
+            case 'supervisor':
+                url = "{% url 'supervisor_dashboard' %}";
+                break;
+            case 'clerk':
+                url = "{% url 'clerk_dashboard' %}";
+                break;
+            case 'staff':
+                url = "{% url 'staff_dashboard' %}";
+                break;
+            case 'student':
+                url = "{% url 'student_dashboard' %}";
+                break;
+            default:
+                url = "{% url 'landing_page' %}";
+        }
+        
+        window.location.href = url;
+    });
+</script>
+{% endblock %}

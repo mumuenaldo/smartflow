@@ -1,0 +1,56 @@
+{% extends 'registry/base.html' %}
+{% block title %}{{ action }} Department{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <h4><i class="bi bi-building me-2"></i>{{ action }} Department</h4>
+  <a href="{% url 'manage_departments' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-building me-2"></i>Department Details
+        </span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Department Name <span class="text-danger">*</span></label>
+            {{ form.dept_name }}
+            {% if form.dept_name.errors %}
+              <div class="text-danger small mt-1">{{ form.dept_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Location</label>
+            {{ form.location }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Description</label>
+            {{ form.description }}
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'manage_departments' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-lg me-1"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-lg me-1"></i>{{ action }} Department
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

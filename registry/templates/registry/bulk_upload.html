@@ -1,0 +1,187 @@
+{% extends 'registry/base.html' %}
+{% block title %}Bulk Upload Documents{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* This card will inherit day colors from base, and switch to burgundy/gold in dark-mode */
+    .custom-bulk-card {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .custom-bulk-card .card-header {
+        background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%) !important;
+        border-bottom: 3px solid var(--accent) !important;
+        color: white !important;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 1.25rem;
+        font-weight: 700;
+    }
+    
+    .custom-bulk-card .card-body {
+        background: white !important;
+        border: 2px solid var(--accent) !important;
+        border-top: none;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        padding: 2rem;
+    }
+
+    /* FORM ELEMENTS - DAY */
+    .custom-bulk-card label {
+        color: var(--blue-deep) !important;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .custom-bulk-card .form-control, 
+    .custom-bulk-card .form-select {
+        background: #f8fbff !important;
+        border: 2px solid var(--accent) !important;
+        color: var(--blue-deep) !important;
+        border-radius: 8px;
+    }
+    .custom-bulk-card .form-control:focus {
+        border-color: var(--blue-brand) !important;
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+    }
+    .custom-alert {
+        background: rgba(0, 198, 255, 0.1) !important;
+        border: 2px solid var(--accent) !important;
+        color: var(--blue-deep) !important;
+    }
+    .custom-alert code {
+        color: var(--blue-brand) !important;
+        background: rgba(0,0,0,0.05);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+    }
+
+    /* BUTTONS - DAY */
+    .btn-smartflow-primary {
+        background: var(--blue-brand) !important;
+        color: white !important;
+        font-weight: 700;
+        border: none;
+    }
+    .btn-smartflow-secondary {
+        border: 2px solid var(--blue-brand) !important;
+        color: var(--blue-brand) !important;
+        font-weight: 700;
+    }
+
+    /* ===== DARK MODE ===== */
+    body.dark-mode .custom-bulk-card .card-header {
+        background: linear-gradient(135deg, #4a1a32 0%, #7c1f3f 100%) !important; 
+        border-bottom: 3px solid #ffc700 !important; 
+        color: #ffc700 !important; 
+    }
+    
+    body.dark-mode .custom-bulk-card .card-body {
+        background: #2d0b1e !important; 
+        border: 2px solid #ffc700 !important; 
+    }
+
+    body.dark-mode .custom-bulk-card label {
+        color: #ffffff !important;
+    }
+    
+    /* Input field styling in dark mode */
+    body.dark-mode .custom-bulk-card .form-control, 
+    body.dark-mode .custom-bulk-card .form-select {
+        background: #3a1428 !important; 
+        border: 2px solid #ffc700 !important; 
+        color: #ffffff !important;
+    }
+    body.dark-mode .custom-bulk-card .form-control:focus {
+        border-color: #ffc700 !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 199, 0, 0.25) !important; 
+    }
+
+    /* Fixes the invisible/white browser button on file inputs in dark mode */
+    body.dark-mode .custom-bulk-card input[type="file"]::file-selector-button {
+        background-color: #4a1a32 !important; 
+        color: #ffffff !important;
+        border: 1px solid #ffc700 !important; 
+        border-radius: 4px;
+        padding: 0.25rem 0.7rem;
+        margin-right: 10px;
+    }
+    body.dark-mode .custom-bulk-card input[type="file"]::file-selector-button:hover {
+        background-color: #ffc700 !important; 
+        color: #2d0b1e !important; 
+        cursor: pointer;
+    }
+    
+    /* Fix for any muted help text underneath the file input box */
+    body.dark-mode .custom-bulk-card .text-muted,
+    body.dark-mode .custom-bulk-card .helptext {
+        color: #c9a96a !important; 
+    }
+    
+    body.dark-mode .custom-alert {
+        background: rgba(255, 199, 0, 0.08) !important; 
+        border: 2px solid #ffc700 !important;
+        color: #ffffff !important;
+    }
+    body.dark-mode .custom-alert code {
+        color: #ffc700 !important;
+        background: rgba(124, 31, 63, 0.3);
+    }
+
+    /* BUTTONS - NIGHT */
+    body.dark-mode .btn-smartflow-primary {
+        background: #ffc700 !important; 
+        color: #2d0b1e !important; 
+        font-weight: 800;
+    }
+    body.dark-mode .btn-smartflow-primary:hover {
+        background: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+    body.dark-mode .btn-smartflow-secondary {
+        border: 2px solid #ffc700 !important;
+        color: #ffc700 !important;
+    }
+    body.dark-mode .btn-smartflow-secondary:hover {
+        background: #ffc700 !important;
+        color: #2d0b1e !important;
+    }
+    
+    /* Specific Bootstrap Icons Target */
+    body.dark-mode .bi { color: #ffc700 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card custom-bulk-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-upload me-2"></i>Bulk Upload Documents</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert custom-alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>CSV Format Required:</strong>
+                        <hr class="my-2">
+                        <code>title,description,document_type,department</code>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data" class="mt-4">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-smartflow-primary">
+                                <i class="bi bi-cloud-upload me-1"></i>Upload
+                            </button>
+                            <a href="{% url 'document_list' %}" class="btn btn-smartflow-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

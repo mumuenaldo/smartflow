@@ -1,0 +1,437 @@
+{% extends 'registry/base.html' %}
+{% block title %}Review Document — {{ doc.reference_no }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badge-approved { background: #d1e7dd; color: #0f5132; }
+    .badge-rejected { background: #f8d7da; color: #842029; }
+    .badge-pending  { background: #fff3cd; color: #856404; }
+    .badge-in_review { background: #cff4fc; color: #055160; }
+    .badge-processed { background: #e2e3e5; color: #383d41; }
+    .badge-archived  { background: #e2d9f3; color: #432874; }
+    .badge-cancelled { background: #f8d7da; color: #842029; }
+
+    .page-header h4 {
+        font-weight: 700;
+        color: #0d3b6e;
+    }
+
+    .review-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    
+    /* DARK MODE FOR REVIEW DOCUMENT PAGE */
+    
+
+    body.dark-mode .page-header h4 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .card-header span {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+        color: #ffffff;
+    }
+
+    body.dark-mode .table {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .table thead th {
+        color: #ffc700 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody td {
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05) !important; 
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .text-muted.fw-semibold {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode code {
+        color: #ffc700 !important;
+        background: rgba(124, 31, 63, 0.3) !important; 
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    body.dark-mode .badge {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .badge.bg-warning {
+        background: #b8860b !important;
+        border: 1px solid #ffc700;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #4a1a32 !important;
+        border: 1px solid #4a1a32;
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .badge-approved {
+        background: rgba(76, 255, 145, 0.15) !important;
+        color: #4cff91 !important;
+        border: 1px solid #4cff91;
+    }
+
+    body.dark-mode .badge-rejected {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .badge-pending {
+        background: rgba(255, 199, 0, 0.15) !important;
+        color: #ffc700 !important;
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge-in_review {
+        background: rgba(124, 31, 63, 0.3) !important;
+        color: #ffc700 !important;
+        border: 1px solid #7c1f3f;
+    }
+
+    body.dark-mode .badge-processed {
+        background: #4a1a32 !important;
+        color: #c9a96a !important;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .badge-archived {
+        background: #4a1a32 !important;
+        color: #c9a96a !important;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .badge-cancelled {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        color: #c9a96a;
+        border-color: #4a1a32;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #4a1a32;
+        color: #ffffff;
+    }
+
+    body.dark-mode .btn-success {
+        background: #4cff91;
+        border: 1px solid #4cff91;
+        color: #2d0b1e; /* Burgundy text */
+    }
+
+    body.dark-mode .btn-success:hover {
+        background: #2ecc71;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode .btn-danger {
+        background: #ff6b6b;
+        border: 1px solid #ff6b6b;
+        color: #ffffff;
+    }
+
+    body.dark-mode .btn-danger:hover {
+        background: #e74c3c;
+        color: #ffffff;
+    }
+
+    body.dark-mode .border-bottom {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .bg-white.py-3 {
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode .form-control {
+        background: #3a1428 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important; 
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .form-check-input {
+        background-color: #4a1a32 !important;
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .form-check-input:checked {
+        background-color: #ffc700 !important; 
+        border-color: #ffc700 !important;
+    }
+
+    body.dark-mode .form-check-label {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .review-section {
+        background: #3a1428 !important; 
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode [style*="color:#0d3b6e;"] {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .d-flex.justify-content-between .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .d-flex.justify-content-between span:last-child {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-text {
+        color: #c9a96a !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <h4><i class="bi bi-clipboard-check me-2"></i>Review Document</h4>
+  <a href="{% url 'document_detail' doc.pk %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back to Document
+  </a>
+</div>
+
+<div class="row g-4">
+
+  <!-- ── Left: Document Details ── -->
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-info-circle me-2"></i>Document Information
+        </span>
+      </div>
+      <div class="card-body">
+        <table class="table table-borderless mb-0" style="font-size:.9rem;">
+          <tr>
+            <td class="text-muted fw-semibold" style="width:160px;">Reference No.</td>
+            <td><code>{{ doc.reference_no }}</code></td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Title</td>
+            <td>{{ doc.title }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Type</td>
+            <td>{{ doc.document_type|default:"—" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Department</td>
+            <td>{{ doc.department|default:"—" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Submitted By</td>
+            <td>{{ doc.submitted_by.get_full_name|default:"—" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Date Submitted</td>
+            <td>{{ doc.created_at|date:"d M Y, H:i" }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Requires Approval</td>
+            <td>
+              {% if doc.requires_approval %}
+                <span class="badge bg-warning text-dark">Yes</span>
+              {% else %}
+                <span class="badge bg-secondary">No</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted fw-semibold">Current Status</td>
+            <td>
+              <span class="badge badge-{{ doc.status.status_code }} fs-6">
+                {{ doc.status.status_name|default:"Unset" }}
+              </span>
+            </td>
+          </tr>
+          {% if doc.description %}
+          <tr>
+            <td class="text-muted fw-semibold">Description</td>
+            <td>{{ doc.description }}</td>
+          </tr>
+          {% endif %}
+          {% if doc.file_path %}
+          <tr>
+            <td class="text-muted fw-semibold">Attachment</td>
+            <td>
+              <a href="{{ doc.file_path.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-paperclip me-1"></i>View File
+              </a>
+            </td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    <!-- Workflow History -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-diagram-3 me-2"></i>Workflow History
+        </span>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0" style="font-size:.87rem;">
+          <thead>
+            <tr><th>Step</th><th>Status</th><th>Assigned To</th><th>Started</th><th>Completed</th></tr>
+          </thead>
+          <tbody>
+            {% for wf in workflows %}
+            <tr>
+              <td>{{ wf.current_step }}</td>
+              <td><span class="badge badge-{{ wf.status }}">{{ wf.get_status_display }}</span></td>
+              <td>{{ wf.assigned_to.get_full_name|default:"—" }}</td>
+              <td class="text-muted">{{ wf.started_at|date:"d M Y" }}</td>
+              <td class="text-muted">{{ wf.completed_at|date:"d M Y"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No workflow history.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right: Approval Form ── -->
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-check2-circle me-2"></i>Approval Decision
+        </span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted small mb-3">
+          Review the document details and make your decision below.
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Decision</label>
+            <div class="review-section">
+              {% for radio in form.action %}
+              <div class="form-check">
+                {{ radio.tag }}
+                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                  {{ radio.choice_label }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.comment.id_for_label }}" class="form-label fw-bold">Comments</label>
+            {{ form.comment }}
+            <div class="form-text">Optional — add any notes or feedback for the submitter.</div>
+          </div>
+
+          <hr>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success flex-fill">
+              <i class="bi bi-check2-circle me-1"></i>Submit Decision
+            </button>
+            <a href="{% url 'document_detail' doc.pk %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-circle me-1"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Quick Info -->
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-activity me-2"></i>Quick Info
+        </span>
+      </div>
+      <div class="card-body" style="font-size:.88rem;">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Last Updated</span>
+          <span>{{ doc.updated_at|date:"d M Y, H:i" }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Total Workflows</span>
+          <span>{{ workflows.count }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Total Comments</span>
+          <span>{{ comments.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

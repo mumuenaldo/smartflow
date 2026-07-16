@@ -1,0 +1,306 @@
+{% extends 'registry/base.html' %}
+{% block title %}Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.07);
+        transition: transform .15s, box-shadow .15s;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    }
+    .icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .badge-approved { background: #d1e7dd; color: #0f5132; }
+    .badge-pending  { background: #fff3cd; color: #856404; }
+    .badge-rejected { background: #f8d7da; color: #842029; }
+    .page-header h4 {
+        font-weight: 700;
+        color: #0d3b6e;
+    }
+
+    
+    /* DARK MODE FOR REPORTS PAGE  */
+    
+
+    body.dark-mode .page-header h4 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .stat-card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .stat-card:hover {
+        box-shadow: 0 6px 20px rgba(255, 199, 0, 0.15) !important; /* Gold glow */
+    }
+
+    body.dark-mode .stat-card .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .stat-card .text-primary {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .stat-card .text-success {
+        color: #4cff91 !important;
+    }
+
+    body.dark-mode .stat-card .text-warning {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .stat-card .text-danger {
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .stat-card .bg-primary.bg-opacity-10 {
+        background: rgba(255, 199, 0, 0.15) !important; 
+    }
+
+    body.dark-mode .stat-card .bg-success.bg-opacity-10 {
+        background: rgba(76, 255, 145, 0.1) !important;
+    }
+
+    body.dark-mode .stat-card .bg-warning.bg-opacity-10 {
+        background: rgba(255, 199, 0, 0.15) !important; 
+    }
+
+    body.dark-mode .stat-card .bg-danger.bg-opacity-10 {
+        background: rgba(255, 107, 107, 0.1) !important;
+    }
+
+    body.dark-mode .stat-card .icon-wrap i {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .stat-card .bg-success.bg-opacity-10 i { color: #4cff91 !important; }
+    body.dark-mode .stat-card .bg-danger.bg-opacity-10 i { color: #ff6b6b !important; }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important;
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .card-header span {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .table {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .table thead th {
+        color: #ffc700 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody td {
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05) !important; 
+    }
+
+    body.dark-mode .table .fw-semibold {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .badge-approved {
+        background: rgba(76, 255, 145, 0.15) !important;
+        color: #4cff91 !important;
+        border: 1px solid #4cff91;
+    }
+
+    body.dark-mode .badge-pending {
+        background: rgba(255, 199, 0, 0.15) !important;
+        color: #ffc700 !important;
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge-rejected {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .text-muted.small {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .progress {
+        background: #4a1a32 !important; 
+    }
+
+    body.dark-mode .progress .progress-bar.bg-success {
+        background: #4cff91 !important;
+    }
+
+    body.dark-mode .progress .progress-bar.bg-warning {
+        background: #ffc700 !important; 
+    }
+
+    body.dark-mode .progress .progress-bar.bg-danger {
+        background: #ff6b6b !important;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .text-center.text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode [style*="color:#0d3b6e;"] {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .bg-white.py-3 {
+        background: #3a1428 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h4><i class="bi bi-bar-chart-line me-2"></i>Workflow Reports</h4>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-wrap bg-primary bg-opacity-10 text-primary">
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div>
+          <div class="fs-4 fw-bold text-primary">{{ total_docs }}</div>
+          <div class="text-muted small">Total Documents</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-wrap bg-success bg-opacity-10 text-success">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div>
+          <div class="fs-4 fw-bold text-success">{{ total_approved }}</div>
+          <div class="text-muted small">Approved</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-wrap bg-warning bg-opacity-10 text-warning">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div>
+          <div class="fs-4 fw-bold text-warning">{{ total_pending }}</div>
+          <div class="text-muted small">Pending</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card stat-card p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-wrap bg-danger bg-opacity-10 text-danger">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div>
+          <div class="fs-4 fw-bold text-danger">{{ total_rejected }}</div>
+          <div class="text-muted small">Rejected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Department Breakdown -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <span class="fw-bold" style="color:#0d3b6e;">
+      <i class="bi bi-building me-2"></i>Department Breakdown
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th class="text-center">Total</th>
+          <th class="text-center">Approved</th>
+          <th class="text-center">Pending</th>
+          <th class="text-center">Rejected</th>
+          <th>Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dept in dept_stats %}
+        <tr>
+          <td class="fw-semibold">{{ dept.dept_name }}</td>
+          <td class="text-center">{{ dept.doc_count }}</td>
+          <td class="text-center">
+            <span class="badge badge-approved">{{ dept.approved }}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge badge-pending">{{ dept.pending }}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge badge-rejected">{{ dept.rejected }}</span>
+          </td>
+          <td style="min-width:120px;">
+            {% if dept.doc_count > 0 %}
+            <div class="progress" style="height:8px; border-radius:4px;">
+              <div class="progress-bar bg-success" 
+                   style="width:{% widthratio dept.approved dept.doc_count 100 %}%;">
+              </div>
+            </div>
+            {% else %}
+            <span class="text-muted small">No documents</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">No departments found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,409 @@
+{% extends 'registry/base.html' %}
+{% block title %}System Progress Analytics — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 1rem;
+    }
+    body.dark-mode .analytics-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* PREMIUM GLASS CARD */
+    .chart-container {
+        position: relative;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 1.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    .chart-container:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+    body.dark-mode .chart-container {
+        background: rgba(45, 11, 30, 0.6);
+        border: 1px solid rgba(90, 26, 58, 0.5);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    body.dark-mode .chart-container:hover {
+        border-color: rgba(255, 199, 0, 0.4);
+        box-shadow: 0 12px 40px rgba(255, 199, 0, 0.15);
+    }
+
+    .pie-wrapper {
+        min-height: 450px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .graph-wrapper {
+        height: 400px;
+    }
+
+    .chart-title {
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1a1a1a;
+    }
+    body.dark-mode .chart-title {
+        color: #f5e6c8;
+    }
+    .chart-title .bi {
+        font-size: 1.3rem;
+    }
+
+    /* LIVE STATUS INDICATOR */
+    .live-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-top: 6px;
+    }
+    .live-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ef4444;
+        transition: background 0.3s ease;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    }
+    .live-dot.connected {
+        background: #22c55e;
+        animation: pulse-dot 1.5s infinite;
+    }
+    @keyframes pulse-dot {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+        70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+</style>
+<!-- Include Chart.js + DataLabels Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="analytics-header">
+        <div>
+            <h2 class="fw-bold m-0" style="color: #7c1f3f;"><i class="bi bi-graph-up-arrow me-2"></i>System Progress Metrics</h2>
+            <p class="text-muted m-0 small">Real-time status tracking and department processing metrics</p>
+            <div class="live-indicator">
+                <span id="liveDot" class="live-dot"></span>
+                <span id="liveStatus" style="color:#ef4444;">Connecting…</span>
+            </div>
+        </div>
+        <a href="{% if user.role == 'admin' %}{% url 'admin_launchpad' %}{% else %}{% url 'dashboard' %}{% endif %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- 1. DOCUMENT STATUS PIE CHART -->
+        <div class="col-12 col-lg-5">
+            <div class="chart-container h-100">
+                <h5 class="chart-title"><i class="bi bi-pie-chart-fill" style="color: #ffc700;"></i>Document Distribution Status</h5>
+                <div class="pie-wrapper">
+                    <canvas id="documentStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SUBMISSIONS TIMELINE -->
+        <div class="col-12 col-lg-7">
+            <div class="chart-container h-100">
+                <h5 class="chart-title"><i class="bi bi-activity" style="color: #ffc700;"></i>Submissions — Last 7 Days</h5>
+                <div class="graph-wrapper">
+                    <canvas id="submissionTimelineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DEPARTMENT BAR CHART -->
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="chart-title"><i class="bi bi-bar-chart-steps" style="color: #ffc700;"></i>Departmental Document Distribution</h5>
+                <div class="graph-wrapper">
+                    <canvas id="departmentBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Register the datalabels plugin
+    Chart.register(ChartDataLabels);
+
+    // Universal color context helper mapping dark mode
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const labelColor = isDarkMode ? '#f5e6c8' : '#333';
+    const gridColor = isDarkMode ? 'rgba(201, 169, 106, 0.15)' : 'rgba(0, 0, 0, 0.05)';
+    const burgundy = '#7c1f3f';
+    const gold = '#ffc700';
+
+    // Global Chart Defaults
+    Chart.defaults.color = labelColor;
+    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+    Chart.defaults.font.weight = '600';
+
+    // 1. Document Status Pie with DATA LABELS
+    const ctxPie = document.getElementById('documentStatusChart').getContext('2d');
+
+    const gradientPending = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
+    gradientPending.addColorStop(0, '#ffd700');
+    gradientPending.addColorStop(1, '#ffc700');
+
+    const gradientReview = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
+    gradientReview.addColorStop(0, '#c9a96a');
+    gradientReview.addColorStop(1, '#a88c5a');
+
+    const gradientApproved = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
+    gradientApproved.addColorStop(0, '#7ed957');
+    gradientApproved.addColorStop(1, '#5cb85c');
+
+    const gradientRejected = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
+    gradientRejected.addColorStop(0, '#ff8a8a');
+    gradientRejected.addColorStop(1, '#e55b5b');
+
+    // NOTE: chart is now stored in a variable so the WebSocket handler
+    // below can update it live instead of only rendering once on load.
+    const documentStatusChart = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Review', 'Approved', 'Rejected'],
+            datasets: [{
+                data: [
+                    {{ pending_count|default:0 }},
+                    {{ review_count|default:0 }},
+                    {{ approved_count|default:0 }},
+                    {{ rejected_count|default:0 }}
+                ],
+                backgroundColor: [gradientPending, gradientReview, gradientApproved, gradientRejected],
+                borderWidth: 3,
+                borderColor: isDarkMode ? '#2d0b1e' : '#ffffff',
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { animateRotate: true, animateScale: true, duration: 1200 },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 25, font: { size: 14, weight: '700' }, usePointStyle: true, pointStyle: 'circle' }
+                },
+                datalabels: {
+                    color: '#ffffff',
+                    font: { weight: '800', size: 16 },
+                    formatter: function(value) { return value > 0 ? value : ''; },
+                    textShadowBlur: 4,
+                    textShadowColor: 'rgba(0,0,0,0.5)'
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
+                    titleColor: gold,
+                    bodyColor: labelColor,
+                    borderColor: gold,
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 10
+                }
+            },
+            cutout: '60%'
+        }
+    });
+
+    // 2. Submissions Timeline with DATA LABELS
+    const ctxLine = document.getElementById('submissionTimelineChart').getContext('2d');
+    const lineGradient = ctxLine.createLinearGradient(0, 0, 0, 400);
+    lineGradient.addColorStop(0, 'rgba(255, 199, 0, 0.4)');
+    lineGradient.addColorStop(1, 'rgba(255, 199, 0, 0)');
+
+    const submissionTimelineChart = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: {{ timeline_labels|safe|default:"['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue']" }},
+            datasets: [{
+                label: 'Documents Uploaded',
+                data: {{ timeline_data|safe|default:"[0, 0, 0, 0, 0, 0, 0]" }},
+                borderColor: gold,
+                backgroundColor: lineGradient,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 4,
+                pointRadius: 6,
+                pointBackgroundColor: gold,
+                pointBorderColor: isDarkMode ? '#2d0b1e' : '#ffffff',
+                pointBorderWidth: 3,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1500, easing: 'easeInOutQuart' },
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: gold,
+                    font: { weight: '800', size: 12 },
+                    align: 'top',
+                    offset: 4,
+                    formatter: function(value) { return value > 0 ? value : ''; }
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
+                    titleColor: gold,
+                    bodyColor: labelColor,
+                    borderColor: gold,
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 10
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor, borderDash: [4, 4] },
+                    ticks: { font: { weight: '700' } }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: { precision: 0, font: { weight: '700' } }
+                }
+            }
+        }
+    });
+
+    // 3. Department Bar Chart with DATA LABELS
+    const ctxBar = document.getElementById('departmentBarChart').getContext('2d');
+    const barGradient = ctxBar.createLinearGradient(0, 0, 0, 400);
+    barGradient.addColorStop(0, gold);
+    barGradient.addColorStop(1, burgundy);
+
+    const departmentBarChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: {{ dept_labels|safe|default:"['Registry', 'Human Resources', 'Finance', 'ICT', 'Academic Affairs', 'Admissions']" }},
+            datasets: [{
+                label: 'Active Records',
+                data: {{ dept_data|safe|default:"[0, 0, 0, 0, 0, 0]" }},
+                backgroundColor: barGradient,
+                borderColor: gold,
+                borderWidth: 2,
+                borderRadius: 12,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1200, easing: 'easeOutBounce' },
+            plugins: {
+                legend: { display: false },
+                datalabels: {
+                    color: isDarkMode ? '#f5e6c8' : '#1a1a1a',
+                    font: { weight: '800', size: 13 },
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: function(value) { return value; }
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
+                    titleColor: gold,
+                    bodyColor: labelColor,
+                    borderColor: gold,
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 10
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { weight: '700' } }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: { precision: 0, font: { weight: '700' } }
+                }
+            }
+        }
+    });
+
+    // ─────────────────────────────────────────────
+    // LIVE WEBSOCKET UPDATES
+    // Connects to the same "workflow_updates" group that
+    // workflow_overview.html listens to, so admin analytics
+    // refresh instantly whenever any user submits, registers,
+    // or approves/rejects a document — no page reload needed.
+    // ─────────────────────────────────────────────
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsUrl = protocol + '://' + window.location.host + '/ws/workflow/';
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = function() {
+        document.getElementById('liveDot').classList.add('connected');
+        document.getElementById('liveStatus').textContent = 'Live';
+        document.getElementById('liveStatus').style.color = '#22c55e';
+    };
+
+    socket.onclose = function() {
+        document.getElementById('liveDot').classList.remove('connected');
+        document.getElementById('liveStatus').textContent = 'Disconnected';
+        document.getElementById('liveStatus').style.color = '#ef4444';
+    };
+
+    socket.onerror = function() {
+        document.getElementById('liveDot').classList.remove('connected');
+        document.getElementById('liveStatus').textContent = 'Error';
+        document.getElementById('liveStatus').style.color = '#ef4444';
+    };
+
+    socket.onmessage = function(e) {
+        try {
+            const response = JSON.parse(e.data);
+            if (response.type === 'connection') return;
+
+            if (response.type === 'workflow_update' && response.data) {
+                const d = response.data;
+
+                // Update pie chart
+                documentStatusChart.data.datasets[0].data = d.status.data;
+                documentStatusChart.update();
+
+                // Update department bar chart
+                departmentBarChart.data.labels = d.dept.labels;
+                departmentBarChart.data.datasets[0].data = d.dept.data;
+                departmentBarChart.update();
+
+                // Timeline chart isn't part of get_workflow_chart_data() yet,
+                // so it's left as-is here (see note below the code block).
+            }
+        } catch (err) {
+            console.error('WebSocket message processing error:', err);
+        }
+    };
+</script>
+{% endblock %}

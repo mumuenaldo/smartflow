@@ -1,0 +1,224 @@
+{% extends 'registry/base.html' %}
+{% block content %}
+<div class="sf-wrapper">
+
+    <!-- Student AI Panel -->
+    <div class="sf-panel">
+        <div class="sf-panel-head">
+            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-robot sf-dot"></i> SmartFlow AI Assistant | Gemini 2.5 Flash
+            </h5>
+            {% if document %}
+            <div class="d-flex gap-2">
+                <button class="btn sf-btn-sm" onclick="runGemini('{{ doc_id }}', 'review')"><i class="bi bi-lightning-charge me-1"></i>Quick Review</button>
+                <button class="btn sf-btn-sm sf-btn--outline" onclick="runGemini('{{ doc_id }}', 'bulk')"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full Analysis</button>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="sf-panel-body">
+
+            {% if user_documents %}
+            <div class="sf-doc-picker mb-4">
+                <label for="docSelect" class="sf-muted small d-block mb-1">Select a document to analyze:</label>
+                <select id="docSelect" class="form-select" onchange="if(this.value){ window.location.href = '/ai/student/' + this.value + '/'; }">
+                    <option value="">-- Choose a document --</option>
+                    {% for doc in user_documents %}
+                    <option value="{{ doc.id }}" {% if document and document.id == doc.id %}selected{% endif %}>{{ doc.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            {% if not document %}
+            <div class="sf-empty-alert">
+                {% if user_documents %}
+                    <i class="bi bi-info-circle me-1"></i> Select a document above to run AI tools on it.
+                {% else %}
+                    <i class="bi bi-folder-x me-1"></i> You don't have any documents yet. Submit a document first, then come back to run AI tools on it.
+                {% endif %}
+            </div>
+            {% else %}
+
+            <p class="sf-muted mb-3">Reviewing: <strong style="color:#fff;">{{ document.title }}</strong></p>
+
+            <div id="ai-results-wrapper" class="d-none">
+                <div id="ai-loading-spinner" class="sf-spinner-wrap d-none">
+                    <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sf-gold);">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="sf-muted ms-2 small"><i class="bi bi-hourglass-split me-1"></i>Gemini is thinking...</span>
+                </div>
+                <div id="ai-output-content" class="sf-output"></div>
+            </div>
+
+            <div id="ai-empty-state" class="sf-empty">
+                <i class="bi bi-stars fa-2x mb-3 opacity-25" style="color: var(--sf-gold);" aria-hidden="true"></i>
+                <h6 class="fw-semibold sf-muted">Powered by Gemini 2.5 Flash</h6>
+                <p class="sf-muted small mx-auto" style="max-width: 400px;">
+                    Run a quick check or full logbook analysis. No admin stats here, just AI.
+                </p>
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+:root{
+  --sf-bg: #1a0a14; /* Deep burgundy */
+  --sf-panel: rgba(45, 11, 30, 0.85); /* Burgundy glass */
+  --sf-gold: #ffc700; /* Primary gold */
+  --sf-gold-light: #ffd700;
+  --sf-burgundy: #7c1f3f;
+  --sf-text: #ffffff;
+  --sf-muted: #c9a96a; /* Muted gold */
+  --sf-radius-xl: 16px;
+  --sf-radius-lg: 10px;
+}
+.sf-wrapper{background: var(--sf-bg); min-height: 100vh; color: var(--sf-text); font-family: 'Segoe UI', Roboto, sans-serif; padding: 1.5rem;}
+.sf-muted{ color: var(--sf-muted)!important; }
+.sf-panel{background: var(--sf-panel); border: 1px solid rgba(255,199,0,0.15); border-radius: var(--sf-radius-xl); color: var(--sf-text); max-width: 900px; margin: 0 auto; backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0,0,0,0.4);}
+.sf-panel-head{ padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,199,0,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;}
+.sf-dot{ color: var(--sf-gold); }
+
+.sf-btn-sm{background: linear-gradient(135deg, var(--sf-gold), var(--sf-gold-light)); color: #2d0b1e; border: none; border-radius: var(--sf-radius-lg); padding: 0.5rem 1rem; font-weight: 700; font-size: 0.875rem; transition: all 0.2s ease;}
+.sf-btn--outline{background: transparent; border: 1.5px solid var(--sf-gold); color: var(--sf-gold);}
+@media (hover: hover) and (pointer: fine){
+  .sf-btn-sm:hover{ transform: translateY(-1px); box-shadow: 0 0 16px rgba(255,199,0,0.4); }
+  .sf-btn--outline:hover{ background: rgba(255,199,0,0.1); }
+}
+.sf-btn-sm:focus-visible{ outline: 2px solid var(--sf-gold-light); outline-offset: 2px; }
+
+.sf-spinner-wrap{ display:flex; align-items:center; margin-bottom:1rem; }
+.sf-output{ line-height: 1.6; }
+.sf-ai-block{ margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.04); border-radius: 10px; border-left: 3px solid var(--sf-gold); }
+.sf-ai-list li{ margin-bottom: 0.25rem; }
+.sf-tag{display:inline-block; background: rgba(255,199,0,0.15); color: var(--sf-gold); border: 1px solid rgba(255,199,0,0.3); border-radius: 20px; padding: 0.25rem 0.7rem; font-size: 0.85rem; font-weight: 600; margin: 2px;}
+.sf-ai-error{background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b; border-radius: 8px; padding: 0.75rem 1rem; color: #ffb3b3; white-space: pre-wrap;}
+.sf-empty{ text-align:center; padding: 3rem 1rem; }
+.sf-empty-alert{ background: rgba(255,199,0,0.08); border: 1px solid rgba(255,199,0,0.25); border-radius: 10px; padding: 1rem 1.25rem; color: #ffd700; font-size: 0.9rem; }
+.sf-doc-picker select.form-select{ background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,199,0,0.2); border-radius: var(--sf-radius-lg); }
+.sf-doc-picker select.form-select:focus{ border-color: var(--sf-gold); box-shadow: 0 0 0 0.2rem rgba(255,199,0,0.2); }
+.sf-doc-picker select.form-select option{ background: #1a0a14; color: #fff; }
+
+/* Light mode override if needed */
+body:not(.dark-mode) .sf-wrapper{ background: #F7F8FA; }
+body:not(.dark-mode) .sf-panel{ background: #fff; border: 1px solid #eee; }
+</style>
+
+<script>
+// ===== SmartFlow + Gemini 2.5 Flash =====
+const escapeHtml = (str) => String(str)
+ .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+let currentAIController = null;
+const DOC_ID = '{{ doc_id }}';
+
+const aiUI = () => ({
+  wrapper: document.getElementById('ai-results-wrapper'),
+  spinner: document.getElementById('ai-loading-spinner'),
+  content: document.getElementById('ai-output-content'),
+  empty: document.getElementById('ai-empty-state')
+});
+
+const showLoading = () => {
+  const {wrapper, spinner, content, empty} = aiUI();
+  if (!DOC_ID || DOC_ID === 'None') {
+    content.innerHTML = `<div class="sf-ai-error"><i class="bi bi-x-circle me-1"></i>Missing Doc ID. Check your view context.</div>`;
+    wrapper.classList.remove('d-none');
+    empty.classList.add('d-none');
+    return null;
+  }
+  if (currentAIController) currentAIController.abort();
+  currentAIController = new AbortController();
+  empty.classList.add('d-none');
+  wrapper.classList.remove('d-none');
+  spinner.classList.remove('d-none');
+  content.innerHTML = '';
+  return currentAIController.signal;
+};
+
+const renderReview = (data) => {
+  const summary = escapeHtml(data.summary || 'No summary returned.');
+  let html = `<div class="sf-ai-block"><strong><i class="bi bi-text-paragraph me-1"></i>SUMMARY:</strong><br>${summary}</div>`;
+
+  if (Array.isArray(data.key_points) && data.key_points.length) {
+    html += `<div class="sf-ai-block"><strong><i class="bi bi-list-check me-1"></i>KEY POINTS:</strong><ul class="sf-ai-list ps-3 mb-0">`;
+    html += data.key_points.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    html += `</ul></div>`;
+  }
+
+  if (data.word_count) {
+    html += `<p class="mt-2 mb-0 sf-muted small"><i class="bi bi-clock me-1"></i>${data.word_count} words &middot; ~${data.reading_time_minutes} min read</p>`;
+  }
+
+  return html;
+};
+
+const renderBulk = (data) => {
+  const summary = data.summary || {};
+  const grammar = data.grammar || {};
+  const improvements = data.improvements || {};
+  const tags = data.tags || {};
+
+  const fixesHtml = (Array.isArray(improvements.actionable_fixes) && improvements.actionable_fixes.length)
+    ? improvements.actionable_fixes.map(f =>
+        `<li>${escapeHtml(f.proposed_rewrite || '')}${f.benefit ? ' <span class="sf-muted">(' + escapeHtml(f.benefit) + ')</span>' : ''}</li>`
+      ).join('')
+    : '<li>No suggestions.</li>';
+
+  const tagList = [...(tags.categories || []), ...(tags.keywords || [])];
+  const scoreText = (grammar.score !== undefined && grammar.score !== null) ? ` <span class="sf-tag">${grammar.score}/100</span>` : '';
+
+  return `
+    <div class="sf-ai-block"><strong><i class="bi bi-journal-text me-1"></i>SUMMARY:</strong><br>${escapeHtml(summary.summary || 'N/A')}</div>
+    <div class="sf-ai-block"><strong><i class="bi bi-check2-circle me-1"></i>GRAMMAR & STYLE:</strong>${scoreText}<br>${escapeHtml(grammar.overall_feedback || 'N/A')}</div>
+    <div class="sf-ai-block"><strong><i class="bi bi-lightbulb me-1"></i>IMPROVEMENTS:</strong><ul class="sf-ai-list ps-3 mb-0">${fixesHtml}</ul></div>
+    <div class="sf-ai-block"><strong><i class="bi bi-tags me-1"></i>TAGS:</strong><br>${tagList.length ? tagList.map(t => `<span class="sf-tag">${escapeHtml(t)}</span>`).join('') : '<span class="sf-muted">None</span>'}</div>
+  `;
+};
+
+const callGemini = async (docId, mode) => {
+  const signal = showLoading();
+  if (!signal) return;
+
+  const {spinner, content} = aiUI();
+  try {
+    const url = mode === 'bulk'
+      ? `/api/ai/student/${docId}/bulk/`
+      : `/api/ai/student/${docId}/?action=summary`;
+
+    const res = await fetch(url, {
+      method: 'GET',
+      signal,
+      credentials: 'include'
+    });
+
+    const text = await res.text();
+    let payload;
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      throw new Error(`Server returned HTML ${res.status}. Check login, URL, or view crash.`);
+    }
+
+    if (!res.ok || !payload.success) throw new Error(payload.error || `HTTP ${res.status}`);
+
+    const data = payload.data;
+    content.innerHTML = mode === 'bulk' ? renderBulk(data) : renderReview(data);
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      content.innerHTML = `<div class="sf-ai-error"><i class="bi bi-exclamation-triangle me-1"></i>Gemini Engine Note: ${escapeHtml(err.message)}</div>`;
+    }
+  } finally {
+    spinner.classList.add('d-none');
+  }
+};
+
+function runGemini(docId, mode) {
+  callGemini(docId, mode);
+}
+</script>
+{% endblock %}

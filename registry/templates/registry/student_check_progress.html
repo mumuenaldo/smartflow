@@ -1,0 +1,216 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Check Progress — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sf-progress { background: #F7F8FA; min-height: calc(100vh - 160px); }
+    body.dark-mode .sf-progress { background: #1a0a14; } 
+    
+    .sf-progress .sf-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        margin-bottom: 1.5rem;
+        border: 1px solid #eee;
+    }
+    body.dark-mode .sf-progress .sf-card {
+        background: #2d0b1e; 
+        border: 1px solid #4a1a32;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    
+    .sf-progress .card-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #1E3A5F;
+        margin-bottom: 1rem;
+    }
+    body.dark-mode .sf-progress .card-title { color: #ffc700; } 
+    
+    .sf-progress .chart-wrap {
+        height: 280px;
+        width: 100%;
+        position: relative;
+    }
+    
+    .sf-progress .back-link {
+        color: var(--sf-muted, #6c757d);
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+    .sf-progress .back-link:hover { color: #1E3A5F; }
+    body.dark-mode .sf-progress .back-link { color: #c9a96a; }
+    body.dark-mode .sf-progress .back-link:hover { color: #ffc700; }
+
+    body.dark-mode .text-muted { color: #c9a96a !important; }
+    body.dark-mode .text-warning { color: #ffc700 !important; }
+    body.dark-mode .text-info { color: #c084fc !important; } 
+    body.dark-mode .text-success { color: #4cff91 !important; }
+    body.dark-mode .text-danger { color: #ff6b6b !important; }
+
+    body.dark-mode h4.fw-bold { color: #ffc700 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sf-progress py-4">
+    <div class="container">
+
+        <!-- Back Link -->
+        <div class="mb-3">
+            <a href="{% url 'student_dashboard' %}" class="back-link">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Page Title -->
+        <h4 class="fw-bold mb-4" style="color: #1E3A5F;">
+            <i class="bi bi-graph-up-arrow me-2"></i> Your Progress
+        </h4>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="sf-card text-center">
+                    <div class="text-warning fs-3 fw-bold">{{ pending|default:"0" }}</div>
+                    <div class="text-muted small">Pending</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="sf-card text-center">
+                    <div class="text-info fs-3 fw-bold">{{ in_review|default:"0" }}</div>
+                    <div class="text-muted small">In Review</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="sf-card text-center">
+                    <div class="text-success fs-3 fw-bold">{{ approved|default:"0" }}</div>
+                    <div class="text-muted small">Approved</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="sf-card text-center">
+                    <div class="text-danger fs-3 fw-bold">{{ rejected|default:"0" }}</div>
+                    <div class="text-muted small">Rejected</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Distribution Chart -->
+        <div class="sf-card">
+            <div class="card-title"><i class="bi bi-pie-chart me-2"></i> Request Status Breakdown</div>
+            <div class="chart-wrap">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Monthly Trends Chart -->
+        <div class="sf-card mt-4">
+            <div class="card-title"><i class="bi bi-bar-chart me-2"></i> Monthly Request Trends</div>
+            <div class="chart-wrap">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const isDark = document.body.classList.contains('dark-mode');
+
+    // Chart Colors
+    const colors = isDark ? {
+        pending: '#ffc700',      // Gold
+        inReview: '#c084fc',     // Purple
+        approved: '#4cff91',     // Green
+        rejected: '#ff6b6b',     // Red
+        grid: 'rgba(201, 169, 106, 0.2)',
+        text: '#c9a96a'
+    } : {
+        pending: '#F0A030',
+        inReview: '#4A90D9',
+        approved: '#2EA86B',
+        rejected: '#E55B5B',
+        grid: 'rgba(0,0,0,0.08)',
+        text: '#6c757d'
+    };
+
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Review', 'Approved', 'Rejected'],
+            datasets: [{
+                data: [{{ pending|default:"0" }}, {{ in_review|default:"0" }}, {{ approved|default:"0" }}, {{ rejected|default:"0" }}],
+                backgroundColor: [colors.pending, colors.inReview, colors.approved, colors.rejected],
+                borderWidth: 2,
+                borderColor: isDark ? '#2d0b1e' : '#fff',
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '62%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { 
+                        usePointStyle: true, 
+                        pointStyle: 'circle', 
+                        padding: 16,
+                        color: colors.text
+                    }
+                }
+            }
+        }
+    });
+
+    // Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyLabels = {{ monthly_labels|safe }} || [];
+    const monthlyData = {{ monthly_data|safe }} || [];
+
+    if (monthlyLabels.length > 0 && monthlyData.length > 0) {
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Requests submitted',
+                    data: monthlyData,
+                    backgroundColor: colors.pending,
+                    borderRadius: 8,
+                    maxBarThickness: 42
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false } 
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Number of requests', color: colors.text },
+                        ticks: { stepSize: 1, color: colors.text },
+                        grid: { color: colors.grid }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: colors.text }
+                    }
+                }
+            }
+        });
+    } else {
+        monthlyCtx.canvas.parentElement.innerHTML = `<p class="text-muted text-center py-5 mb-0"><i class="bi bi-bar-chart fs-2 d-block mb-2"></i>No data yet. Submit some requests to see trends!</p>`;
+    }
+</script>
+{% endblock %}

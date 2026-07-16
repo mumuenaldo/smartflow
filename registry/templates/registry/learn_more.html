@@ -1,0 +1,282 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Learn More — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    .step-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    
+    /* DARK MODE FOR LEARN MORE PAGE - */
+    
+
+    body.dark-mode .card.bg-light {
+        background: #2d0b1e !important;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .card.bg-light .bg-white {
+        background: #3a1428 !important; 
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .bg-light.rounded-4 {
+        background: #2d0b1e !important;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .text-primary {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode h1, 
+    body.dark-mode h2, 
+    body.dark-mode h3, 
+    body.dark-mode h4, 
+    body.dark-mode h5, 
+    body.dark-mode h6 {
+        color: #ffffff !important; 
+    }
+
+    body.dark-mode .lead {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode p {
+        color: #e0e0e0 !important; 
+    }
+
+    body.dark-mode ul li {
+        color: #e0e0e0 !important;
+    }
+
+    body.dark-mode .accordion-item {
+        background: #2d0b1e;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .accordion-header {
+        background: #2d0b1e;
+    }
+
+    body.dark-mode .accordion-button {
+        background: #2d0b1e;
+        color: #ffffff;
+    }
+
+    body.dark-mode .accordion-button:not(.collapsed) {
+        background: #4a1a32; 
+        color: #ffc700; 
+    }
+
+    body.dark-mode .accordion-button::after {
+        filter: invert(80%) sepia(100%) saturate(1000%) hue-rotate(10deg); 
+    }
+
+    body.dark-mode .accordion-body {
+        background: #2d0b1e;
+        color: #e0e0e0;
+        border-top: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .bg-primary.bg-opacity-10 {
+        background: rgba(124, 31, 63, 0.2) !important; 
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e; 
+    }
+
+    body.dark-mode .display-6 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .step-circle {
+        background: #ffc700 !important; 
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .text-center .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .small.text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .accordion-button:focus {
+        border-color: #ffc700;
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2); 
+    }
+
+    body.dark-mode [style*="color: var(--blue-deep);"] {
+        color: #ffc700 !important; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold" style="color: var(--blue-deep);">About SmartFlow</h1>
+        <p class="lead text-muted">Digitizing the TelOne Registry Department, one workflow at a time.</p>
+    </div>
+
+    <!-- System Overview -->
+    <div class="row g-5 mb-5">
+        <div class="col-lg-6">
+            <h2 class="h3 mb-3">What is SmartFlow?</h2>
+            <p>SmartFlow is a web‑based workflow automation system designed specifically for the TelOne Registry Department. It replaces manual paper‑based logbooks with a digital platform that tracks documents in real time, automates approval chains, and maintains a complete audit trail.</p>
+            <p>The system is built to address the three core challenges identified at the Registry Department:</p>
+            <ul>
+                <li><strong>Process Delays</strong> — Documents no longer need to be physically moved between offices.</li>
+                <li><strong>Lack of Transparency</strong> — Any authorised user can instantly see where a document is in the workflow.</li>
+                <li><strong>Risk of Loss</strong> — Digital records are never misplaced or damaged.</li>
+            </ul>
+        </div>
+        <div class="col-lg-6">
+            <div class="card bg-light border-0 p-4">
+                <h3 class="h5 mb-3">Quick Facts</h3>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded text-center">
+                            <div class="display-6 fw-bold text-primary">5</div>
+                            <div class="text-muted">User Roles</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded text-center">
+                            <div class="display-6 fw-bold text-primary">100%</div>
+                            <div class="text-muted">Paperless</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded text-center">
+                            <div class="display-6 fw-bold text-primary">24/7</div>
+                            <div class="text-muted">Access</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded text-center">
+                            <div class="display-6 fw-bold text-primary">Real‑time</div>
+                            <div class="text-muted">Tracking</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Process -->
+    <div class="bg-light rounded-4 p-4 p-lg-5 mb-5">
+        <h2 class="h3 mb-4 text-center">How the Document Workflow Works</h2>
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="step-circle bg-primary text-white mx-auto mb-3">1</div>
+                <h5 class="fw-bold">Register</h5>
+                <p class="small text-muted">Clerk registers document with metadata and file upload</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle bg-primary text-white mx-auto mb-3">2</div>
+                <h5 class="fw-bold">Assign</h5>
+                <p class="small text-muted">Document assigned to department officer with due date</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle bg-primary text-white mx-auto mb-3">3</div>
+                <h5 class="fw-bold">Review</h5>
+                <p class="small text-muted">Supervisor reviews, comments, approves or rejects</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-circle bg-primary text-white mx-auto mb-3">4</div>
+                <h5 class="fw-bold">Archive</h5>
+                <p class="small text-muted">Approved documents digitally archived, all parties notified</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <h2 class="h3 mb-4">Frequently Asked Questions</h2>
+    <div class="accordion mb-5" id="faqAccordion">
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                    Who can use SmartFlow?
+                </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    SmartFlow is designed for five user roles: Students (tracking only), Registry Clerks, Staff Members, Supervisors, and Administrators. Each role has its own dashboard with appropriate permissions.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                    Is my data secure?
+                </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Yes. SmartFlow uses role-based access control (RBAC), password hashing, and a complete audit trail that logs every action with timestamp, user, and IP address. All files are stored securely.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                    Can students submit requests?
+                </button>
+            </h3>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Yes, students can register, log in, submit document requests, and track their request status. Students cannot approve documents or view other users' requests.
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                    How do I register?
+                </button>
+            </h3>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Click the "Register" button on the homepage and select your role. Fill in the required information and submit. Admin approval may be required for staff accounts.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact / Support -->
+    <div class="text-center p-4 bg-primary bg-opacity-10 rounded-4">
+        <h3 class="h5 mb-3">Need Help?</h3>
+        <p class="mb-2">Contact the Registry Department or your system administrator.</p>
+        <p class="small text-muted mb-0">SmartFlow v1.0 — Developed for TelOne Centre for Learning</p>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'landing_page' %}" class="btn btn-outline-primary">← Back to Home</a>
+    </div>
+</div>
+{% endblock %}

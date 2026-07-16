@@ -1,0 +1,89 @@
+{% extends 'registry/base.html' %}
+
+{% block title %}Advanced Search{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2><i class="bi bi-search"></i> Advanced Document Search</h2>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-12">
+                    <input type="text" name="q" class="form-control" placeholder="Search by title, reference, or description..." value="{{ query }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        {% for status in statuses %}
+                            <option value="{{ status.id }}" {% if selected_status == status.id|stringformat:"s" %}selected{% endif %}>{{ status.status_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="department" class="form-select">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.dept_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_from" class="form-control" placeholder="From Date" value="{{ date_from }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_to" class="form-control" placeholder="To Date" value="{{ date_to }}">
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+                    <a href="{% url 'advanced_search' %}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h5>Results ({{ documents.count }})</h5>
+            <a href="{% url 'export_excel' %}" class="btn btn-success btn-sm">
+                <i class="bi bi-file-excel"></i> Export to Excel
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Department</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td><code>{{ doc.reference_no }}</code></td>
+                        <td>{{ doc.title|truncatechars:30 }}</td>
+                        <td><span class="badge bg-secondary">{{ doc.status.status_name|default:"Pending" }}</span></td>
+                        <td>{{ doc.department.dept_name|default:"-" }}</td>
+                        <td>{{ doc.created_at|date:"d M Y" }}</td>
+                        <td>
+                            <a href="{% url 'document_detail' doc.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                            <a href="{% url 'export_document' doc.id %}" class="btn btn-sm btn-outline-success">PDF</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">No documents found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

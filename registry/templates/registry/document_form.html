@@ -1,0 +1,329 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Register Document — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* ===== NIGHT MODE OVERRIDES ====== */
+    
+
+    body.dark-mode .page-header h4 {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .card {
+        background: #1a0a0e !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    body.dark-mode .card-header {
+        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important; 
+        border-bottom: 3px solid #D4AF37 !important; 
+        color: #D4AF37 !important; 
+        font-weight: 700;
+    }
+
+    body.dark-mode .card-body {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-text,
+    body.dark-mode .text-muted {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    /* FORM INPUTS & DROPDOWNS - NIGHT MODE */
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: rgba(212, 175, 55, 0.06) !important;
+        color: #ffffff !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    /* Style options inside select dropdowns for dark mode */
+    body.dark-mode .form-select option {
+        background-color: #1a0a0e !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        color: #ffffff !important;
+        border-color: #D4AF37 !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+    }
+
+    body.dark-mode .form-control:disabled,
+    body.dark-mode .form-select:disabled {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(212, 175, 55, 0.3) !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* BUTTONS - NIGHT MODE */
+    body.dark-mode .btn-primary {
+        background: #8b1a3a !important; 
+        border: 1px solid #D4AF37 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #4a0e1a !important;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        border: 2px solid #D4AF37 !important;
+        background: transparent !important;
+        color: #D4AF37 !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #D4AF37 !important;
+        color: #1a0a0e !important;
+    }
+
+    body.dark-mode hr {
+        border-color: rgba(212, 175, 55, 0.2);
+        opacity: 1;
+    }
+
+    /* BOOTSTRAP ICONS */
+    body.dark-mode .bi { color: #D4AF37 !important; }
+    body.dark-mode .btn .bi { color: inherit !important; }
+    body.dark-mode .card-header .bi { color: #D4AF37 !important; }
+    
+    /* Form Check Toggles */
+    body.dark-mode .form-check-input:checked {
+        background-color: #8b1a3a !important;
+        border-color: #D4AF37 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between mb-4">
+  <h4><i class="bi bi-file-earmark-plus me-2"></i>Register New Document</h4>
+  <a href="{% url 'document_list' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back to Documents
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-pencil-square me-2"></i>Document Details
+        </span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+              <div>
+                <strong>Registration Failed:</strong> Please correct the errors marked below, or check your missing fields.
+                <ul class="mb-0 mt-1 small">
+                  {% for field, errors in form.errors.items %}
+                    <li><strong>{{ field|title }}:</strong> {{ errors.0 }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="row g-3">
+
+            <!-- Title -->
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Document Title <span class="text-danger"></span></label>
+              {% if form.title.field.widget.attrs.class %}
+                {{ form.title }}
+              {% else %}
+                <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}" required>
+              {% endif %}
+              {% if form.title.errors %}
+                <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Reference Number & Auto Gen Toggle -->
+            <div class="col-md-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="form-label fw-semibold mb-1">Reference Number</label>
+                <div class="form-check form-switch mb-1">
+                  <input class="form-check-input" type="checkbox" id="autoGenRef" name="auto_generate_ref">
+                  <label class="form-check-label small fw-semibold text-muted" for="autoGenRef">Auto</label>
+                </div>
+              </div>
+              
+              {% if form.reference_no.field.widget.attrs.class %}
+                {{ form.reference_no }}
+              {% else %}
+                <input type="text" name="reference_no" id="id_reference_no" class="form-control" value="{{ form.reference_no.value|default:'' }}">
+              {% endif %}
+              
+              {% if form.reference_no.errors %}
+                <div class="text-danger small mt-1">{{ form.reference_no.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Document Type Dropdown Selection -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Document Type</label>
+              {% if form.document_type.field.widget.input_type == 'select' and form.document_type.field.choices %}
+                {{ form.document_type }}
+              {% else %}
+                <select name="document_type" id="id_document_type" class="form-select">
+                  <option value="" {% if not form.document_type.value %}selected{% endif %}>Select Document Type...</option>
+                  <option value="Policy" {% if form.document_type.value == 'Policy' %}selected{% endif %}>Policy Document</option>
+                  <option value="Invoice" {% if form.document_type.value == 'Invoice' %}selected{% endif %}>Invoice / Receipt</option>
+                  <option value="Memorandum" {% if form.document_type.value == 'Memorandum' %}selected{% endif %}>Internal Memorandum</option>
+                  <option value="Report" {% if form.document_type.value == 'Report' %}selected{% endif %}>Academic / Project Report</option>
+                  <option value="Letter" {% if form.document_type.value == 'Letter' %}selected{% endif %}>Official Letter</option>
+                </select>
+              {% endif %}
+              {% if form.document_type.errors %}
+                <div class="text-danger small mt-1">{{ form.document_type.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Department -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Department <span class="text-danger"></span></label>
+              {% if form.department.field.widget.input_type == 'select' or form.department.field.choices %}
+                {{ form.department }}
+              {% else %}
+                <select name="department" id="id_department" class="form-select" required>
+                  <option value="">Select Department...</option>
+                  {% for choice_id, choice_label in form.department.field.choices %}
+                    {% if choice_id %}
+                      <option value="{{ choice_id }}" {% if form.department.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              {% endif %}
+              {% if form.department.errors %}
+                <div class="text-danger small mt-1">{{ form.department.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- ADDED: Priority Level Row Dropdown -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Priority Level <span class="text-danger"></span></label>
+              {% if form.priority.field.widget.input_type == 'select' or form.priority.field.choices %}
+                {{ form.priority }}
+              {% else %}
+                <select name="priority" id="id_priority" class="form-select" required>
+                  <option value="">Select Priority Level...</option>
+                  {% for choice_id, choice_label in form.priority.field.choices %}
+                    <option value="{{ choice_id }}" {% if form.priority.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
+                  {% endfor %}
+                </select>
+              {% endif %}
+              {% if form.priority.errors %}
+                <div class="text-danger small mt-1">{{ form.priority.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Requires Approval Checkbox Wrapper -->
+            <div class="col-md-6 d-flex align-items-center mt-4 pt-2">
+              <div class="form-check form-switch">
+                {{ form.requires_approval }}
+                <label class="form-check-label fw-semibold ms-2" for="id_requires_approval">Requires Verification/Approval?</label>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">Description</label>
+              {% if form.description.field.widget.attrs.class %}
+                {{ form.description }}
+              {% else %}
+                <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
+              {% endif %}
+            </div>
+
+            <!-- File Upload -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-paperclip me-1"></i>Attach File (PDF, DOCX)
+              </label>
+              {% if form.file_path.field.widget.attrs.class %}
+                {{ form.file_path }}
+              {% else %}
+                <input type="file" name="file_path" id="id_file_path" class="form-control">
+              {% endif %}
+              <div class="form-text">Optional — max 10MB</div>
+            </div>
+
+          </div>
+
+          <hr class="my-4">
+
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'document_list' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-lg me-1"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-lg me-1"></i>Register Document
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic Class Injection for native Django widgets if missing form classes
+    const textInputs = document.querySelectorAll('#id_title, #id_reference_no, #id_file_path');
+    textInputs.forEach(input => input.classList.add('form-control'));
+
+    const selectInputs = document.querySelectorAll('#id_document_type, #id_department, #id_priority');
+    selectInputs.forEach(select => select.classList.add('form-select'));
+
+    const textAreas = document.querySelectorAll('#id_description');
+    textAreas.forEach(area => area.classList.add('form-control'));
+
+    const checkInputs = document.querySelectorAll('#id_requires_approval');
+    checkInputs.forEach(check => check.classList.add('form-check-input'));
+
+    // Auto Generation Toggle Mechanism
+    const autoGenToggle = document.getElementById('autoGenRef');
+    const refInput = document.getElementById('id_reference_no');
+
+    if(autoGenToggle && refInput) {
+      if(autoGenToggle.checked) {
+        refInput.value = '';
+        refInput.placeholder = '[ Auto-Generated on Save ]';
+        refInput.disabled = true;
+      }
+
+      autoGenToggle.addEventListener('change', function() {
+        if(this.checked) {
+          refInput.value = '';
+          refInput.placeholder = '[ Auto-Generated on Save ]';
+          refInput.disabled = true;
+        } else {
+          refInput.placeholder = '';
+          refInput.disabled = false;
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

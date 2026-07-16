@@ -1,0 +1,208 @@
+{% extends 'registry/base.html' %}
+{% block title %}Assign Document — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========================================================== */
+    /* ===== NIGHT MODE OVERRIDES - BURGUNDY + SOFT GOLD ======= */
+    /* ========================================================== */
+
+    body.dark-mode .page-header h4 {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .card {
+        background: #1a0a0e !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    body.dark-mode .card-header {
+        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important; /* BURGUNDY */
+        border-bottom: 3px solid #D4AF37 !important; /* ELEGANT SOFT METALLIC GOLD */
+        color: #D4AF37 !important; 
+        font-weight: 700;
+    }
+
+    body.dark-mode .card-body {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .card-body[style*="background"] {
+        background: rgba(212, 175, 55, 0.05) !important;
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-text,
+    body.dark-mode .text-muted {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    /* FORM INPUTS, SELECTS & DATES - NIGHT MODE */
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: rgba(212, 175, 55, 0.06) !important;
+        color: #ffffff !important;
+        border: 2px solid #D4AF37 !important;
+    }
+
+    /* Style options inside select dropdowns for dark mode */
+    body.dark-mode .form-select option {
+        background-color: #1a0a0e !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        color: #ffffff !important;
+        border-color: #D4AF37 !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+    }
+
+    /* CODE NIGHT MODE */
+    body.dark-mode code {
+        background-color: rgba(212, 175, 55, 0.15) !important;
+        color: #D4AF37 !important;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    /* BUTTONS - NIGHT MODE */
+    body.dark-mode .btn-primary {
+        background: #8b1a3a !important; 
+        border: 1px solid #D4AF37 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #4a0e1a !important;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        border: 2px solid #D4AF37 !important;
+        background: transparent !important;
+        color: #D4AF37 !important;
+        font-weight: 700;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #D4AF37 !important;
+        color: #1a0a0e !important;
+    }
+
+    /* BOOTSTRAP ICONS */
+    body.dark-mode .bi { color: #D4AF37 !important; }
+    body.dark-mode .btn .bi { color: inherit !important; }
+    body.dark-mode .card-header .bi { color: #D4AF37 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between mb-4">
+  <h4><i class="bi bi-person-check me-2"></i>Assign Document</h4>
+  <a href="{% url 'document_detail' doc.pk %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back to Details
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+
+    <!-- Document Summary -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-3" style="background:#f4f7fb; border-radius:12px;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="background:#0d3b6e; color:#fff; border-radius:10px; width:44px; height:44px;
+                      display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <div>
+            <div class="fw-bold">{{ doc.title }}</div>
+            <div class="text-muted small">Ref: <code>{{ doc.reference_no }}</code>
+              &mdash; {{ doc.department.dept_name|default:"No Department Assigned" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignment Form -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3">
+        <span class="fw-bold" style="color:#0d3b6e;">
+          <i class="bi bi-person-plus me-2"></i>Assignment Details
+        </span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- GLOBAL ERROR BANNER FOR SILENT FALURES -->
+          {% if form.errors %}
+            <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+              <div>
+                <strong>Assignment Failed:</strong> Please fix the field errors highlighted below.
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- Assign To Dropdown -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Assign To <span class="text-danger"></span></label>
+            {{ form.assign_to }}
+            {% if form.assign_to.errors %}
+              <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ form.assign_to.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Due Date Field -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Due Date</label>
+            {{ form.due_date }}
+            {% if form.due_date.errors %}
+              <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ form.due_date.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text text-muted">Optional — leave blank if no processing deadline is required.</div>
+          </div>
+
+          <!-- Form Buttons -->
+          <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'document_detail' doc.pk %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-lg me-1"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-send me-1"></i>Assign Document
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Form Widget Field Class Injection -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Dynamic Class Injection for assign select wrapper
+    const assignField = document.querySelector('[name="assign_to"]');
+    if(assignField) {
+      assignField.classList.add('form-select');
+    }
+
+    // Dynamic Class Injection for due date picker inputs
+    const dateField = document.querySelector('[name="due_date"]');
+    if(dateField) {
+      dateField.classList.add('form-control');
+      // If native calendar support is preferred, un-comment next line:
+      // dateField.setAttribute('type', 'date');
+    }
+  });
+</script>
+{% endblock %}

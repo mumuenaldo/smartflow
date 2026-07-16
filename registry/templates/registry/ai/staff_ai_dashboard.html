@@ -1,0 +1,96 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4 sf-ai-page">
+
+    <div class="p-4 mb-4 rounded-4 position-relative sf-banner">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1 sf-banner-title"><i class="bi bi-diagram-3 me-2"></i>AI Workflow Tools</h2>
+                <p class="small mb-0 sf-text-muted">Plan capacity and route documents smarter</p>
+            </div>
+            <span class="badge px-3 py-2 sf-badge-live"><i class="bi bi-stars me-1"></i> AI Ready</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Workload Prediction -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-calendar-week fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Workload Prediction</h6>
+                    <p class="small sf-tool-desc">Estimated daily submissions & busy periods</p>
+                    <button onclick="runAITool('workload-result', '/api/ai/staff/?action=workload')" class="btn w-100 mt-2 sf-btn sf-btn-primary">
+                        <i class="bi bi-bar-chart-line me-1"></i> Predict
+                    </button>
+                    <div id="workload-result" class="mt-3 sf-result-box">Click to predict...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Routing -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-signpost-split fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Smart Routing</h6>
+                    <p class="small sf-tool-desc">Best supervisor by workload + expertise</p>
+                    <button onclick="runAITool('routing-result', '/api/ai/staff/?action=routing')" class="btn w-100 mt-2 sf-btn sf-btn-teal">
+                        <i class="bi bi-send-check me-1"></i> Route
+                    </button>
+                    <div id="routing-result" class="mt-3 sf-result-box">Click to route...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duplicate Detection -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-files fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Duplicate Detection</h6>
+                    <p class="small sf-tool-desc">Checks whether a document already exists</p>
+                    <button onclick="runAITool('duplicate-result', '/api/ai/staff/?action=duplicate')" class="btn w-100 mt-2 sf-btn sf-btn-alert">
+                        <i class="bi bi-search me-1"></i> Check
+                    </button>
+                    <div id="duplicate-result" class="mt-3 sf-result-box">Click to check...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Time Estimation -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-stopwatch fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Processing Time</h6>
+                    <p class="small sf-tool-desc">Estimates how long a document will take</p>
+                    <button onclick="runAITool('time-result', '/api/ai/staff/?action=time')" class="btn w-100 mt-2 sf-btn sf-btn-navy">
+                        <i class="bi bi-clock-history me-1"></i> Estimate
+                    </button>
+                    <div id="time-result" class="mt-3 sf-result-box">Click to estimate...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button onclick="runAllStaffTools()" class="btn px-4 sf-btn sf-btn-navy">
+            <i class="bi bi-lightning-fill me-1"></i> Run All Tools
+        </button>
+    </div>
+</div>
+
+<script>
+function runAllStaffTools() {
+    runAITool('workload-result', '/api/ai/staff/?action=workload');
+    runAITool('routing-result', '/api/ai/staff/?action=routing');
+    runAITool('duplicate-result', '/api/ai/staff/?action=duplicate');
+    runAITool('time-result', '/api/ai/staff/?action=time');
+}
+</script>
+
+{% include 'registry/ai/_ai_shared.html' %}
+{% endblock %}

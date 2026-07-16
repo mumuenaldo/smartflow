@@ -1,0 +1,299 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Submit Request — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR STUDENT REQUEST FORM  */
+    
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+        color: #ffffff;
+    }
+
+    body.dark-mode .card.bg-light {
+        background: #3a1428 !important; 
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important; 
+    }
+
+    body.dark-mode .form-control {
+        background: #3a1428 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important; 
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .form-select {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-select:focus {
+        border-color: #ffc700 !important;
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-select option {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-text {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .form-check-label {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-check-input {
+        background-color: #4a1a32 !important;
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .form-check-input:checked {
+        background-color: #ffc700 !important; 
+        border-color: #ffc700 !important;
+    }
+
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important; 
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important; 
+        border-color: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode hr {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-danger {
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .alert {
+        background: #3a1428 !important;
+        border-color: #4a1a32 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .alert-success {
+        border-color: #4cff91 !important;
+        color: #4cff91 !important;
+    }
+
+    body.dark-mode .alert-danger {
+        border-color: #ff6b6b !important;
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .alert-warning {
+        border-color: #ffc700 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .alert-info {
+        border-color: #ffc700 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .border-0 {
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .bg-light {
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode [style*="color: var(--blue-deep);"] {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .btn-close {
+        filter: invert(80%) sepia(100%) saturate(1000%) hue-rotate(10deg); 
+    }
+
+    body.dark-mode .text-primary {
+        color: #ffc700 !important; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold" style="color: var(--blue-deep);">
+                        <i class="bi bi-plus-circle me-2"></i> Submit New Request
+                    </h2>
+                    <p class="text-muted">Fill in the details below to submit a document request.</p>
+                </div>
+                <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Form Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Document Title <span class="text-danger"></span></label>
+                            <input type="text" name="title" class="form-control" 
+                                   placeholder="e.g., Academic Transcript Request, Clearance Letter" required>
+                        </div>
+
+                        <!-- Description  -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description (Optional)</label>
+                            <textarea name="description" class="form-control" rows="2" 
+                                      placeholder="Brief description (e.g., 'Need transcript for internship')"></textarea>
+                            <div class="form-text">Optional — a short note is enough.</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Document Type -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Document Type</label>
+                                <select name="document_type" class="form-select">
+                                    <option value="">Select type...</option>
+                                    <option value="Academic Transcript">Academic Transcript</option>
+                                    <option value="Clearance Letter">Clearance Letter</option>
+                                    <option value="Recommendation Letter">Recommendation Letter</option>
+                                    <option value="Admission Letter">Admission Letter</option>
+                                    <option value="Certificate Request">Certificate Request</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Department <span class="text-danger"></span></label>
+                                <select name="department" class="form-select" required>
+                                    <option value="">Select department...</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept.id }}">{{ dept.dept_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Priority - NEW! -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Priority Level</label>
+                            <select name="priority" class="form-select">
+                                <option value="low">🟢 Low</option>
+                                <option value="medium" selected>🟡 Medium</option>
+                                <option value="high">🟠 High</option>
+                                <option value="urgent">🔴 Urgent</option>
+                            </select>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Attach Supporting Document</label>
+                            <input type="file" name="file_path" class="form-control">
+                            <div class="form-text">Upload any supporting documents (PDF, DOC, JPG - max 10MB).</div>
+                        </div>
+
+                        <!-- Requires Approval -->
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" name="requires_approval" class="form-check-input" checked>
+                            <label class="form-check-label fw-bold">
+                                Requires Approval
+                            </label>
+                            <div class="form-text">Most requests require supervisor approval. Uncheck if immediate processing is allowed.</div>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-send me-2"></i> Submit Request
+                            </button>
+                            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card bg-light border-0 mt-4">
+                <div class="card-body">
+                    <div class="d-flex gap-3 align-items-center">
+                        <i class="bi bi-info-circle-fill fs-3 text-primary"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Need Assistance?</h6>
+                            <p class="small text-muted mb-0">For urgent requests, contact the Registry Department directly at registry@telone.co.zw</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

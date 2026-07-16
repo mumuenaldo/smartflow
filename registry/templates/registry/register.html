@@ -1,0 +1,328 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Register as {{ role }} — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR REGISTER PAGE  */
+    
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .card-header h3 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-header .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important; 
+    }
+
+    body.dark-mode .form-control {
+        background: #3a1428 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important; 
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .form-control.is-invalid {
+        border-color: #ff6b6b !important;
+    }
+
+    body.dark-mode .form-select {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-select:focus {
+        border-color: #ffc700 !important;
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-select option {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .form-text {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .alert {
+        background: #3a1428 !important;
+        border-color: #4a1a32 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .alert-danger {
+        border-color: #ff6b6b !important;
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important; 
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important; 
+        border-color: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode hr {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .text-center p {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-center a {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .text-center a:hover {
+        color: #ffd700 !important; 
+    }
+
+    body.dark-mode .text-decoration-none {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-decoration-none:hover {
+        color: #ffc700 !important;
+    }
+
+    body.dark-mode .invalid-feedback {
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .bg-white {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .bg-white.text-center.py-3 {
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode [style*="color: var(--blue-deep);"] {
+        color: #ffc700 !important; /* Gold for header */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white text-center py-3">
+                    <h3 class="fw-bold" style="color: var(--blue-deep);">
+                        {% if role == 'Student' %}
+                            <i class="bi bi-mortarboard me-2"></i>
+                        {% elif role == 'Registry Clerk' %}
+                            <i class="bi bi-person-workspace me-2"></i>
+                        {% elif role == 'Staff Member' %}
+                            <i class="bi bi-person me-2"></i>
+                        {% elif role == 'Supervisor' %}
+                            <i class="bi bi-person-check me-2"></i>
+                        {% elif role == 'Administrator' %}
+                            <i class="bi bi-shield-lock me-2"></i>
+                        {% endif %}
+                        Register as {{ role }}
+                    </h3>
+                    <p class="text-muted mb-0">Create your SmartFlow account</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">Username </label>
+                            <input type="text" name="username" id="{{ form.username.id_for_label }}" 
+                                   class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                                   value="{{ form.username.value|default:'' }}" required>
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <!-- First Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">First Name </label>
+                                <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" 
+                                       class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+                                       value="{{ form.first_name.value|default:'' }}" required>
+                                {% if form.first_name.errors %}
+                                    <div class="invalid-feedback">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">Last Name </label>
+                                <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" 
+                                       class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+                                       value="{{ form.last_name.value|default:'' }}" required>
+                                {% if form.last_name.errors %}
+                                    <div class="invalid-feedback">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">Email Address </label>
+                            <input type="email" name="email" id="{{ form.email.id_for_label }}" 
+                                   class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                   value="{{ form.email.value|default:'' }}" required>
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label fw-bold">Password </label>
+                            <input type="password" name="password" id="{{ form.password.id_for_label }}" 
+                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}" required>
+                            <div class="form-text">Minimum 8 characters. Use a mix of letters, numbers, and symbols.</div>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label for="{{ form.confirm_password.id_for_label }}" class="form-label fw-bold">Confirm Password </label>
+                            <input type="password" name="confirm_password" id="{{ form.confirm_password.id_for_label }}" 
+                                   class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}" required>
+                            {% if form.confirm_password.errors %}
+                                <div class="invalid-feedback">{{ form.confirm_password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Department (for staff roles) -->
+                        {% if role != 'Student' %}
+                        <div class="mb-3">
+                            <label for="{{ form.department.id_for_label }}" class="form-label fw-bold">Department</label>
+                            <select name="department" id="{{ form.department.id_for_label }}" 
+                                    class="form-select {% if form.department.errors %}is-invalid{% endif %}">
+                                <option value="">Select department...</option>
+                                {% for dept in form.department.field.queryset %}
+                                    <option value="{{ dept.id }}" {% if form.department.value == dept.id %}selected{% endif %}>
+                                        {{ dept.dept_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            {% if form.department.errors %}
+                                <div class="invalid-feedback">{{ form.department.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Student-specific fields -->
+                        {% if role == 'Student' %}
+                        <div class="mb-3">
+                            <label for="{{ form.student_id.id_for_label }}" class="form-label fw-bold">Student ID </label>
+                            <input type="text" name="student_id" id="{{ form.student_id.id_for_label }}" 
+                                   class="form-control {% if form.student_id.errors %}is-invalid{% endif %}"
+                                   placeholder="e.g., T2420016" required>
+                            {% if form.student_id.errors %}
+                                <div class="invalid-feedback">{{ form.student_id.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-bold">Phone Number</label>
+                            <input type="tel" name="phone_number" id="{{ form.phone_number.id_for_label }}" 
+                                   class="form-control" placeholder="e.g., 0771234567">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label fw-bold">Address</label>
+                            <textarea name="address" id="{{ form.address.id_for_label }}" 
+                                      class="form-control" rows="2" placeholder="Your address"></textarea>
+                        </div>
+                        {% endif %}
+
+                        <!-- Admin Registration Key -->
+                        {% if role == 'Administrator' %}
+                        <div class="mb-3">
+                            <label for="{{ form.admin_key.id_for_label }}" class="form-label fw-bold">Admin Registration Key *</label>
+                            <input type="password" name="admin_key" id="{{ form.admin_key.id_for_label }}" 
+                                   class="form-control {% if form.admin_key.errors %}is-invalid{% endif %}" required>
+                            {% if form.admin_key.errors %}
+                                <div class="invalid-feedback">{{ form.admin_key.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            <i class="bi bi-person-plus me-2"></i> Register as {{ role }}
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Home -->
+            <div class="text-center mt-4">
+                <a href="{% url 'landing_page' %}" class="text-decoration-none">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

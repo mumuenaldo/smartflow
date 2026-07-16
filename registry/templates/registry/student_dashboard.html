@@ -1,0 +1,725 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===STUDENT DASHBOARD=== */
+    
+    .sf-home {
+        min-height: calc(100vh - 120px);
+        padding: 3rem 0;
+        background: linear-gradient(180deg, #0b2240 0%, #061324 100%);
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    body.dark-mode .sf-home {
+        background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+    }
+
+    .sf-home .orb {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.14;
+        top: -100px;
+        left: -50px;
+        background: #00f2fe;
+    }
+    body.dark-mode .sf-home .orb {
+        background: #facc15;
+    }
+
+    .sf-home .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* ─── PREMIUM WELCOME CARD WITH PROFILE PIC ─── */
+    .sf-home .welcome-card {
+        background: linear-gradient(135deg, #0f2b48 0%, #1a3d60 100%);
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        border-radius: 24px;
+        padding: 2.5rem 2.5rem;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+    }
+    
+    body.dark-mode .sf-home .welcome-card {
+        background: linear-gradient(135deg, #4c1130 0%, #31071c 100%);
+        border: 1px solid rgba(250, 204, 21, 0.2);
+    }
+
+    .sf-home .welcome-card::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: #00f2fe;
+        border-radius: 24px 0 0 24px;
+    }
+    body.dark-mode .sf-home .welcome-card::after {
+        background: #facc15;
+    }
+
+    /* ─── PROFILE PICTURE - BIGGER SIZE ─── */
+    .profile-avatar-wrapper {
+        position: relative;
+        flex-shrink: 0;
+        cursor: pointer;
+        text-decoration: none !important;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .profile-avatar-wrapper:hover .profile-avatar,
+    .profile-avatar-wrapper:hover .profile-avatar-initials {
+        transform: scale(1.08);
+        box-shadow: 0 0 50px rgba(0, 242, 254, 0.5);
+    }
+
+    body.dark-mode .profile-avatar-wrapper:hover .profile-avatar,
+    body.dark-mode .profile-avatar-wrapper:hover .profile-avatar-initials {
+        box-shadow: 0 0 50px rgba(250, 204, 21, 0.5);
+    }
+
+    /* "Edit Profile" */
+    .profile-avatar-wrapper::after {
+        content: 'Edit Profile';
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 4px 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-avatar-wrapper:hover::after {
+        opacity: 1;
+        bottom: -38px;
+    }
+
+    /* BIGGER PROFILE PICTURE - 100px */
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid transparent;
+        background-image: linear-gradient(#0f2b48, #0f2b48), 
+                          linear-gradient(135deg, #00f2fe, #2563eb);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+        box-shadow: 0 0 40px rgba(0, 242, 254, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    body.dark-mode .profile-avatar {
+        background-image: linear-gradient(#4c1130, #4c1130), 
+                          linear-gradient(135deg, #facc15, #eab308);
+        box-shadow: 0 0 40px rgba(250, 204, 21, 0.25);
+    }
+
+    .profile-avatar-initials {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, #00f2fe, #2563eb);
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 40px rgba(0, 242, 254, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    body.dark-mode .profile-avatar-initials {
+        background: linear-gradient(135deg, #facc15, #eab308);
+        box-shadow: 0 0 40px rgba(250, 204, 21, 0.25);
+    }
+
+    /* Online Status Dot - Bigger */
+    .online-dot {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        width: 22px;
+        height: 22px;
+        background: #22c55e;
+        border-radius: 50%;
+        border: 4px solid #0f2b48;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        animation: pulse-dot 2s infinite;
+    }
+
+    body.dark-mode .online-dot {
+        border-color: #4c1130;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    /* Setup Prompt Badge (for new users without profile pic) */
+    .setup-prompt {
+        position: absolute;
+        bottom: -6px;
+        right: -6px;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: white;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 2px 12px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        animation: badge-pulse 2s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ─── GREETING TEXT ─── */
+    .welcome-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        text-align: left;
+        flex-wrap: wrap;
+    }
+
+    .greeting-text-wrapper {
+        flex: 1;
+    }
+
+    .sf-home .welcome-card h3 {
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .sf-home .welcome-card .welcome-subtitle {
+        color: #94a3b8;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+
+    .sf-home .greeting-icon {
+        font-size: 2rem;
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+    .sf-home .greeting-icon.morning { color: #fbbf24; }
+    .sf-home .greeting-icon.afternoon { color: #f97316; }
+    .sf-home .greeting-icon.evening { color: #facc15; }
+
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-5px) rotate(6deg); }
+    }
+
+    /*  Badges and Live Clock */
+    .sf-student-meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-left: 0;
+    }
+
+    .sf-student-meta .badge {
+        background: rgba(0, 0, 0, 0.25);
+        color: #ffffff;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sf-student-meta .badge i {
+        color: #00f2fe;
+        margin-right: 6px;
+    }
+    body.dark-mode .sf-student-meta .badge i {
+        color: #facc15;
+    }
+
+    .sf-clock {
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        font-weight: 700;
+        background: #040d1a;
+        color: #00f2fe;
+        padding: 8px 18px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(0, 242, 254, 0.25);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+    }
+    body.dark-mode .sf-clock {
+        background: #12020a;
+        color: #facc15;
+        border-color: rgba(250, 204, 21, 0.25);
+    }
+
+    /* ───  BOOTSTRAP ICONS ─── */
+    .sf-home .circle-grid {
+        display: flex;
+        justify-content: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+    
+    .sf-home .circle-btn {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-decoration: none !important;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: float 4s ease-in-out infinite;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .sf-home .circle-btn:nth-child(1) { animation-delay: 0s; }
+    .sf-home .circle-btn:nth-child(2) { animation-delay: 0.5s; }
+    .sf-home .circle-btn:nth-child(3) { animation-delay: 1s; }
+    .sf-home .circle-btn:nth-child(4) { animation-delay: 1.5s; }
+
+    .sf-home .circle-btn .btn-icon {
+        font-size: 2.8rem;
+        margin-bottom: 0.3rem;
+        transition: transform 0.3s ease;
+        display: block;
+        line-height: 1;
+    }
+
+    .sf-home .circle-btn .label {
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .sf-home .circle-btn:hover {
+        transform: translateY(-12px) scale(1.05);
+        border-color: #00f2fe;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: #040d1a !important;
+        box-shadow: 0 15px 40px rgba(0, 242, 254, 0.3);
+        animation-play-state: paused;
+    }
+    body.dark-mode .sf-home .circle-btn:hover {
+        border-color: #facc15;
+        background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+        color: #12020a !important;
+        box-shadow: 0 15px 40px rgba(250, 204, 21, 0.3);
+    }
+    
+    .sf-home .circle-btn:hover .btn-icon {
+        transform: scale(1.15);
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+
+    /* ─── AI TOOLS  ─── */
+    .sf-home .circle-btn.ai-tools-btn {
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        border-color: #8b5cf6;
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
+        color: #ffffff;
+        animation: ai-glow 3s ease-in-out infinite, float 4s ease-in-out infinite;
+        position: relative;
+        overflow: visible;
+    }
+    
+    /*  badge */
+    .sf-home .circle-btn.ai-tools-btn::before {
+        content: '✦';
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 18px;
+        color: #facc15;
+        animation: sparkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes ai-glow {
+        0%, 100% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); }
+        50% { box-shadow: 0 0 80px rgba(124, 58, 237, 0.7); }
+    }
+    
+    @keyframes sparkle {
+        0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        50% { transform: scale(1.3) rotate(180deg); opacity: 0.5; }
+    }
+    
+    .sf-home .circle-btn.ai-tools-btn:hover {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        box-shadow: 0 0 80px rgba(124, 58, 237, 0.8);
+        border-color: #a78bfa;
+        color: #ffffff !important;
+        animation-play-state: paused;
+    }
+    
+    body.dark-mode .sf-home .circle-btn.ai-tools-btn {
+        background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+    }
+    
+    body.dark-mode .sf-home .circle-btn.ai-tools-btn:hover {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+        box-shadow: 0 0 80px rgba(124, 58, 237, 0.9);
+    }
+
+    .sf-home .circle-btn.ai-tools-btn .label {
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sf-subtitle {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin: 4rem 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+    .sf-subtitle i { color: #00f2fe; }
+    body.dark-mode .sf-subtitle i { color: #facc15; }
+
+    /* ─── PREMIUM STATS CARDS WITH BOOTSTRAP ICONS ─── */
+    .sf-home .mini-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .sf-home .mini-stats .stat-item {
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 18px;
+        padding: 1.5rem 1.2rem;
+        width: 150px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+        animation: heartbeat 2.5s infinite;
+        transition: all 0.3s ease;
+    }
+    
+    .sf-home .mini-stats .stat-item:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .sf-home .mini-stats .stat-item:nth-child(1) { animation-delay: 0s; border-left: 3px solid #f59e0b; }
+    .sf-home .mini-stats .stat-item:nth-child(2) { animation-delay: 0.4s; border-left: 3px solid #3b82f6; }
+    .sf-home .mini-stats .stat-item:nth-child(3) { animation-delay: 0.8s; border-left: 3px solid #10b981; }
+
+    .sf-home .mini-stats .stat-item .stat-icon {
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+
+    .sf-home .mini-stats .stat-item .num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        display: block;
+        margin-bottom: 0.2rem;
+        line-height: 1.2;
+    }
+    
+    .sf-home .mini-stats .stat-item .lbl {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+    }
+    
+    .stat-icon-pending { color: #f59e0b; }
+    .stat-icon-review { color: #3b82f6; }
+    .stat-icon-approved { color: #10b981; }
+    
+    .num-pending { color: #f59e0b; }
+    .num-review { color: #3b82f6; }
+    .num-approved { color: #10b981; }
+    
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        14% { transform: scale(1.05); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.03); }
+        70% { transform: scale(1); }
+    }
+
+    /* ─── MOBILE ADAPTATIONS ─── */
+    @media (max-width: 768px) {
+        .sf-home { padding: 2rem 0; }
+        .sf-home .welcome-card { padding: 2rem 1.5rem; border-radius: 20px; }
+        .welcome-header { flex-direction: column; text-align: center; gap: 1rem; }
+        .sf-student-meta { justify-content: center; }
+        .sf-home .circle-grid { gap: 1.5rem; }
+        .sf-home .circle-btn { width: 110px; height: 110px; }
+        .sf-home .circle-btn .btn-icon { font-size: 2.2rem; }
+        .sf-home .circle-btn .label { font-size: 0.75rem; }
+        .sf-home .mini-stats { gap: 1.2rem; }
+        .sf-home .mini-stats .stat-item { width: 120px; padding: 1.2rem 1rem; }
+        .sf-home .mini-stats .stat-item .stat-icon { font-size: 1.6rem; }
+        .profile-avatar, .profile-avatar-initials { width: 80px; height: 80px; font-size: 32px; border-width: 3px; }
+        .online-dot { width: 18px; height: 18px; border-width: 3px; }
+        .sf-home .circle-btn.ai-tools-btn::before { font-size: 14px; top: -4px; right: -4px; }
+        .profile-avatar-wrapper::after { font-size: 10px; padding: 3px 10px; bottom: -28px; }
+        .profile-avatar-wrapper:hover::after { bottom: -34px; }
+        .setup-prompt { font-size: 8px; padding: 1px 8px; bottom: -4px; right: -4px; }
+        .sf-home .welcome-card h3 { font-size: 1.6rem; }
+        .sf-home .mini-stats .stat-item .num { font-size: 1.8rem; }
+    }
+
+    @media (max-width: 480px) {
+        .sf-home .circle-btn { width: 90px; height: 90px; }
+        .sf-home .circle-btn .btn-icon { font-size: 1.8rem; }
+        .sf-home .circle-btn .label { font-size: 0.65rem; }
+        .sf-home .circle-grid { gap: 1rem; }
+        .sf-home .mini-stats .stat-item { width: 95px; padding: 1rem; }
+        .sf-home .mini-stats .stat-item .num { font-size: 1.5rem; }
+        .sf-home .mini-stats .stat-item .stat-icon { font-size: 1.4rem; }
+        .profile-avatar, .profile-avatar-initials { width: 64px; height: 64px; font-size: 24px; }
+        .online-dot { width: 14px; height: 14px; border-width: 2px; }
+        .sf-home .welcome-card h3 { font-size: 1.3rem; }
+        .sf-home .circle-btn.ai-tools-btn::before { font-size: 12px; top: -2px; right: -2px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sf-home">
+    <!-- Blurry ambient background layout feature -->
+    <div class="orb"></div>
+
+    <div class="container text-center">
+        <!-- Premium Welcome Card with Profile Picture -->
+        <div class="welcome-card">
+            <div class="welcome-header">
+                <!-- PROFILE PICTURE - LINK TO PROFILE PAGE -->
+                <a href="{% url 'student_profile' %}" class="profile-avatar-wrapper" title="Edit Profile">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" 
+                             alt="{{ user.first_name|default:user.username }}" 
+                             class="profile-avatar">
+                    {% else %}
+                        <div class="profile-avatar-initials">
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                        </div>
+                        <!-- Setup Prompt for New Users -->
+                        <span class="setup-prompt">📸 Setup</span>
+                    {% endif %}
+                    <span class="online-dot"></span>
+                </a>
+                
+                <!-- GREETING TEXT -->
+                <div class="greeting-text-wrapper">
+                    <h3>
+                        <i id="greetingIcon" class="bi bi-sun-fill greeting-icon morning"></i>
+                        <span id="dynamicGreeting" class="greeting-text">
+                            Good morning, {{ user.first_name|default:user.username }}
+                        </span>
+                    </h3>
+                    <p class="welcome-subtitle">Track your document requests and submit new applications safely through SmartFlow.</p>
+                    
+                    <!-- Synchronized Badges & Live Dashboard Clock -->
+                    <div class="sf-student-meta">
+                        <span class="badge">
+                            <i class="bi bi-calendar3"></i> {% now "l, d M Y" %}
+                        </span>
+                        <span class="sf-clock" id="liveClock">
+                            <i class="bi bi-clock"></i>
+                            <span id="clockTime">--:--:--</span>
+                        </span>
+                        <span class="badge">
+                            <i class="bi bi-mortarboard-fill"></i> Student
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PREMIUM OPERATIONS MENU - WITH BOOTSTRAP ICONS -->
+        <div class="circle-grid">
+            <a href="{% url 'student_submit' %}" class="circle-btn">
+                <i class="bi bi-upload btn-icon"></i>
+                <span class="label">Submit</span>
+            </a>
+            <a href="{% url 'student_check_progress' %}" class="circle-btn">
+                <i class="bi bi-graph-up-arrow btn-icon"></i>
+                <span class="label">Progress</span>
+            </a>
+            <a href="{% url 'student_my_requests' %}" class="circle-btn">
+                <i class="bi bi-clipboard btn-icon"></i>
+                <span class="label">Requests</span>
+            </a>
+            <!-- ⭐ AI TOOLS - Clean (No "NEW" badge) -->
+            <a href="{% url 'student_ai_dashboard' %}" class="circle-btn ai-tools-btn">
+                <i class="bi bi-robot btn-icon"></i>
+                <span class="label">AI Tools</span>
+            </a>
+        </div>
+
+        <!-- Section Header Title for Counter Realignment -->
+        <div class="sf-subtitle">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            Application Progress Overview
+        </div>
+
+        <!-- Premium Stats Cards with Bootstrap Icons -->
+        <div class="mini-stats">
+            <div class="stat-item">
+                <i class="bi bi-hourglass-split stat-icon stat-icon-pending"></i>
+                <span class="num num-pending" data-count="{{ pending|default:'0' }}">{{ pending|default:"0" }}</span>
+                <span class="lbl">Pending</span>
+            </div>
+            <div class="stat-item">
+                <i class="bi bi-arrow-repeat stat-icon stat-icon-review"></i>
+                <span class="num num-review" data-count="{{ in_review|default:'0' }}">{{ in_review|default:"0" }}</span>
+                <span class="lbl">In Review</span>
+            </div>
+            <div class="stat-item">
+                <i class="bi bi-check-circle-fill stat-icon stat-icon-approved"></i>
+                <span class="num num-approved" data-count="{{ approved|default:'0' }}">{{ approved|default:"0" }}</span>
+                <span class="lbl">Approved</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Premium counter entry sequence animation
+    document.querySelectorAll('.num').forEach(el => {
+        const target = parseInt(el.getAttribute('data-count')) || 0;
+        let count = 0;
+        const step = Math.max(1, Math.ceil(target / 25));
+        
+        if (target > 0) {
+            const timer = setInterval(() => {
+                count += step;
+                if (count >= target) {
+                    el.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = count;
+                }
+            }, 40);
+        } else {
+            el.textContent = "0";
+        }
+    });
+
+    // Time Engine Module: Greeting Phrases & Live Clock Sequence 
+    function updateStudentDashboardTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        
+        // Context evaluations
+        let timePhrase = "Good morning";
+        let iconClass = "bi-sun-fill";
+        let addColorClass = "morning";
+
+        if (hours >= 12 && hours < 18) {
+            timePhrase = "Good afternoon";
+            iconClass = "bi-sun-fill";
+            addColorClass = "afternoon";
+        } else if (hours >= 18 || hours < 5) {
+            timePhrase = "Good evening";
+            iconClass = "bi-moon-fill";
+            addColorClass = "evening";
+        }
+
+        // Element injection handles
+        const textTarget = document.getElementById('dynamicGreeting');
+        const iconTarget = document.getElementById('greetingIcon');
+        
+        if (textTarget) {
+            textTarget.textContent = timePhrase + ", {{ user.first_name|default:user.username }}";
+        }
+        
+        if (iconTarget) {
+            iconTarget.className = "bi " + iconClass + " greeting-icon " + addColorClass;
+        }
+
+        // Clock text construction
+        const padH = String(hours).padStart(2, '0');
+        const padM = String(now.getMinutes()).padStart(2, '0');
+        const padS = String(now.getSeconds()).padStart(2, '0');
+        
+        const clockDisplay = document.getElementById('clockTime');
+        if (clockDisplay) {
+            clockDisplay.textContent = padH + ':' + padM + ':' + padS;
+        }
+    }
+
+    // Trigger immediate updates and register steady interval loops
+    updateStudentDashboardTime();
+    setInterval(updateStudentDashboardTime, 1000);
+});
+</script>
+{% endblock %}

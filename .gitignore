@@ -1,0 +1,35 @@
+# ====================================================================
+# SMARTFLOW BULLETPROOF GITIGNORE
+# ====================================================================
+
+# 1. Virtual Environment
+venv/
+.venv/
+env/
+
+# 2. Databases & Secrets
+db.sqlite3
+.env
+debug_env.py
+
+# 3. Media & User Uploads (Crucial for privacy!)
+media/documents/
+media/profile_pics/
+media/qr_codes/
+media/uploads/
+# Alternatively, ignore the entire media folder:
+media/
+
+# 4. Python Cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 5. Local Test Scripts (Keep repository clean)
+quick_test.py
+test_all_ai.py
+
+# 6. System Files
+.DS_Store
+Thumbs.db

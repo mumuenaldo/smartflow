@@ -1,0 +1,142 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4 sf-ai-page">
+
+    <div class="p-4 mb-4 rounded-4 position-relative sf-banner">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1 sf-banner-title"><i class="bi bi-robot me-2"></i>AI Review Tools</h2>
+                <p class="small mb-0 sf-text-muted">Speed up document review with AI-assisted analysis</p>
+            </div>
+            <span class="badge px-3 py-2 sf-badge-live"><i class="bi bi-stars me-1"></i> AI Ready</span>
+        </div>
+    </div>
+
+    {% if pending_documents %}
+    <div class="mb-4">
+        <label for="docSelect" class="small text-muted d-block mb-1">Select a document to review:</label>
+        <select id="docSelect" class="form-select" style="max-width: 480px;" onchange="if(this.value){ window.location.href = '/ai/supervisor/' + this.value + '/'; }">
+            <option value="">-- Choose a document --</option>
+            {% for doc in pending_documents %}
+            <option value="{{ doc.id }}" {% if document and document.id == doc.id %}selected{% endif %}>{{ doc.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    {% if not document %}
+    <div class="alert alert-warning">
+        {% if pending_documents %}
+            Select a document above to run AI tools on it.
+        {% else %}
+            There are no pending documents to review right now.
+        {% endif %}
+    </div>
+    {% else %}
+
+    <p class="sf-text-muted mb-4">Reviewing: <strong class="sf-text-primary">{{ document.title }}</strong></p>
+
+    <div class="row g-4">
+        <!-- Feedback -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-chat-square-text fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Feedback Generation</h6>
+                    <p class="small sf-tool-desc">Strengths, weaknesses, suggestions & a score</p>
+                    <button onclick="runAITool('feedback-result', '/api/ai/supervisor/{{ document.id }}/?action=feedback')" class="btn w-100 mt-2 sf-btn sf-btn-primary">
+                        <i class="bi bi-magic me-1"></i> Generate
+                    </button>
+                    <div id="feedback-result" class="mt-3 sf-result-box">Click to generate...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Analysis -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-file-earmark-text fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Report Analysis</h6>
+                    <p class="small sf-tool-desc">Executive summary, findings, methodology, conclusions</p>
+                    <button onclick="runAITool('analyze-result', '/api/ai/supervisor/{{ document.id }}/?action=analyze_long')" class="btn w-100 mt-2 sf-btn sf-btn-teal">
+                        <i class="bi bi-search me-1"></i> Analyze
+                    </button>
+                    <div id="analyze-result" class="mt-3 sf-result-box">Click to analyze...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Detection -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-shield-exclamation fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Risk Detection</h6>
+                    <p class="small sf-tool-desc">Missing references, plagiarism flags, gaps</p>
+                    <button onclick="runAITool('risk-result', '/api/ai/supervisor/{{ document.id }}/?action=risks')" class="btn w-100 mt-2 sf-btn sf-btn-alert">
+                        <i class="bi bi-shield-check me-1"></i> Scan
+                    </button>
+                    <div id="risk-result" class="mt-3 sf-result-box">Click to scan...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 h-100 sf-card sf-card-tool sf-card-accent">
+                <div class="card-body p-4 text-center">
+                    <div class="sf-tool-icon"><i class="bi bi-clipboard-data fs-2"></i></div>
+                    <h6 class="fw-bold sf-tool-title">Summary Card</h6>
+                    <p class="small sf-tool-desc">One-page snapshot pulling feedback, analysis & risks together</p>
+                    <button onclick="runSupervisorSummaryCard()" class="btn w-100 mt-2 sf-btn sf-btn-navy">
+                        <i class="bi bi-card-checklist me-1"></i> Build Snapshot
+                    </button>
+                    <div id="summary-card-result" class="mt-3 sf-result-box">Click to build...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button onclick="runAllSupervisorTools()" class="btn px-4 sf-btn sf-btn-navy">
+            <i class="bi bi-lightning-fill me-1"></i> Run All Tools
+        </button>
+    </div>
+
+    {% endif %}
+</div>
+
+<script>
+function runAllSupervisorTools() {
+    runAITool('feedback-result', '/api/ai/supervisor/{{ document.id }}/?action=feedback');
+    runAITool('analyze-result', '/api/ai/supervisor/{{ document.id }}/?action=analyze_long');
+    runAITool('risk-result', '/api/ai/supervisor/{{ document.id }}/?action=risks');
+}
+
+// Summary Card combines the three supervisor endpoints into one readable
+// snapshot instead of calling a separate backend route.
+function runSupervisorSummaryCard() {
+    const box = document.getElementById('summary-card-result');
+    box.innerHTML = '<span class="sf-status-pending"><i class="bi bi-hourglass-split me-1"></i>Building snapshot...</span>';
+
+    Promise.all([
+        fetch('/api/ai/supervisor/{{ document.id }}/?action=feedback').then(r => r.json()),
+        fetch('/api/ai/supervisor/{{ document.id }}/?action=analyze_long').then(r => r.json()),
+        fetch('/api/ai/supervisor/{{ document.id }}/?action=risks').then(r => r.json())
+    ]).then(([feedback, analysis, risks]) => {
+        let out = '';
+        out += 'FEEDBACK\n' + (feedback.success ? formatAIResponse(feedback.data) : 'Unavailable') + '\n\n';
+        out += 'REPORT ANALYSIS\n' + (analysis.success ? formatAIResponse(analysis.data) : 'Unavailable') + '\n\n';
+        out += 'RISKS\n' + (risks.success ? formatAIResponse(risks.data) : 'Unavailable');
+        box.innerHTML = `<span class="sf-status-done"><i class="bi bi-check-circle me-1"></i>Done</span>\n${out}`;
+    }).catch(() => {
+        box.innerHTML = '<span class="sf-status-error"><i class="bi bi-x-circle me-1"></i>Connection error</span>';
+    });
+}
+</script>
+
+{% include 'registry/ai/_ai_shared.html' %}
+{% endblock %}

@@ -1,0 +1,248 @@
+<script>
+// Turns any AI JSON response into readable, human-friendly text.
+// Works with any field names the backend returns.
+function humanizeKey(key) {
+    return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatAIResponse(data, indent = '') {
+    if (data === null || data === undefined) return 'No data returned.';
+
+    if (typeof data === 'string') return data;
+    if (typeof data === 'number' || typeof data === 'boolean') return String(data);
+
+    if (Array.isArray(data)) {
+        if (data.length === 0) return 'None';
+        return data.map(item => {
+            if (item !== null && typeof item === 'object') {
+                return indent + '• ' + formatAIResponse(item, indent + '  ').replace(/\n/g, '\n' + indent + '  ');
+            }
+            return indent + '• ' + item;
+        }).join('\n');
+    }
+
+    if (typeof data === 'object') {
+        return Object.entries(data).map(([key, value]) => {
+            const label = humanizeKey(key);
+            if (Array.isArray(value)) {
+                if (value.length === 0) return `${indent}${label}: None`;
+                return `${indent}${label}:\n` + formatAIResponse(value, indent + '  ');
+            }
+            if (value !== null && typeof value === 'object') {
+                return `${indent}${label}:\n` + formatAIResponse(value, indent + '  ');
+            }
+            return `${indent}${label}: ${value}`;
+        }).join('\n');
+    }
+
+    return String(data);
+}
+
+//  AI tool runner//
+function runAITool(resultElId, url) {
+    const box = document.getElementById(resultElId);
+    if (!box) return;
+    box.innerHTML = '<span class="sf-status-pending"><i class="bi bi-hourglass-split me-1"></i>Thinking...</span>';
+
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const readable = formatAIResponse(data.data);
+                box.innerHTML = `<span class="sf-status-done"><i class="bi bi-check-circle me-1"></i>Done</span>\n${readable}`;
+            } else {
+                box.innerHTML = `<span class="sf-status-error"><i class="bi bi-x-circle me-1"></i>${data.error || 'Something went wrong'}</span>`;
+            }
+        })
+        .catch(() => {
+            box.innerHTML = '<span class="sf-status-error"><i class="bi bi-wifi-off me-1"></i>Connection error — check your AI service is running</span>';
+        });
+}
+</script>
+
+<style>
+/* =========================================================
+   SmartFlow AI Dashboards — Shared Theme Variables
+   Day mode: navy / cyan / blue / white / slate / teal
+   Night mode: burgundy / gold / purple / wine / cream / charcoal
+   ========================================================= */
+
+.sf-ai-page {
+    --sf-navy: #0f2b48;
+    --sf-navy-deep: #1a3d60;
+    --sf-cyan: #00b8d9;
+    --sf-blue: #2f6fed;
+    --sf-white: #ffffff;
+    --sf-slate: #64748b;
+    --sf-teal: #0d9488;
+
+    --sf-bg-card: rgba(15, 43, 72, 0.04);
+    --sf-bg-card-border: rgba(15, 43, 72, 0.12);
+    --sf-bg-accent-border: rgba(0, 184, 217, 0.35);
+    --sf-text-primary: var(--sf-navy);
+    --sf-text-muted: var(--sf-slate);
+    --sf-result-bg: rgba(15, 43, 72, 0.05);
+    --sf-result-text: var(--sf-slate);
+}
+
+.sf-banner {
+    background: linear-gradient(135deg, var(--sf-navy) 0%, var(--sf-navy-deep) 100%);
+    border-left: 6px solid var(--sf-cyan);
+    box-shadow: 0 8px 32px rgba(15, 43, 72, 0.25);
+    transition: all 0.3s;
+}
+.sf-banner-title { letter-spacing: -0.5px; color: var(--sf-white); }
+.sf-badge-live {
+    background: rgba(0, 184, 217, 0.18);
+    color: #5eead4;
+    border: 1px solid rgba(0, 184, 217, 0.4);
+    border-radius: 50px;
+}
+
+.sf-text-muted { color: var(--sf-text-muted); }
+.sf-section-title { color: var(--sf-blue); }
+
+.sf-card {
+    background: var(--sf-bg-card);
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    border: 1px solid var(--sf-bg-card-border) !important;
+    color: var(--sf-text-primary);
+    transition: all 0.3s;
+}
+.sf-card-accent { border: 1px solid var(--sf-bg-accent-border) !important; }
+.sf-label { color: var(--sf-cyan); }
+.sf-card-value { font-size: 2rem; color: var(--sf-navy); font-weight: 800; }
+
+.sf-card-tool { border: 1px solid var(--sf-bg-card-border) !important; }
+.sf-tool-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
+.sf-tool-title { color: var(--sf-navy); font-weight: 700; }
+.sf-tool-desc { color: var(--sf-text-muted); font-size: 0.75rem; }
+
+.sf-btn {
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.sf-btn-primary { background: linear-gradient(135deg, var(--sf-cyan), var(--sf-blue)); color: #fff; }
+.sf-btn-alert   { background: linear-gradient(135deg, #ef4476, #c2255c); color: #fff; }
+.sf-btn-teal    { background: linear-gradient(135deg, var(--sf-teal), #0f766e); color: #fff; }
+.sf-btn-navy    { background: linear-gradient(135deg, var(--sf-navy-deep), var(--sf-navy)); color: #fff; }
+.sf-btn-outline {
+    background: transparent;
+    color: var(--sf-blue);
+    border: 1.5px solid var(--sf-blue) !important;
+}
+.sf-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+.sf-result-box {
+    background: var(--sf-result-bg);
+    border-radius: 8px;
+    padding: 0.8rem;
+    max-height: 220px;
+    overflow-y: auto;
+    color: var(--sf-result-text);
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left;
+    line-height: 1.5;
+}
+.sf-status-pending { color: var(--sf-cyan); }
+.sf-status-done { color: var(--sf-teal); font-weight: 600; }
+.sf-status-error { color: #c2255c; }
+
+.sf-stat { border: 1px solid; border-radius: 12px; padding: 1rem; }
+.sf-stat h5 { font-weight: 700; font-size: 1.8rem; margin-bottom: 0.25rem; }
+.sf-stat p { margin: 0; font-size: 0.8rem; }
+.sf-stat-cyan  { background: rgba(0, 184, 217, 0.06); border-color: rgba(0, 184, 217, 0.18); }
+.sf-stat-cyan h5  { color: var(--sf-cyan); }
+.sf-stat-blue  { background: rgba(47, 111, 237, 0.06); border-color: rgba(47, 111, 237, 0.18); }
+.sf-stat-blue h5  { color: var(--sf-blue); }
+.sf-stat-slate { background: rgba(100, 116, 139, 0.06); border-color: rgba(100, 116, 139, 0.18); }
+.sf-stat-slate h5 { color: var(--sf-slate); }
+.sf-stat-teal  { background: rgba(13, 148, 136, 0.06); border-color: rgba(13, 148, 136, 0.18); }
+.sf-stat-teal h5  { color: var(--sf-teal); }
+
+/* Chatbot-specific */
+.sf-chat-window {
+    background: var(--sf-bg-card);
+    border: 1px solid var(--sf-bg-card-border);
+    border-radius: 16px;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+}
+.sf-chat-messages { flex: 1; overflow-y: auto; padding: 1.25rem; }
+.sf-msg { max-width: 75%; padding: 0.65rem 1rem; border-radius: 14px; margin-bottom: 0.75rem; font-size: 0.9rem; white-space: pre-wrap; }
+.sf-msg-user { background: linear-gradient(135deg, var(--sf-cyan), var(--sf-blue)); color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+.sf-msg-bot { background: var(--sf-result-bg); color: var(--sf-text-primary); margin-right: auto; border-bottom-left-radius: 4px; }
+.sf-chat-input-row { border-top: 1px solid var(--sf-bg-card-border); padding: 0.75rem; display: flex; gap: 0.5rem; }
+.sf-chat-input {
+    flex: 1; border-radius: 50px; border: 1px solid var(--sf-bg-card-border);
+    padding: 0.55rem 1rem; background: transparent; color: var(--sf-text-primary);
+}
+.sf-quick-actions .btn { font-size: 0.75rem; }
+
+/* =========================================================
+   NIGHT MODE 
+   ========================================================= */
+body.dark-mode .sf-ai-page {
+    --sf-navy: #4c1130;
+    --sf-navy-deep: #31071c;
+    --sf-cyan: #facc15; /* Gold */
+    --sf-blue: #c084fc; /* Purple */
+    --sf-white: #f5e6d3; /* Cream */
+    --sf-slate: #c4b5a0;
+    --sf-teal: #facc15; /* Gold */
+
+    --sf-bg-card: rgba(60, 20, 40, 0.7);
+    --sf-bg-card-border: rgba(245, 230, 211, 0.2);
+    --sf-bg-accent-border: rgba(250, 204, 21, 0.3);
+    --sf-text-primary: #f5e6d3; /* Cream */
+    --sf-text-muted: #c4b5a0;
+    --sf-result-bg: rgba(0, 0, 0, 0.3);
+    --sf-result-text: #f5e6d3; /* Cream - FIXED from slate */
+}
+
+body.dark-mode .sf-banner { background: linear-gradient(135deg, #4c1130 0%, #31071c 100%); border-left-color: #facc15; }
+body.dark-mode .sf-badge-live { color: #facc15; border-color: rgba(250, 204, 21, 0.3); background: rgba(250, 204, 21, 0.1); }
+body.dark-mode .sf-btn { filter: brightness(0.95); }
+body.dark-mode .sf-btn:hover { filter: brightness(1.1); }
+body.dark-mode .sf-btn-outline { color: #facc15; border-color: #facc15 !important; }
+body.dark-mode .sf-section-title { color: #facc15; }
+
+/* THE FIX: State cards text contrast */
+body.dark-mode .sf-card,
+body.dark-mode .sf-tool-title,
+body.dark-mode .sf-label {
+    color: #f5e6d3 !important; /* Cream text */
+}
+
+body.dark-mode .sf-card-value,
+body.dark-mode .sf-stat h5 {
+    color: #facc15 !important; /* Gold numbers */
+}
+
+body.dark-mode .sf-tool-desc,
+body.dark-mode .sf-text-muted {
+    color: #c4b5a0 !important; /* Muted cream */
+}
+
+/* Make stat cards pop more in dark */
+body.dark-mode .sf-stat-cyan  { background: rgba(250, 204, 21, 0.08); border-color: rgba(250, 204, 21, 0.25); }
+body.dark-mode .sf-stat-blue  { background: rgba(192, 132, 252, 0.08); border-color: rgba(192, 132, 252, 0.25); }
+body.dark-mode .sf-stat-teal  { background: rgba(250, 204, 21, 0.08); border-color: rgba(250, 204, 21, 0.25); }
+body.dark-mode .sf-stat-slate { background: rgba(245, 230, 211, 0.06); border-color: rgba(245, 230, 211, 0.15); }
+
+/* Result box more readable */
+body.dark-mode .sf-result-box {
+    color: #f5e6d3;
+    background: rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .sf-status-pending { color: #facc15; }
+body.dark-mode .sf-status-done { color: #4cff91; }
+</style>r

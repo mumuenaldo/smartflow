@@ -1,0 +1,174 @@
+{% extends 'registry/base.html' %}
+{% block title %}Manage Users{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR MANAGE USERS  */
+
+    body.dark-mode .page-header h4 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important; 
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important;
+        border-color: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .table {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .table thead th {
+        color: #ffc700 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+        background: #3a1428 !important; 
+    }
+
+    body.dark-mode .table tbody td {
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05) !important;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .text-muted.small {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode strong {
+        color: #ffffff !important;
+    }
+
+    /* Role Badges */
+    body.dark-mode .badge.bg-dark {
+        background: #4a1a32 !important; 
+        color: #ffc700 !important; 
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge.bg-primary {
+        background: rgba(255, 199, 0, 0.15) !important; 
+        color: #ffc700 !important;
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge.bg-info {
+        background: rgba(124, 31, 63, 0.4) !important; 
+        color: #ffc700 !important;
+        border: 1px solid #7c1f3f;
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #4a1a32 !important;
+        color: #c9a96a !important; 
+        border: 1px solid #4a1a32;
+    }
+
+    /* Status Badges */
+    body.dark-mode .badge.bg-success {
+        background: rgba(76, 255, 145, 0.15) !important;
+        color: #4cff91 !important;
+        border: 1px solid #4cff91;
+    }
+
+    body.dark-mode .badge.bg-danger {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .text-center.text-muted {
+        color: #c9a96a !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between">
+  <h4><i class="bi bi-people me-2"></i>Manage Users</h4>
+  <a href="{% url 'create_user' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-person-plus me-1"></i>Add New User
+  </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Department</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td class="text-muted small">{{ forloop.counter }}</td>
+          <td><strong>{{ user.username }}</strong></td>
+          <td>{{ user.get_full_name|default:"—" }}</td>
+          <td class="text-muted small">{{ user.email|default:"—" }}</td>
+          <td>
+            {% if user.role == 'admin' %}
+              <span class="badge bg-dark">Administrator</span>
+            {% elif user.role == 'supervisor' %}
+              <span class="badge bg-primary">Supervisor</span>
+            {% elif user.role == 'clerk' %}
+              <span class="badge bg-info text-dark">Registry Clerk</span>
+            {% else %}
+              <span class="badge bg-secondary">Staff Member</span>
+            {% endif %}
+          </td>
+          <td>{{ user.department|default:"—" }}</td>
+          <td>
+            {% if user.is_active %}
+              <span class="badge bg-success">Active</span>
+            {% else %}
+              <span class="badge bg-danger">Inactive</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-5">
+            <i class="bi bi-people fs-2 d-block mb-2"></i>
+            No users found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

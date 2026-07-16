@@ -1,0 +1,336 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ============================================================
+       SmartFlow Admin Workspace Colors 
+       ============================================================ */
+    :root {
+        /* ===== DAY THEME  ===== */
+        --accent-day: #00d2d3;              
+        --bg-day: #181d52f7;                  
+        --card-day: rgba(255, 255, 255, 0.05); 
+        --text-day: #ffffff;                
+        --border-day: rgba(255,255,255,0.2);   
+        --blue-day: #3498db;                
+
+        /* NIGHT THEME  */
+        --bg-night-gradient: linear-gradient(135deg, #1a0a0a, #2c0e1e); /* Burgundy */
+        --accent-night: #f1c40f;            
+        --accent-secondary-night: #9b59b6;  
+        --blue-night: #3498db;              
+        --text-night: #f5e6d3;             
+        --card-night: rgba(60, 20, 40, 0.7); 
+        --border-night: rgba(245, 230, 211, 0.2); 
+    }
+
+    /* Auto-switch based on body.dark-mode from base.html */
+    .workspace-container {
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        background: var(--bg-day);
+        color: var(--text-day);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    body.dark-mode .workspace-container {
+        background: var(--bg-night-gradient);
+        color: var(--text-night);
+    }
+
+    /* Navigation Bar - Gold accent on night */
+    .control-nav-bar {
+        background: var(--card-day);
+        border-left: 5px solid var(--accent-day);
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 3rem;
+        border: 1px solid var(--border-day);
+        transition: all 0.3s ease;
+    }
+    body.dark-mode .control-nav-bar {
+        background: var(--card-night);
+        border-left-color: var(--accent-night); 
+        border-color: var(--border-night);
+    }
+
+    .btn-back-workspace {
+        color: var(--accent-day);
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid var(--accent-day);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    body.dark-mode .btn-back-workspace {
+        color: var(--accent-night); 
+        border-color: var(--accent-night);
+    }
+
+    .btn-back-workspace:hover {
+        background: var(--accent-day);
+        color: #000;
+    }
+    body.dark-mode .btn-back-workspace:hover {
+        background: var(--accent-night); 
+        color: #000;
+    }
+
+    /* Module Matrix Cards  */
+    .grid-card {
+        background: var(--card-day);
+        border: 1px solid var(--border-day);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: 0.3s;
+        height: 100%;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    body.dark-mode .grid-card {
+        background: var(--card-night);
+        border-color: var(--border-night);
+    }
+
+    .grid-card:hover {
+        border-color: var(--blue-day); 
+        box-shadow: 0 0 12px var(--blue-day); 
+        transform: translateY(-5px);
+    }
+    body.dark-mode .grid-card:hover {
+        border-color: var(--blue-night);
+        box-shadow: 0 0 12px var(--accent-secondary-night);
+    }
+
+    /* ─── AI TOOLS SPECIAL CARD ─── */
+    .grid-card.ai-tools-card {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(109, 40, 217, 0.25) 100%);
+        border: 2px solid rgba(124, 58, 237, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .grid-card.ai-tools-card::after {
+        content: '✨ AI';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: white;
+        font-size: 0.55rem;
+        padding: 2px 10px;
+        border-radius: 50px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    
+    .grid-card.ai-tools-card:hover {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+        transform: translateY(-8px) scale(1.02);
+    }
+    
+    .grid-card.ai-tools-card .icon-box-cyan {
+        color: #a78bfa;
+    }
+    
+    .grid-card.ai-tools-card:hover .icon-box-cyan {
+        color: #c4b5fd;
+    }
+    
+    .grid-card.ai-tools-card .btn-action-outline {
+        border-color: #8b5cf6;
+        color: #a78bfa;
+    }
+    
+    .grid-card.ai-tools-card .btn-action-outline:hover {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #ffffff;
+        border-color: #7c3aed;
+    }
+    
+    body.dark-mode .grid-card.ai-tools-card {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(109, 40, 217, 0.35) 100%);
+        border-color: rgba(124, 58, 237, 0.4);
+    }
+    
+    body.dark-mode .grid-card.ai-tools-card:hover {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
+    }
+    
+    body.dark-mode .grid-card.ai-tools-card .icon-box-cyan {
+        color: #a78bfa;
+    }
+    
+    body.dark-mode .grid-card.ai-tools-card .btn-action-outline {
+        border-color: #8b5cf6;
+        color: #a78bfa;
+    }
+    
+    body.dark-mode .grid-card.ai-tools-card .btn-action-outline:hover {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: #ffffff;
+        border-color: #7c3aed;
+    }
+
+    .icon-box-cyan {
+        color: var(--accent-day);
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+    body.dark-mode .icon-box-cyan {
+        color: var(--accent-secondary-night); 
+    }
+
+    .btn-action-outline {
+        border: 1px solid var(--accent-day);
+        color: var(--accent-day);
+        border-radius: 20px;
+        margin-top: 1rem;
+        background: transparent;
+        transition: 0.3s;
+        padding: 0.3rem 1.2rem;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+    body.dark-mode .btn-action-outline {
+        border-color: var(--accent-night); 
+        color: var(--accent-night); 
+    }
+
+    .btn-action-outline:hover {
+        background-color: var(--accent-day);
+        color: #000;
+    }
+    body.dark-mode .btn-action-outline:hover {
+        background-color: var(--accent-night); 
+        color: #000;
+    }
+
+    /* Bottom Stat Strip - Blue both themes */
+    .stat-pill {
+        background: var(--card-day);
+        border: 1px solid var(--blue-day); 
+        border-radius: 10px;
+        padding: 1.5rem;
+        color: var(--blue-day); 
+        text-align: center;
+        transition: 0.3s;
+    }
+    body.dark-mode .stat-pill {
+        background: var(--card-night);
+        border-color: var(--blue-night); 
+        color: var(--blue-night);
+    }
+
+    .stat-pill:hover {
+        box-shadow: 0 0 10px var(--blue-day);
+    }
+    body.dark-mode .stat-pill:hover {
+        box-shadow: 0 0 10px var(--accent-secondary-night); 
+    }
+
+    /* Bottom border line - Blue both themes */
+    .mt-5.pt-5 {
+        border-top: 1px solid var(--blue-day) !important;
+    }
+    body.dark-mode .mt-5.pt-5 {
+        border-top-color: var(--blue-night) !important;
+    }
+
+    /* H5 in navbar icon - Gold on night */
+    .control-nav-bar h5 i {
+        color: var(--accent-day);
+    }
+    body.dark-mode .control-nav-bar h5 i {
+        color: var(--accent-night); 
+    }
+</style>
+
+<div class="workspace-container">
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div class="control-nav-bar d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-cpu"></i> Admin Control Workspace</h5>
+            <a href="{% url 'admin_launchpad' %}" class="btn-back-workspace"><i class="bi bi-grid-3x3-gap-fill"></i> Launchpad</a>
+        </div>
+
+        <!-- Module Matrix (6 cards - 2 rows of 3) -->
+        <div class="row g-4">
+            <!-- Card 1: User Management -->
+            <div class="col-md-4">
+                <a href="{% url 'manage_users' %}" class="grid-card">
+                    <div class="icon-box-cyan"><i class="bi bi-people-fill"></i></div>
+                    <h5>User Management</h5>
+                    <p class="small">Provision and configure secure profiles.</p>
+                    <span class="btn-action-outline">Open Directory</span>
+                </a>
+            </div>
+            
+            <!-- Card 2: Departments -->
+            <div class="col-md-4">
+                <a href="{% url 'manage_departments' %}" class="grid-card">
+                    <div class="icon-box-cyan"><i class="bi bi-diagram-3-fill"></i></div>
+                    <h5>Departments</h5>
+                    <p class="small">Manage units and routing matrices.</p>
+                    <span class="btn-action-outline">View Units</span>
+                </a>
+            </div>
+            
+            <!-- Card 3: Audit Trail -->
+            <div class="col-md-4">
+                <a href="{% url 'audit_trail' %}" class="grid-card">
+                    <div class="icon-box-cyan"><i class="bi bi-shield-lock-fill"></i></div>
+                    <h5>Audit Trail</h5>
+                    <p class="small">Review security events and logs.</p>
+                    <span class="btn-action-outline">Review Logs</span>
+                </a>
+            </div>
+            
+            <!-- Card 4: All Documents -->
+            <div class="col-md-4">
+                <a href="{% url 'document_list' %}" class="grid-card">
+                    <div class="icon-box-cyan"><i class="bi bi-folder-fill"></i></div>
+                    <h5>All Documents</h5>
+                    <p class="small">Global document access and overrides.</p>
+                    <span class="btn-action-outline">Browse Docs</span>
+                </a>
+            </div>
+            
+            <!-- Card 5: Check Progress -->
+            <div class="col-md-4">
+                <a href="{% url 'check_progress' %}" class="grid-card">
+                    <div class="icon-box-cyan"><i class="bi bi-activity"></i></div>
+                    <h5>Check Progress</h5>
+                    <p class="small">Analyze pipeline processing trends.</p>
+                    <span class="btn-action-outline">Monitor Flows</span>
+                </a>
+            </div>
+            
+            <!-- ⭐ Card 6: AI TOOLS -->
+            <div class="col-md-4">
+                <a href="{% url 'admin_ai_dashboard' %}" class="grid-card ai-tools-card">
+                    <div class="icon-box-cyan"><i class="bi bi-robot"></i></div>
+                    <h5>AI Analytics</h5>
+                    <p class="small">System intelligence &amp; predictions.</p>
+                    <span class="btn-action-outline">Launch AI</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Stats Deck -->
+        <div class="mt-5 pt-5">
+            <div class="row g-3">
+                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_docs|default:"0" }}</h3><h6>Total Documents</h6></div></div>
+                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_users|default:"0" }}</h3><h6>Active Users</h6></div></div>
+                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_depts|default:"0" }}</h3><h6>Departments</h6></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

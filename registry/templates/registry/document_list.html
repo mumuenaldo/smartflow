@@ -1,0 +1,255 @@
+{% extends 'registry/base.html' %}
+{% block title %}Documents — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR DOCUMENTS LIST  */
+  
+
+    body.dark-mode .page-header h4 {
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important;
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important;
+        border-color: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-outline-primary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-primary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        color: #c9a96a;
+        border-color: #4a1a32;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #4a1a32;
+        color: #ffffff;
+    }
+
+    body.dark-mode .btn-outline-success {
+        color: #4cff91;
+        border-color: #4cff91;
+    }
+
+    body.dark-mode .btn-outline-success:hover {
+        background: #4cff91;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+    }
+
+    body.dark-mode .form-control {
+        background: #3a1428 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important;
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .table {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .table thead th {
+        color: #ffc700 !important;
+        border-bottom: 1px solid #4a1a32 !important;
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode .table tbody td {
+        border-bottom: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05) !important;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .text-muted.small {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .fw-semibold {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode code {
+        color: #ffc700 !important;
+        background: rgba(124, 31, 63, 0.3) !important;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    /* Status Badges */
+    body.dark-mode .badge.bg-success {
+        background: rgba(76, 255, 145, 0.15) !important;
+        color: #4cff91 !important;
+        border: 1px solid #4cff91;
+    }
+
+    body.dark-mode .badge.bg-warning {
+        background: rgba(255, 199, 0, 0.15) !important;
+        color: #ffc700 !important;
+        border: 1px solid #ffc700;
+    }
+
+    body.dark-mode .badge.bg-danger {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border: 1px solid #ff6b6b;
+    }
+
+    body.dark-mode .badge.bg-secondary {
+        background: #4a1a32 !important;
+        color: #c9a96a !important;
+        border: 1px solid #4a1a32;
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .text-center.text-muted {
+        color: #c9a96a !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex align-items-center justify-content-between mb-4">
+  <h4><i class="bi bi-file-earmark-text me-2"></i>Documents</h4>
+  {% if request.user.role in 'clerk,admin' %}
+  <a href="{% url 'document_register' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg me-1"></i>Register New Document
+  </a>
+  {% endif %}
+</div>
+
+<!-- Search Bar -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="d-flex gap-2">
+      <input type="text" name="q" value="{{ query }}"
+             class="form-control form-control-sm"
+             placeholder="Search by title or reference number…">
+      <button class="btn btn-sm btn-outline-primary" type="submit">
+        <i class="bi bi-search"></i>
+      </button>
+      {% if query %}
+      <a href="{% url 'document_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-x-lg"></i>
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Table Card -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Reference</th>
+          <th>Title</th>
+          <th>Department</th>
+          <th>Submitted By</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in docs %}
+        <tr>
+          <td class="text-muted small">{{ forloop.counter }}</td>
+          <td><code>{{ doc.reference_no }}</code></td>
+          <td class="fw-semibold">{{ doc.title }}</td>
+          <td>{{ doc.department.dept_name|default:doc.department|default:"—" }}</td>
+          <td>{{ doc.submitted_by.get_full_name|default:doc.submitted_by.username }}</td>
+          
+          <!-- FIXED BOOTSTRAP 5 DYNAMIC STATUS BADGE -->
+          <td>
+            {% if doc.status %}
+              <span class="badge {% if doc.status.status_code == 'approved' or doc.status.status_code == 'completed' %}bg-success{% elif doc.status_code == 'pending' or doc.status_code == 'review' %}bg-warning text-dark{% elif doc.status_code == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                {{ doc.status.status_name }}
+              </span>
+            {% else %}
+              <span class="badge bg-secondary">Pending</span>
+            {% endif %}
+          </td>
+          
+          <td class="text-muted small">{{ doc.created_at|date:"d M Y" }}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{% url 'document_detail' doc.pk %}"
+                 class="btn btn-sm btn-outline-primary" title="View Detail">
+                <i class="bi bi-eye"></i>
+              </a>
+              {% if request.user.role == 'clerk' or request.user.role == 'admin' %}
+              <a href="{% url 'document_assign' doc.pk %}"
+                 class="btn btn-sm btn-outline-secondary" title="Assign Document">
+                <i class="bi bi-person-check"></i>
+              </a>
+              {% endif %}
+              {% if request.user.role in 'supervisor,admin' %}
+              <a href="{% url 'approval_view' doc.pk %}"
+                 class="btn btn-sm btn-outline-success" title="Review/Approve">
+                <i class="bi bi-check2-circle"></i>
+              </a>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted py-5">
+            <i class="bi bi-folder2-open fs-3 d-block mb-2"></i>
+            {% if query %}No documents found for "<strong>{{ query }}</strong>".
+            {% else %}No documents found inside the system registries yet.{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

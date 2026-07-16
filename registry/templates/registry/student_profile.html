@@ -1,0 +1,237 @@
+{% extends 'registry/base.html' %}
+
+{% block title %}My Profile — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+    /* DARK MODE FOR STUDENT PROFILE PAGE  */
+    
+
+    body.dark-mode .card {
+        background: #2d0b1e !important; 
+        border: 1px solid #4a1a32 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark-mode .card-header {
+        background: #3a1428 !important; 
+        border-bottom: 1px solid #4a1a32 !important;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .card-header.bg-primary {
+        background: #3a1428 !important;
+    }
+
+    body.dark-mode .card-body {
+        background: #2d0b1e !important;
+        color: #ffffff;
+    }
+
+    body.dark-mode .text-muted {
+        color: #c9a96a !important; 
+    }
+
+    body.dark-mode .form-label {
+        color: #ffffff !important; 
+    }
+
+    body.dark-mode .form-control {
+        background: #3a1428 !important; 
+        color: #ffffff !important;
+        border: 1px solid #4a1a32 !important;
+    }
+
+    body.dark-mode .form-control:focus {
+        background: #3a1428 !important;
+        color: #ffffff !important;
+        border-color: #ffc700 !important; 
+        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
+    }
+
+    body.dark-mode .form-control::placeholder {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .form-text {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .btn-primary {
+        background: #ffc700 !important; 
+        border: 1px solid #ffc700 !important;
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .btn-primary:hover {
+        background: #ffd700 !important;
+        border-color: #ffd700 !important;
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode .btn-outline-secondary {
+        color: #ffc700;
+        border-color: #ffc700;
+    }
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background: #ffc700;
+        color: #2d0b1e;
+    }
+
+    body.dark-mode hr {
+        border-color: #4a1a32 !important;
+    }
+
+    body.dark-mode .bg-primary {
+        background: #ffc700 !important; 
+    }
+
+    body.dark-mode .bg-primary i {
+        color: #2d0b1e !important; 
+    }
+
+    body.dark-mode .rounded-circle {
+        border-color: #ffc700 !important; 
+    }
+
+    body.dark-mode .badge.bg-info {
+        background: #4a1a32 !important;
+        border: 1px solid #ffc700;
+        color: #ffc700 !important; 
+    }
+
+    body.dark-mode .shadow-sm {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-mode .alert {
+        background: #3a1428 !important;
+        border-color: #4a1a32 !important;
+        color: #ffffff !important;
+    }
+
+    body.dark-mode .alert-danger {
+        border-color: #ff6b6b !important;
+        color: #ff6b6b !important;
+    }
+
+    body.dark-mode .text-center .text-muted {
+        color: #c9a96a !important;
+    }
+
+    body.dark-mode .d-flex.gap-3 .btn {
+        color: #ffffff !important;
+    }
+
+    body.dark-mode [style*="border: 3px solid #0d3b6e;"] {
+        border-color: #ffc700 !important; 
+    }
+
+    body.dark-mode .bg-primary.rounded-circle {
+        background: #ffc700 !important;
+    }
+
+    body.dark-mode .bg-primary.rounded-circle i {
+        color: #2d0b1e !important;
+    }
+
+    body.dark-mode h5 {
+        color: #ffffff !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i> My Profile
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Profile Picture Display -->
+                    <div class="text-center mb-4">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" 
+                                 class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #0d3b6e;">
+                        {% else %}
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 150px; height: 150px;">
+                                <i class="bi bi-person-fill text-white" style="font-size: 80px;"></i>
+                            </div>
+                        {% endif %}
+                        <h5 class="mt-3">{{ user.get_full_name }}</h5>
+                        <span class="badge bg-info">{{ user.get_role_display }}</span>
+                        {% if user.student_id %}
+                            <p class="text-muted small mt-2">Student ID: {{ user.student_id }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Profile Update Form -->
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            {{ form.email }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Address</label>
+                            {{ form.address }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Profile Picture</label>
+                            {{ form.profile_picture }}
+                            <div class="form-text">Upload a profile picture (JPG, PNG - max 5MB).</div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i> Save Changes
+                            </button>
+                            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

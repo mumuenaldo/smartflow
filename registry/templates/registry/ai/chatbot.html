@@ -1,0 +1,128 @@
+{% extends 'registry/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4 sf-ai-page">
+
+    <div class="p-4 mb-4 rounded-4 position-relative sf-banner">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1 sf-banner-title"><i class="bi bi-chat-dots me-2"></i>SmartFlow Assistant</h2>
+                <p class="small mb-0 sf-text-muted">Ask about documents, submissions, or your workflow status</p>
+            </div>
+            <span class="badge px-3 py-2 sf-badge-live"><i class="bi bi-stars me-1"></i> Online</span>
+        </div>
+    </div>
+
+    <div class="sf-chat-window mb-3">
+        <div id="chat-messages" class="sf-chat-messages">
+            <div class="sf-msg sf-msg-bot">
+                <i class="bi bi-robot me-1"></i> 
+                Hi {{ user.first_name|default:user.username }}! I can help you check document status, find submissions, or answer questions about your workflow. What do you need?
+            </div>
+        </div>
+        <div class="sf-chat-input-row">
+            <input id="chat-input" type="text" class="sf-chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){sendChatMessage();}">
+            <button onclick="sendChatMessage()" class="btn sf-btn sf-btn-primary px-4">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="sf-quick-actions d-flex flex-wrap gap-2">
+        <button class="btn sf-btn-outline btn-sm rounded-pill px-3" onclick="quickAsk('What is the status of my latest document?')">
+            <i class="bi bi-file-earmark-text me-1"></i> Latest document status
+        </button>
+        <button class="btn sf-btn-outline btn-sm rounded-pill px-3" onclick="quickAsk('How many documents do I have pending?')">
+            <i class="bi bi-hourglass-split me-1"></i> Pending count
+        </button>
+        <button class="btn sf-btn-outline btn-sm rounded-pill px-3" onclick="quickAsk('What should I do next in my workflow?')">
+            <i class="bi bi-signpost-split me-1"></i> What's next
+        </button>
+    </div>
+</div>
+
+<style>
+
+.sf-chat-window { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1rem; backdrop-filter: blur(10px); }
+.sf-chat-messages { max-height: 400px; overflow-y: auto; margin-bottom: 1rem; }
+.sf-msg { padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 80%; line-height: 1.5; }
+.sf-msg-bot { background: rgba(0,242,254,0.1); border: 1px solid rgba(0,242,254,0.2); color: #e2e8f0; }
+.sf-msg-user { background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); color: #fff; margin-left: auto; }
+.sf-chat-input-row { display: flex; gap: 0.5rem; }
+.sf-chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; color: #fff; }
+.sf-chat-input:focus { outline: 2px solid #00f2fe; border-color: transparent; }
+.sf-status-pending { opacity: 0.7; font-style: italic; }
+</style>
+
+<script>
+function appendMessage(text, sender) {
+    const wrap = document.getElementById('chat-messages');
+    const bubble = document.createElement('div');
+    bubble.className = sender === 'user' ? 'sf-msg sf-msg-user' : 'sf-msg sf-msg-bot';
+    
+    
+    if(sender === 'bot'){
+        bubble.innerHTML = `<i class="bi bi-robot me-1"></i> ${text}`;
+    } else {
+        bubble.innerHTML = `<i class="bi bi-person-circle me-1"></i> ${text}`;
+    }
+    
+    wrap.appendChild(bubble);
+    wrap.scrollTop = wrap.scrollHeight;
+    return bubble;
+}
+
+function quickAsk(text) {
+    document.getElementById('chat-input').value = text;
+    sendChatMessage();
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+
+    appendMessage(message, 'user');
+    input.value = '';
+
+    const thinking = appendMessage('<i class="bi bi-hourglass-split me-1"></i> Thinking...', 'bot');
+    thinking.classList.add('sf-status-pending');
+
+    fetch('/api/ai/chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ message: message })
+    })
+        .then(r => r.json())
+        .then(data => {
+            thinking.classList.remove('sf-status-pending');
+            
+            if (data.success) {
+                const reply = data.response || data.data || 'Message processed successfully.';
+                thinking.innerHTML = `<i class="bi bi-robot me-1"></i> ${reply}`;
+            } else {
+                thinking.innerHTML = `<i class="bi bi-exclamation-triangle me-1"></i> Sorry, something went wrong: ${data.error || 'unknown error'}`;
+            }
+        })
+        .catch((err) => {
+            console.error("Chat routing breakdown:", err);
+            thinking.classList.remove('sf-status-pending');
+            thinking.innerHTML = '<i class="bi bi-wifi-off me-1"></i> Connection error — please try again.';
+        });
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+</script>
+
+{% include 'registry/ai/_ai_shared.html' %}
+{% endblock %}
