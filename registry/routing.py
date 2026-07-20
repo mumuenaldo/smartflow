@@ -13,6 +13,6 @@ websocket_urlpatterns = [
     # Document tracking
     re_path(r'ws/document/(?P<doc_id>\w+)/$', consumers.DocumentConsumer.as_asgi()),
 
-    # Student progress (per-student, not global)
+    # Student progress 
     re_path(r'ws/student-progress/(?P<user_id>\w+)/$', consumers.StudentProgressConsumer.as_asgi()),
 ]

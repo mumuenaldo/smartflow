@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 import uuid
 # ─────────────────────────────────────────────
-# CUSTOM USER MANAGER (for student role support)
+# CUSTOM USER MANAGER 
 # ─────────────────────────────────────────────
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
@@ -41,7 +41,7 @@ class Department(models.Model):
 
 
 # ─────────────────────────────────────────────
-# 2. CUSTOM USER (UPDATED with STUDENT role and PROFILE PICTURE)
+# 2. CUSTOM USER 
 # ─────────────────────────────────────────────
 class User(AbstractUser):
     ROLE_CHOICES = [
@@ -118,7 +118,7 @@ class Status(models.Model):
 
 
 # ─────────────────────────────────────────────
-# 4. DOCUMENT (UPDATED with Auto-Ref & QR Hook)
+# 4. DOCUMENT 
 # ─────────────────────────────────────────────
 class Document(models.Model):
     PRIORITY_CHOICES = [

@@ -123,7 +123,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'SmartFlow <noreply@smartflow.com>'
 
 # ─────────────────────────────────────────────
-# MESSAGES — Bootstrap 5 alert class mapping
+# MESSAGES 
 # ─────────────────────────────────────────────
 MESSAGE_TAGS = {
     messages_constants.DEBUG:   'alert-secondary',
@@ -162,7 +162,7 @@ else:
 # ─────────────────────────────────────────────
 ASGI_APPLICATION = 'smartflow_project.asgi.application'
 
-# Swapped out Redis for the built-in, in-memory channel layer for local testing
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",

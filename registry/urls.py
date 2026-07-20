@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-# ⭐ Import AI views directly from the ai_views.py file
+
 from .views_files.ai_views import (
     student_ai_action,
     student_ai_bulk,
@@ -8,7 +8,7 @@ from .views_files.ai_views import (
     staff_ai_action,
     admin_ai_action,
     ai_chat,
-    # ⭐ AI Dashboard Views (NEW!)
+    #  AI Dashboard Views 
     student_ai_dashboard,
     supervisor_ai_dashboard,
     staff_ai_dashboard,
@@ -41,7 +41,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
 
     # ─────────────────────────────────────────────
-    # DASHBOARDS (Role-Specific)
+    # DASHBOARDS 
     # ─────────────────────────────────────────────
     path('dashboard/', views.dashboard, name='dashboard'),
     path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
@@ -131,7 +131,7 @@ urlpatterns = [
     path('check-progress/', views.admin_dashboard, name='check_progress'),
 
     # ─────────────────────────────────────────────
-    # 🚀 AI ENDPOINTS
+    # AI ENDPOINTS
     # ─────────────────────────────────────────────
     path('api/ai/student/<int:document_id>/', student_ai_action, name='ai_student_action'),
     path('api/ai/student/<int:document_id>/bulk/', student_ai_bulk, name='ai_student_bulk'),
@@ -141,7 +141,7 @@ urlpatterns = [
     path('api/ai/chat/', ai_chat, name='ai_chat'),
 
     # ─────────────────────────────────────────────
-    # 🤖 AI DASHBOARD PAGES
+    # AI DASHBOARD PAGES
     # ─────────────────────────────────────────────
     path('ai/student-dashboard/', student_ai_dashboard, name='student_ai_dashboard'),
     path('ai/supervisor-dashboard/', supervisor_ai_dashboard, name='supervisor_ai_dashboard'),
