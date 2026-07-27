@@ -1,8 +1,60 @@
 {% extends 'registry/base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+.sf-ai-page{padding-top:1rem;padding-bottom:4rem}
+.sf-banner{background:linear-gradient(135deg,#0f2b48,#1a3d60);border:1px solid rgba(0,184,217,.15)}
+.sf-banner-title{color:#fff}
+.sf-text-muted{color:#64748b}
+.sf-badge-live{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:800;letter-spacing:.5px}
+.sf-section-title{color:#0f2b48}
+
+.sf-btn-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:8px;padding:.5rem .9rem;font-weight:700;font-size:.85rem;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem}
+.sf-btn-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+
+.sf-card{background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(15,43,72,.08);transition:transform .25s ease,box-shadow .25s ease}
+.sf-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,184,217,.12)}
+.sf-tool-icon{margin-bottom:1rem}
+.sf-tool-title{color:#0f2b48;margin-bottom:.5rem}
+.sf-tool-desc{color:#64748b;min-height:40px}
+.sf-btn{border-radius:10px;font-weight:800}
+.sf-btn-primary{background:linear-gradient(135deg,#00b8d9,#0f2b48);color:#fff;border:0}
+.sf-btn-alert{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:0}
+.sf-btn-teal{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:0}
+.sf-btn-navy{background:linear-gradient(135deg,#0f2b48,#1a3d60);color:#fff;border:0}
+.sf-btn:hover{transform:translateY(-2px);color:#fff}
+.sf-result-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.75rem;font-size:.8rem;color:#475569;min-height:60px}
+
+.sf-stat{border:1px solid #e2e8f0;background:#fff}
+.sf-stat-cyan{border-left:4px solid #00f2fe}
+.sf-stat-blue{border-left:4px solid #3b82f6}
+.sf-stat-teal{border-left:4px solid #10b981}
+
+body.dark-mode .sf-banner{background:linear-gradient(135deg,#4a1a32,#2d0b1e);border-color:rgba(255,199,0,.2)}
+body.dark-mode .sf-banner-title{color:#ffc700}
+body.dark-mode .sf-text-muted{color:#c9a96a}
+body.dark-mode .sf-badge-live{background:linear-gradient(135deg,#4cff91,#22c55e);color:#2d0b1e}
+body.dark-mode .sf-section-title{color:#ffc700}
+
+body.dark-mode .sf-btn-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .sf-btn-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
+
+body.dark-mode .sf-card{background:#2d0b1e;border:1px solid #4a1a32;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+body.dark-mode .sf-card:hover{box-shadow:0 12px 32px rgba(255,199,0,.1)}
+body.dark-mode .sf-tool-title{color:#ffc700}
+body.dark-mode .sf-result-box{background:#17040e;border-color:#4a1a32;color:#e2e8f0}
+body.dark-mode .sf-stat{background:#2d0b1e;border-color:#4a1a32}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4 sf-ai-page">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div></div>
+        <a href="{% url 'admin_workspace' %}" class="sf-btn-back"><i class="bi bi-arrow-left"></i>Back</a>
+    </div>
 
     <div class="p-4 mb-4 rounded-4 position-relative sf-banner">
         <div class="d-flex flex-wrap justify-content-between align-items-center">
@@ -14,6 +66,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- ===== STATUS CARDS ===== -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
@@ -46,10 +99,11 @@
     </div> 
 
     <!-- ===== AI TOOLS ===== -->
+=======
+>>>>>>> cabff75 (feat(ui): redesign all 27 registry templates with Navy/Cyan + Burgundy/Gold theme)
     <h4 class="fw-bold mb-3 sf-section-title"><i class="bi bi-stars me-2"></i> AI Analytics Tools</h4>
     <div class="row g-4 mb-4">
 
-        <!-- System Analytics -->
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 h-100 sf-card sf-card-tool">
                 <div class="card-body p-4 text-center">
@@ -64,7 +118,6 @@
             </div>
         </div>
 
-        <!-- Anomaly Detection -->
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 h-100 sf-card sf-card-tool">
                 <div class="card-body p-4 text-center">
@@ -79,7 +132,6 @@
             </div>
         </div>
 
-        <!-- Trend Prediction -->
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 h-100 sf-card sf-card-tool">
                 <div class="card-body p-4 text-center">
@@ -94,7 +146,6 @@
             </div>
         </div>
 
-        <!-- Performance Report -->
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 h-100 sf-card sf-card-tool">
                 <div class="card-body p-4 text-center">
@@ -116,7 +167,6 @@
         </button>
     </div>
 
-    <!-- ===== FOOTER STATS ===== -->
     <div class="row g-3">
         <div class="col-6 col-md-4">
             <div class="p-3 text-center rounded-3 sf-stat sf-stat-cyan">

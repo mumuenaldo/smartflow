@@ -1,174 +1,110 @@
 {% extends 'registry/base.html' %}
-{% block title %}Manage Users{% endblock %}
+{% block title %}Manage Users — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    
-    /* DARK MODE FOR MANAGE USERS  */
+.sf-manage{padding:2rem 0;min-height:calc(100vh - 160px);background:#f8fafc}
+.sf-title{font-size:1.6rem;font-weight:900;color:#0f2b48;margin:0}
+.sf-title .bi{color:#00b8d9}
+.sf-btn-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:8px;padding:.5rem .9rem;font-weight:700;font-size:.85rem;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center}
+.sf-btn-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+.sf-btn-add{background:linear-gradient(135deg,#00b8d9,#0f2b48);color:#fff;border:0;border-radius:10px;padding:.7rem 1.3rem;font-weight:900;text-decoration:none;box-shadow:0 4px 12px rgba(0,184,217,.3)}
 
-    body.dark-mode .page-header h4 {
-        color: #ffc700 !important; 
-    }
+.sf-card{background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(15, 43, 72, 0.08);overflow-x:auto}
+.sf-table{width:100%;border-collapse:collapse;color:#1e293b;min-width:900px}
+.sf-table thead{background:linear-gradient(135deg,#0f2b48,#1a3d60)}
+.sf-table thead th{padding:16px 18px;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;font-weight:900;color:#ffffff;text-align:left;border-right:1px solid rgba(255,255,255,.15)}
+.sf-table tbody td{padding:16px 18px;font-size:.9rem;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;background:#fff}
+.sf-table tbody tr:hover td{background:#f0f9ff}
 
-    body.dark-mode .btn-primary {
-        background: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-        color: #2d0b1e !important; 
-    }
+body.dark-mode .sf-manage{background:#17040e}
+body.dark-mode .sf-title{color:#ffc700}
+body.dark-mode .sf-title .bi{color:#ffc700}
+body.dark-mode .sf-btn-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .sf-btn-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
+body.dark-mode .sf-btn-add{background:linear-gradient(135deg,#ffc700,#d4af37);color:#2d0b1e;box-shadow:0 4px 12px rgba(255,199,0,.3)}
 
-    body.dark-mode .btn-primary:hover {
-        background: #ffd700 !important;
-        border-color: #ffd700 !important;
-        color: #2d0b1e !important;
-    }
+body.dark-mode .sf-card{background:#2d0b1e;border:1px solid #4a1a32}
+body.dark-mode .sf-table{color:#f1f5f9}
+body.dark-mode .sf-table thead{background:linear-gradient(135deg,#4a1a32,#2d0b1e)}
+body.dark-mode .sf-table thead th{color:#ffc700;border-right:1px solid rgba(255,199,0,.2)}
+body.dark-mode .sf-table tbody td{background:#2d0b1e;border-bottom:1px solid #4a1a32;border-right:1px solid #4a1a32;color:#e2e8f0}
+body.dark-mode .sf-table tbody tr:hover td{background:rgba(255,199,0,.05)}
+body.dark-mode .sf-user-name{color:#ffc700}
+body.dark-mode .sf-muted{color:#c9a96a}
 
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
+.sf-badge{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:900;padding:6px 12px;border-radius:50px;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.sf-badge.admin{background:linear-gradient(135deg,#0f2b48,#1a3d60)}
+.sf-badge.supervisor{background:linear-gradient(135deg,#00b8d9,#0891b2)}
+.sf-badge.clerk{background:linear-gradient(135deg,#7c3aed,#6d28d0)}
+.sf-badge.staff{background:linear-gradient(135deg,#64748b,#475569)}
+.sf-badge.active{background:linear-gradient(135deg,#10b981,#059669)}
+.sf-badge.inactive{background:linear-gradient(135deg,#ef4444,#dc2626)}
 
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-    }
-
-    body.dark-mode .table {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .table thead th {
-        color: #ffc700 !important; 
-        border-bottom: 1px solid #4a1a32 !important;
-        background: #3a1428 !important; 
-    }
-
-    body.dark-mode .table tbody td {
-        border-bottom: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .table tbody tr:hover {
-        background: rgba(255, 199, 0, 0.05) !important;
-    }
-
-    body.dark-mode .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .text-muted.small {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode strong {
-        color: #ffffff !important;
-    }
-
-    /* Role Badges */
-    body.dark-mode .badge.bg-dark {
-        background: #4a1a32 !important; 
-        color: #ffc700 !important; 
-        border: 1px solid #ffc700;
-    }
-
-    body.dark-mode .badge.bg-primary {
-        background: rgba(255, 199, 0, 0.15) !important; 
-        color: #ffc700 !important;
-        border: 1px solid #ffc700;
-    }
-
-    body.dark-mode .badge.bg-info {
-        background: rgba(124, 31, 63, 0.4) !important; 
-        color: #ffc700 !important;
-        border: 1px solid #7c1f3f;
-    }
-
-    body.dark-mode .badge.bg-secondary {
-        background: #4a1a32 !important;
-        color: #c9a96a !important; 
-        border: 1px solid #4a1a32;
-    }
-
-    /* Status Badges */
-    body.dark-mode .badge.bg-success {
-        background: rgba(76, 255, 145, 0.15) !important;
-        color: #4cff91 !important;
-        border: 1px solid #4cff91;
-    }
-
-    body.dark-mode .badge.bg-danger {
-        background: rgba(255, 107, 107, 0.15) !important;
-        color: #ff6b6b !important;
-        border: 1px solid #ff6b6b;
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .text-center.text-muted {
-        color: #c9a96a !important;
-    }
+body.dark-mode .sf-badge.admin{background:linear-gradient(135deg,#ffc700,#d4af37);color:#2d0b1e}
+body.dark-mode .sf-badge.supervisor{background:linear-gradient(135deg,#7c1f3f,#a8325e);color:#fff}
+body.dark-mode .sf-badge.clerk{background:linear-gradient(135deg,#ffc700,#d4af37);color:#2d0b1e}
+body.dark-mode .sf-badge.staff{background:linear-gradient(135deg,#4a1a32,#2d0b1e);color:#ffc700;border:1px solid #ffc700}
+body.dark-mode .sf-badge.active{background:linear-gradient(135deg,#4cff91,#22c55e);color:#2d0b1e}
+body.dark-mode .sf-badge.inactive{background:linear-gradient(135deg,#ff6b6b,#ef4444);color:#fff}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header d-flex align-items-center justify-content-between">
-  <h4><i class="bi bi-people me-2"></i>Manage Users</h4>
-  <a href="{% url 'create_user' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-person-plus me-1"></i>Add New User
-  </a>
-</div>
+<div class="sf-manage">
+  <div class="container">
+    <div class="sf-header d-flex justify-content-between align-items-center mb-4">
+      <h4 class="sf-title"><i class="bi bi-people me-2"></i>Manage Users</h4>
+      <div class="d-flex gap-2">
+        <a href="{% url 'admin_workspace' %}" class="sf-btn-back"><i class="bi bi-arrow-left me-1"></i>Back</a>
+        <a href="{% url 'create_user' %}" class="sf-btn-add"><i class="bi bi-person-plus me-1"></i>Add New User</a>
+      </div>
+    </div>
 
-<div class="card border-0 shadow-sm">
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Username</th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Department</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-        <tr>
-          <td class="text-muted small">{{ forloop.counter }}</td>
-          <td><strong>{{ user.username }}</strong></td>
-          <td>{{ user.get_full_name|default:"—" }}</td>
-          <td class="text-muted small">{{ user.email|default:"—" }}</td>
-          <td>
-            {% if user.role == 'admin' %}
-              <span class="badge bg-dark">Administrator</span>
-            {% elif user.role == 'supervisor' %}
-              <span class="badge bg-primary">Supervisor</span>
-            {% elif user.role == 'clerk' %}
-              <span class="badge bg-info text-dark">Registry Clerk</span>
-            {% else %}
-              <span class="badge bg-secondary">Staff Member</span>
-            {% endif %}
-          </td>
-          <td>{{ user.department|default:"—" }}</td>
-          <td>
-            {% if user.is_active %}
-              <span class="badge bg-success">Active</span>
-            {% else %}
-              <span class="badge bg-danger">Inactive</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="7" class="text-center text-muted py-5">
-            <i class="bi bi-people fs-2 d-block mb-2"></i>
-            No users found.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="sf-card">
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th style="width:60px">#</th>
+            <th>USERNAME</th>
+            <th>FULL NAME</th>
+            <th>EMAIL</th>
+            <th>ROLE</th>
+            <th>DEPARTMENT</th>
+            <th style="width:110px">STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td class="sf-muted">{{ forloop.counter }}</td>
+            <td><div class="sf-user-name">{{ user.username }}</div></td>
+            <td>{{ user.get_full_name|default:"—" }}</td>
+            <td class="sf-muted">{{ user.email|default:"—" }}</td>
+            <td>
+              {% if user.role == 'admin' %}
+                <span class="sf-badge admin"><i class="bi bi-shield-lock"></i> ADMIN</span>
+              {% elif user.role == 'supervisor' %}
+                <span class="sf-badge supervisor"><i class="bi bi-person-check"></i> SUPERVISOR</span>
+              {% elif user.role == 'clerk' %}
+                <span class="sf-badge clerk"><i class="bi bi-person-workspace"></i> CLERK</span>
+              {% else %}
+                <span class="sf-badge staff"><i class="bi bi-person"></i> STAFF</span>
+              {% endif %}
+            </td>
+            <td>{{ user.department|default:"—" }}</td>
+            <td>
+              {% if user.is_active %}
+                <span class="sf-badge active"><i class="bi bi-check-circle"></i> ACTIVE</span>
+              {% else %}
+                <span class="sf-badge inactive"><i class="bi bi-x-circle"></i> INACTIVE</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}

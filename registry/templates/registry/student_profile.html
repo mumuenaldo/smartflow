@@ -1,234 +1,257 @@
 {% extends 'registry/base.html' %}
-
 {% block title %}My Profile — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    
-    /* DARK MODE FOR STUDENT PROFILE PAGE  */
-    
-
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
-
-    body.dark-mode .card-header {
-        background: #3a1428 !important; 
-        border-bottom: 1px solid #4a1a32 !important;
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .card-header.bg-primary {
-        background: #3a1428 !important;
-    }
-
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-        color: #ffffff;
-    }
-
-    body.dark-mode .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .form-label {
-        color: #ffffff !important; 
-    }
-
-    body.dark-mode .form-control {
-        background: #3a1428 !important; 
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .form-control:focus {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border-color: #ffc700 !important; 
-        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
-    }
-
-    body.dark-mode .form-control::placeholder {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .form-text {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .btn-primary {
-        background: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-        color: #2d0b1e !important; 
-    }
-
-    body.dark-mode .btn-primary:hover {
-        background: #ffd700 !important;
-        border-color: #ffd700 !important;
-        color: #2d0b1e !important;
-    }
-
-    body.dark-mode .btn-outline-secondary {
-        color: #ffc700;
-        border-color: #ffc700;
-    }
-
-    body.dark-mode .btn-outline-secondary:hover {
-        background: #ffc700;
-        color: #2d0b1e;
-    }
-
-    body.dark-mode hr {
-        border-color: #4a1a32 !important;
-    }
-
-    body.dark-mode .bg-primary {
-        background: #ffc700 !important; 
-    }
-
-    body.dark-mode .bg-primary i {
-        color: #2d0b1e !important; 
-    }
-
-    body.dark-mode .rounded-circle {
-        border-color: #ffc700 !important; 
-    }
-
-    body.dark-mode .badge.bg-info {
-        background: #4a1a32 !important;
-        border: 1px solid #ffc700;
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .alert {
-        background: #3a1428 !important;
-        border-color: #4a1a32 !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .alert-danger {
-        border-color: #ff6b6b !important;
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .text-center .text-muted {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .d-flex.gap-3 .btn {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode [style*="border: 3px solid #0d3b6e;"] {
-        border-color: #ffc700 !important; 
-    }
-
-    body.dark-mode .bg-primary.rounded-circle {
-        background: #ffc700 !important;
-    }
-
-    body.dark-mode .bg-primary.rounded-circle i {
-        color: #2d0b1e !important;
-    }
-
-    body.dark-mode h5 {
-        color: #ffffff !important;
-    }
+.sf-profile {
+    --sf-navy: #0d3b6e;
+    --sf-cyan: #00f2fe;
+    --sf-bg: #f8fafc;
+    --sf-card: #ffffff;
+    --sf-ink: #0f172a;
+    --sf-muted: #64748b;
+    padding: 3rem 0;
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+}
+body.dark-mode .sf-profile {
+    --sf-burg: #2d0b1e;
+    --sf-burg-soft: #3a1428;
+    --sf-gold: #facc15;
+    --sf-bg: #17040e;
+    --sf-card: #2d0b1e;
+    --sf-ink: #ffffff;
+    --sf-muted: #c9a96a;
+    background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+}
+.sf-profile .container { max-width: 860px; }
+.sf-card {
+    background: var(--sf-card);
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 40px rgba(13,59,110,0.08);
+    overflow: hidden;
+}
+body.dark-mode .sf-card {
+    border: 1px solid rgba(250,204,21,0.12);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+}
+.sf-card-header {
+    background: linear-gradient(135deg, var(--sf-navy) 0%, #0a2f58 100%);
+    padding: 1.4rem 2rem;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+body.dark-mode .sf-card-header {
+    background: linear-gradient(135deg, var(--sf-burg) 0%, var(--sf-burg-soft) 100%);
+    color: var(--sf-gold);
+}
+.sf-card-body { padding: 2rem; }
+.sf-avatar-wrap { text-align: center; margin-bottom: 1.5rem; }
+.sf-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--sf-cyan);
+    box-shadow: 0 0 0 4px rgba(0,242,254,0.15);
+}
+body.dark-mode .sf-avatar {
+    border-color: var(--sf-gold);
+    box-shadow: 0 0 0 4px rgba(250,204,21,0.15);
+}
+.sf-avatar-fallback {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--sf-navy), var(--sf-cyan));
+    color: #ffffff;
+}
+body.dark-mode .sf-avatar-fallback {
+    background: linear-gradient(135deg, var(--sf-burg), var(--sf-gold));
+    color: var(--sf-burg);
+}
+.sf-avatar-wrap h5 {
+    margin: 1rem 0 0.3rem 0;
+    color: var(--sf-ink);
+    font-weight: 800;
+}
+.sf-badge {
+    background: rgba(0,242,254,0.15);
+    color: var(--sf-navy);
+    border: 1px solid rgba(0,242,254,0.3);
+    padding: 0.35rem 0.8rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+body.dark-mode .sf-badge {
+    background: rgba(250,204,21,0.15);
+    color: var(--sf-gold);
+    border-color: rgba(250,204,21,0.3);
+}
+.sf-form .form-label {
+    color: var(--sf-ink) !important;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+.sf-form .form-control {
+    background: var(--sf-bg) !important;
+    border: 1.5px solid rgba(0,0,0,0.08) !important;
+    color: var(--sf-ink) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+}
+body.dark-mode .sf-form .form-control {
+    background: var(--sf-burg-soft) !important;
+    border-color: #4a1a32 !important;
+}
+.sf-form .form-control:focus {
+    border-color: var(--sf-cyan) !important;
+    box-shadow: 0 0 0 3px rgba(0,242,254,0.15) !important;
+    outline: none;
+}
+body.dark-mode .sf-form .form-control:focus {
+    border-color: var(--sf-gold) !important;
+    box-shadow: 0 0 0 3px rgba(250,204,21,0.15) !important;
+}
+.sf-form .form-text { color: var(--sf-muted); font-size: 0.8rem; margin-top: 0.4rem; }
+.sf-alert {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #ef4444;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+body.dark-mode .sf-alert {
+    background: rgba(255,107,107,0.1);
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+}
+.sf-btn-primary {
+    background: linear-gradient(135deg, var(--sf-navy), var(--sf-cyan));
+    color: #ffffff;
+    font-weight: 800;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.15s ease;
+}
+body.dark-mode .sf-btn-primary {
+    background: linear-gradient(135deg, var(--sf-gold), #eab308);
+    color: var(--sf-burg);
+}
+.sf-btn-primary:hover { transform: translateY(-2px); color: #ffffff; }
+body.dark-mode .sf-btn-primary:hover { color: var(--sf-burg); }
+.sf-btn-secondary {
+    background: transparent;
+    border: 1.5px solid var(--sf-muted);
+    color: var(--sf-muted);
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.8rem 1.8rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.sf-btn-secondary:hover {
+    border-color: var(--sf-cyan);
+    color: var(--sf-cyan);
+}
+body.dark-mode .sf-btn-secondary:hover {
+    border-color: var(--sf-gold);
+    color: var(--sf-gold);
+}
+hr { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 1.5rem 0; }
+body.dark-mode hr { border-top: 1px solid #4a1a32; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-person-circle me-2"></i> My Profile
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <!-- Profile Picture Display -->
-                    <div class="text-center mb-4">
-                        {% if user.profile_picture %}
-                            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" 
-                                 class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #0d3b6e;">
-                        {% else %}
-                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 150px; height: 150px;">
-                                <i class="bi bi-person-fill text-white" style="font-size: 80px;"></i>
-                            </div>
-                        {% endif %}
-                        <h5 class="mt-3">{{ user.get_full_name }}</h5>
-                        <span class="badge bg-info">{{ user.get_role_display }}</span>
-                        {% if user.student_id %}
-                            <p class="text-muted small mt-2">Student ID: {{ user.student_id }}</p>
-                        {% endif %}
+<div class="sf-profile">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        <i class="bi bi-person-circle"></i> My Profile
                     </div>
-                    
-                    <hr>
-                    
-                    <!-- Profile Update Form -->
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">First Name</label>
-                                {{ form.first_name }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Last Name</label>
-                                {{ form.last_name }}
-                            </div>
+                    <div class="sf-card-body">
+                        <div class="sf-avatar-wrap">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="sf-avatar">
+                            {% else %}
+                                <div class="sf-avatar-fallback">
+                                    <i class="bi bi-person-fill" style="font-size: 80px;"></i>
+                                </div>
+                            {% endif %}
+                            <h5>{{ user.get_full_name }}</h5>
+                            <span class="sf-badge">{{ user.get_role_display }}</span>
+                            {% if user.student_id %}
+                                <p class="small mt-2" style="color: var(--sf-muted);">Student ID: {{ user.student_id }}</p>
+                            {% endif %}
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Email Address</label>
-                            {{ form.email }}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Phone Number</label>
-                            {{ form.phone_number }}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Address</label>
-                            {{ form.address }}
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Profile Picture</label>
-                            {{ form.profile_picture }}
-                            <div class="form-text">Upload a profile picture (JPG, PNG - max 5MB).</div>
-                        </div>
-                        
                         <hr>
-                        
-                        <div class="d-flex gap-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-2"></i> Save Changes
-                            </button>
-                            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
-                            </a>
-                        </div>
-                    </form>
+                        <form method="post" enctype="multipart/form-data" class="sf-form">
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}
+                                <div class="sf-alert">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Picture</label>
+                                {{ form.profile_picture }}
+                                <div class="form-text">Upload JPG, PNG. Max 5MB.</div>
+                            </div>
+                            <hr>
+                            <div class="d-flex gap-3 flex-wrap">
+                                <button type="submit" class="sf-btn-primary">
+                                    <i class="bi bi-save"></i> Save Changes
+                                </button>
+                                <a href="{% url 'student_dashboard' %}" class="sf-btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,148 +5,296 @@
 
 {% block extra_css %}
 <style>
-    .sf-requests { background: #F7F8FA; min-height: calc(100vh - 160px); }
-    body.dark-mode .sf-requests { background: #1a0a16; } 
-    .sf-requests .sf-card {
-        background: #fff;
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    /* -----------------------------------------------------------------
+       SMARTFLOW 
+    ----------------------------------------------------------------- */
+    .sf-requests-wrapper {
+        min-height: calc(100vh - 160px);
+        padding: 1.5rem 0;
     }
-    body.dark-mode .sf-requests .sf-card {
-        background: #2d0b1e; 
-        border: 1px solid #4a1a32;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-    .sf-requests .back-link {
-        color: var(--sf-muted);
+
+    .sf-back-link {
+        color: var(--sf-slate, #64748b);
         text-decoration: none;
         font-size: 0.85rem;
+        font-weight: 700;
+        transition: color 0.2s ease;
     }
-    .sf-requests .back-link:hover { color: #7c1f3f; } 
-    body.dark-mode .sf-requests .back-link { color: #c9a96a; } 
-    body.dark-mode .sf-requests .back-link:hover { color: #ffc700; }  
+    .sf-back-link:hover {
+        color: var(--sf-cyan, #00b8d9);
+    }
 
-    .sf-requests .empty-state {
-        text-align: center;
-        padding: 3rem 1.5rem;
+    .sf-page-title {
+        color: var(--sf-navy, #0f2b48);
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        margin: 0;
     }
-    .sf-requests .empty-state .icon {
-        font-size: 3rem;
-        color: #d1d5db;
-        display: block;
-        margin-bottom: 1rem;
-    }
-    body.dark-mode .sf-requests .empty-state .icon { color: #ffc700; } 
-    .sf-requests .empty-state p { color: var(--sf-muted); }
-    body.dark-mode .sf-requests .empty-state p { color: #c9a96a; }
 
-    /* Table in dark mode */
-    body.dark-mode .sf-table { color: #ffffff; }
-    body.dark-mode .sf-table thead th { color: #ffc700; border-color: #4a1a32; } 
-    body.dark-mode .sf-table tbody td { border-color: #4a1a32; }
-    body.dark-mode .sf-table .text-muted { color: #c9a96a !important; }
-    body.dark-mode .sf-table code { color: #ffc700; background: #3a1428; padding: 2px 6px; border-radius: 4px; }
+    .sf-btn-gradient-primary {
+        background: linear-gradient(135deg, var(--sf-cyan, #00b8d9), var(--sf-blue, #2f6fed));
+        color: #ffffff !important;
+        font-weight: 800;
+        border: none;
+        border-radius: 50px;
+        padding: 0.55rem 1.25rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 184, 217, 0.25);
+    }
+    .sf-btn-gradient-primary:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
 
-    /* Buttons in dark mode */
-    body.dark-mode .sf-btn-primary {
-        background: #ffc700;
-        color: #2d0b1e;
-        border: 1px solid #ffc700;
+    /* Container Glass Card */
+    .sf-card-container {
+        background: var(--sf-bg-card, rgba(15, 43, 72, 0.04));
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12)) !important;
+        border-radius: 20px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(15, 43, 72, 0.08);
     }
-    body.dark-mode .sf-btn-primary:hover {
-        background: #ffd700;
-        color: #2d0b1e;
+
+    .sf-card-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sf-cyan, #00b8d9), var(--sf-blue, #2f6fed));
     }
-    body.dark-mode .sf-btn-outline {
-        color: #ffc700;
-        border: 1px solid #ffc700;
+
+    /* Table & Strict Transparent Resets */
+    .sf-table-v2, 
+    .sf-table-v2 > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: var(--sf-navy, #0f2b48);
+        border-bottom-color: var(--sf-bg-card-border, rgba(15, 43, 72, 0.12));
+    }
+
+    .sf-table-v2 thead th {
+        color: var(--sf-blue, #2f6fed);
+        font-weight: 900;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12));
+    }
+
+    .sf-table-v2 tbody td {
+        padding: 1rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+
+    /* Vertical Column Lines */
+    .sf-table-v2 th:not(:last-child),
+    .sf-table-v2 td:not(:last-child) {
+        border-right: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12)) !important;
+    }
+
+    /* Code Reference Pills */
+    .sf-code-ref {
+        color: var(--sf-navy, #0f2b48);
+        background: rgba(0, 184, 217, 0.12);
+        border: 1px solid rgba(0, 184, 217, 0.25);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-weight: 700;
+        font-size: 0.82rem;
+    }
+
+    /* Track & PDF Action Buttons */
+    .sf-btn-track {
         background: transparent;
+        color: var(--sf-blue, #2f6fed);
+        border: 1.5px solid var(--sf-blue, #2f6fed);
+        border-radius: 50px;
+        padding: 0.3rem 0.85rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
-    body.dark-mode .sf-btn-outline:hover {
-        background: #ffc700;
-        color: #2d0b1e;
-    }
-    body.dark-mode .sf-btn-outline-success {
-        color: #4cff91;
-        border: 1px solid #4cff91;
-        background: transparent;
-    }
-    body.dark-mode .sf-btn-outline-success:hover {
-        background: #4cff91;
-        color: #2d0b1e;
+    .sf-btn-track:hover {
+        background: var(--sf-blue, #2f6fed);
+        color: #ffffff !important;
     }
 
-    /* Status chips in dark mode */
-    body.dark-mode .sf-status-chip.status-pending { background: rgba(255, 199, 0, 0.15); color: #ffc700; border: 1px solid #ffc700; }
-    body.dark-mode .sf-status-chip.status-approved { background: rgba(76, 255, 145, 0.15); color: #4cff91; border: 1px solid #4cff91; }
-    body.dark-mode .sf-status-chip.status-rejected { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; border: 1px solid #ff6b6b; }
-    body.dark-mode .sf-status-chip.status-in_review { background: rgba(124, 31, 63, 0.3); color: #ffc700; border: 1px solid #7c1f3f; }
-    body.dark-mode .sf-status-chip .dot { background: currentColor; }
+    .sf-btn-pdf {
+        background: linear-gradient(135deg, var(--sf-teal, #0d9488), #0f766e);
+        color: #ffffff !important;
+        border: none;
+        border-radius: 50px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
 
-    body.dark-mode h4[style*="color: #1E3A5F;"] { color: #ffc700 !important; } 
+    /* Status Chips */
+    .sf-status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.3rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+    .sf-status-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .status-pending { background: rgba(217, 119, 6, 0.12); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.3); }
+    .status-approved { background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-rejected { background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3); }
+    .status-in_review { background: rgba(47, 111, 237, 0.12); color: #2f6fed; border: 1px solid rgba(47, 111, 237, 0.3); }
+
+    /* -----------------------------------------------------------------
+       NIGHT MODE BURGUNDY FIX (Eliminates White Bleed)
+    ----------------------------------------------------------------- */
+    body.dark-mode {
+        --sf-navy: #f5e6d3;
+        --sf-navy-deep: #31071c;
+        --sf-cyan: #facc15;
+        --sf-blue: #c084fc;
+        --sf-teal: #facc15;
+        --sf-white: #f5e6d3;
+        --sf-slate: #c4b5a0;
+        --sf-bg-card: rgba(45, 11, 30, 0.85);
+        --sf-bg-card-border: rgba(245, 230, 211, 0.2);
+    }
+
+    body.dark-mode .sf-page-title { color: #facc15 !important; }
+    
+    /* Enforce Dark Background & Contrast Text on Table Rows */
+    body.dark-mode .sf-table-v2, 
+    body.dark-mode .sf-table-v2 > :not(caption) > * > * {
+        background-color: transparent !important;
+        color: #f5e6d3 !important;
+        border-color: rgba(245, 230, 211, 0.15) !important;
+    }
+
+    body.dark-mode .sf-table-v2 thead th {
+        background-color: rgba(49, 7, 28, 0.6) !important;
+        color: #facc15 !important;
+    }
+
+    body.dark-mode .sf-table-v2 tbody tr:hover > * {
+        background-color: rgba(250, 204, 21, 0.05) !important;
+    }
+
+    body.dark-mode .sf-code-ref {
+        color: #facc15 !important;
+        background: rgba(250, 204, 21, 0.12) !important;
+        border-color: rgba(250, 204, 21, 0.3) !important;
+    }
+
+    body.dark-mode .sf-btn-gradient-primary {
+        background: linear-gradient(135deg, #facc15, #c084fc) !important;
+        color: #31071c !important;
+    }
+
+    body.dark-mode .sf-btn-track {
+        color: #c084fc !important;
+        border-color: #c084fc !important;
+    }
+    body.dark-mode .sf-btn-track:hover {
+        background: #c084fc !important;
+        color: #31071c !important;
+    }
+
+    body.dark-mode .sf-btn-pdf {
+        background: linear-gradient(135deg, #facc15, #eab308) !important;
+        color: #31071c !important;
+    }
+
+    /* Night Mode Status Overrides */
+    body.dark-mode .status-pending { background: rgba(250, 204, 21, 0.15); color: #facc15; border-color: #facc15; }
+    body.dark-mode .status-approved { background: rgba(76, 255, 145, 0.15); color: #4cff91; border-color: #4cff91; }
+    body.dark-mode .status-rejected { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; border-color: #ff6b6b; }
+    body.dark-mode .status-in_review { background: rgba(192, 132, 252, 0.2); color: #c084fc; border-color: #c084fc; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="sf-requests py-4">
+<div class="sf-requests-wrapper">
     <div class="container">
 
         <!-- Back Link -->
         <div class="mb-3">
-            <a href="{% url 'student_dashboard' %}" class="back-link">
+            <a href="{% url 'student_dashboard' %}" class="sf-back-link">
                 <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
             </a>
         </div>
 
-        <!-- Page Title -->
+        <!-- Page Title & Header Action -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold" style="color: #1E3A5F;">
-                <i class="bi bi-files me-2"></i> My Requests
+            <h4 class="sf-page-title">
+                <i class="bi bi-files me-2"></i>My Requests
             </h4>
-            <a href="{% url 'student_submit' %}" class="sf-btn sf-btn-primary">
-                <i class="bi bi-plus-circle me-1"></i> New Request
+            <a href="{% url 'student_submit' %}" class="sf-btn-gradient-primary">
+                <i class="bi bi-plus-lg"></i> New Request
             </a>
         </div>
 
-        <!-- Requests Table -->
-        <div class="sf-card">
+        <!-- Main Glass Card Container -->
+        <div class="sf-card-container">
             {% if my_requests %}
                 <div class="table-responsive">
-                    <table class="table align-middle sf-table">
+                    <table class="table align-middle sf-table-v2">
                         <thead>
                             <tr>
                                 <th>Reference</th>
                                 <th>Title</th>
                                 <th>Status</th>
                                 <th>Submitted</th>
-                                <th>Action</th>
+                                <th class="text-end">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for doc in my_requests %}
                             <tr>
-                                <td><code>{{ doc.reference_no }}</code></td>
-                                <td>{{ doc.title|truncatechars:40 }}</td>
+                                <td><code class="sf-code-ref">{{ doc.reference_no }}</code></td>
+                                <td class="fw-semibold">{{ doc.title|truncatechars:40 }}</td>
                                 <td>
                                     <span class="sf-status-chip 
                                         {% if doc.status_code == 'pending' %}status-pending
                                         {% elif doc.status.status_code == 'approved' %}status-approved
                                         {% elif doc.status_code == 'rejected' %}status-rejected
                                         {% elif doc.status_code == 'in_review' %}status-in_review
-                                        {% else %}status-default{% endif %}">
+                                        {% else %}status-pending{% endif %}">
                                         <span class="dot"></span>
                                         {{ doc.status.status_name|default:"Processing" }}
                                     </span>
                                 </td>
-                                <td class="text-muted">{{ doc.created_at|date:"d M Y" }}</td>
-                                <td>
-                                    <a href="{% url 'student_track' doc.id %}" class="sf-btn sf-btn-outline">
-                                        <i class="bi bi-eye"></i> Track
-                                    </a>
-                                    <a href="{% url 'export_document' doc.id %}" class="sf-btn sf-btn-outline-success">
-                                        <i class="bi bi-file-pdf"></i> PDF
-                                    </a>
+                                <td class="sf-text-muted small">{{ doc.created_at|date:"d M Y" }}</td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{% url 'student_track' doc.id %}" class="sf-btn-track">
+                                            <i class="bi bi-eye"></i> Track
+                                        </a>
+                                        <a href="{% url 'export_document' doc.id %}" class="sf-btn-pdf">
+                                            <i class="bi bi-file-pdf"></i> PDF
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -154,15 +302,17 @@
                     </table>
                 </div>
             {% else %}
-                <div class="empty-state">
-                    <span class="icon"><i class="bi bi-inbox"></i></span>
-                    <p class="mb-3">No document requests yet.</p>
-                    <a href="{% url 'student_submit' %}" class="sf-btn sf-btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Submit Your First Request
+                <div class="sf-empty-state">
+                    <span class="sf-empty-icon"><i class="bi bi-inbox"></i></span>
+                    <h6 class="fw-bold mb-1">No requests submitted yet</h6>
+                    <p class="sf-text-muted small mb-4">Start by creating your first document request to track its progress here.</p>
+                    <a href="{% url 'student_submit' %}" class="sf-btn-gradient-primary">
+                        <i class="bi bi-plus-lg"></i> Submit First Request
                     </a>
                 </div>
             {% endif %}
         </div>
+
     </div>
 </div>
 {% endblock %}

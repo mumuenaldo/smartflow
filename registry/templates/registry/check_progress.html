@@ -2,196 +2,666 @@
 {% block title %}System Progress Analytics — SmartFlow{% endblock %}
 
 {% block extra_css %}
-<style>
-    .analytics-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        padding-bottom: 1rem;
-    }
-    body.dark-mode .analytics-header {
-        border-bottom-color: rgba(255, 255, 255, 0.1);
-    }
-
-    /* PREMIUM GLASS CARD */
-    .chart-container {
-        position: relative;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 20px;
-        padding: 1.8rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-    }
-    .chart-container:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-    }
-    body.dark-mode .chart-container {
-        background: rgba(45, 11, 30, 0.6);
-        border: 1px solid rgba(90, 26, 58, 0.5);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-    body.dark-mode .chart-container:hover {
-        border-color: rgba(255, 199, 0, 0.4);
-        box-shadow: 0 12px 40px rgba(255, 199, 0, 0.15);
-    }
-
-    .pie-wrapper {
-        min-height: 450px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .graph-wrapper {
-        height: 400px;
-    }
-
-    .chart-title {
-        font-weight: 800;
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #1a1a1a;
-    }
-    body.dark-mode .chart-title {
-        color: #f5e6c8;
-    }
-    .chart-title .bi {
-        font-size: 1.3rem;
-    }
-
-    /* LIVE STATUS INDICATOR */
-    .live-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-top: 6px;
-    }
-    .live-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #ef4444;
-        transition: background 0.3s ease;
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
-    }
-    .live-dot.connected {
-        background: #22c55e;
-        animation: pulse-dot 1.5s infinite;
-    }
-    @keyframes pulse-dot {
-        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-        70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-</style>
-<!-- Include Chart.js + DataLabels Plugin -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+    font-family: 'Inter','Segoe UI',system-ui,sans-serif;
+    -webkit-font-smoothing: antialiased;
+
+    --text-primary:   #0f172a;
+    --text-secondary: #004080;
+    --text-muted:     #475569;
+    --bg-page:        #edf2fb;
+    --bg-panel:       rgba(255,255,255,0.88);
+    --border-panel:   rgba(0,43,102,0.10);
+    --border-hover:   rgba(0,87,217,0.30);
+    --header-border:  rgba(0,0,0,0.07);
+    --table-th-bg:    rgba(0,64,128,0.06);
+    --accent-gold:    #ffc700;
+    --chart-color:    #0057D9;
+    --chart-border:   #002b66;
+    --grid-color:     rgba(0,64,128,0.07);
+    --chart-label:    #0f172a;
+    --legend-text:    #0f172a;
+    --pie-border:     #ffffff;
+    --today-dot:      #22c55e;
+    --tooltip-bg:     #ffffff;
+    --number-color:   #004080;
+    --shine:          rgba(255,255,255,0.65);
+    --glow:           rgba(0,87,217,0.05);
+    --shadow:         0 4px 28px rgba(0,64,128,0.09), 0 1px 4px rgba(0,64,128,0.05);
+    --shadow-hover:   0 18px 52px rgba(0,64,128,0.18), 0 2px 10px rgba(0,64,128,0.09);
+    --accent-bar:     linear-gradient(90deg,#0057D9,#00c6ff);
+}
+
+body.dark-mode {
+    --text-primary:   #ffd700;
+    --text-secondary: #ffd700;
+    --text-muted:     #c4b49a;
+    --bg-page:        #0d0208;
+    --bg-panel:       rgba(30,10,22,0.82);
+    --border-panel:   rgba(124,31,63,0.40);
+    --border-hover:   rgba(255,199,0,0.38);
+    --header-border:  rgba(255,215,0,0.13);
+    --table-th-bg:    rgba(255,199,0,0.09);
+    --chart-color:    #ffd700;
+    --chart-border:   #7c1f3f;
+    --grid-color:     rgba(255,215,0,0.11);
+    --chart-label:    #ffd700;
+    --legend-text:    #ffd700;
+    --pie-border:     #2d0b1e;
+    --tooltip-bg:     #3a1127;
+    --number-color:   #ffd700;
+    --shine:          rgba(255,215,0,0.04);
+    --glow:           rgba(255,199,0,0.06);
+    --shadow:         0 4px 32px rgba(0,0,0,0.58), 0 1px 4px rgba(0,0,0,0.42);
+    --shadow-hover:   0 18px 56px rgba(255,199,0,0.20), 0 2px 10px rgba(0,0,0,0.58);
+    --accent-bar:     linear-gradient(90deg,#ffd700,#ff1493);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGE BACKGROUND
+═══════════════════════════════════════════════════════ */
+body {
+    background: var(--bg-page) !important;
+    transition: background 0.4s ease, color 0.3s ease;
+    font-family: 'Inter','Segoe UI',system-ui,sans-serif;
+}
+body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+        radial-gradient(ellipse 70% 55% at 12% 8%,  rgba(0,87,217,0.055) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 88% 92%, rgba(0,43,102,0.04)  0%, transparent 65%);
+    transition: background 0.4s ease;
+}
+body.dark-mode::before {
+    background:
+        radial-gradient(ellipse 70% 55% at 12% 8%,  rgba(255,20,147,0.055) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 88% 92%, rgba(124,31,63,0.07)   0%, transparent 65%);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANALYTICS HEADER
+═══════════════════════════════════════════════════════ */
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.85rem;
+    padding-bottom: 1.35rem;
+    border-bottom: 1px solid var(--header-border);
+    position: relative; z-index: 1;
+    transition: border-color 0.35s ease;
+}
+.analytics-header h2 {
+    color: var(--text-secondary) !important;
+    font-weight: 900; font-size: 1.7rem;
+    letter-spacing: -0.6px; line-height: 1.08;
+    margin: 0 0 0.3rem;
+    transition: color 0.35s ease;
+}
+.analytics-header .sub {
+    font-size: 0.82rem; color: var(--text-muted);
+    margin: 0; transition: color 0.35s ease;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIVE INDICATOR
+═══════════════════════════════════════════════════════ */
+.live-indicator {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 0.8rem; font-weight: 700; margin-top: 0.65rem;
+    padding: 0.3rem 0.9rem; border-radius: 30px;
+    border: 1px solid var(--border-panel);
+    background: var(--bg-panel); backdrop-filter: blur(12px);
+    color: var(--text-primary); transition: all 0.35s ease;
+    box-shadow: var(--shadow);
+}
+.live-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #ef4444; flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+.live-dot.connected { background: #22c55e; animation: pulseDotAna 1.5s infinite; }
+@keyframes pulseDotAna {
+    0%   { box-shadow: 0 0 0 0   rgba(34,197,94,0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(34,197,94,0);   }
+    100% { box-shadow: 0 0 0 0   rgba(34,197,94,0);   }
+}
+#liveStatus      { color: #ef4444; transition: color 0.3s; font-weight: 800; }
+#liveStatus.ok   { color: #22c55e; }
+#liveTime        {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.73rem;
+    transition: color 0.35s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   KPI STRIP
+═══════════════════════════════════════════════════════ */
+.sf-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem; margin-bottom: 1.85rem;
+    position: relative; z-index: 1;
+}
+@media (max-width: 768px) { .sf-kpi-strip { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 480px) { .sf-kpi-strip { grid-template-columns: 1fr; } }
+
+.sf-kpi {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-panel);
+    border-radius: 22px; padding: 1.4rem 1.5rem;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(18px) saturate(150%);
+    box-shadow: var(--shadow);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+/* Colour accent bar */
+.sf-kpi::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; border-radius: 22px 22px 0 0;
+}
+/* Inset glass highlight */
+.sf-kpi::after {
+    content: '';
+    position: absolute; top: 0; left: 12px; right: 12px;
+    height: 1px; background: var(--shine); opacity: 0.5;
+    border-radius: 22px; pointer-events: none;
+}
+.sf-kpi-pending::before  { background: linear-gradient(90deg,#ffd700,#ffc700); }
+.sf-kpi-review::before   { background: linear-gradient(90deg,#c9a96a,#a88c5a); }
+.sf-kpi-approved::before { background: linear-gradient(90deg,#22c55e,#16a34a); }
+.sf-kpi-rejected::before { background: linear-gradient(90deg,#ef4444,#dc2626); }
+
+.sf-kpi:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-hover);
+}
+
+.sf-kpi-icon {
+    width: 42px; height: 42px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.15rem; margin-bottom: 0.9rem;
+    transition: background 0.35s ease, color 0.35s ease;
+}
+.sf-kpi-pending  .sf-kpi-icon { background: rgba(255,199,0,0.14);  color: #b45309; }
+.sf-kpi-review   .sf-kpi-icon { background: rgba(201,169,106,0.14); color: #92400e; }
+.sf-kpi-approved .sf-kpi-icon { background: rgba(34,197,94,0.14);  color: #16a34a; }
+.sf-kpi-rejected .sf-kpi-icon { background: rgba(239,68,68,0.14);  color: #dc2626; }
+body.dark-mode .sf-kpi-pending  .sf-kpi-icon { color: #ffd700; }
+body.dark-mode .sf-kpi-review   .sf-kpi-icon { color: #d4c4a8; }
+
+.sf-kpi-num {
+    font-size: 2.65rem; font-weight: 900;
+    letter-spacing: -1.8px; line-height: 1;
+    color: var(--number-color); margin-bottom: 0.22rem;
+    transition: color 0.35s ease;
+}
+.sf-kpi-label {
+    font-size: 0.68rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.9px;
+    color: var(--text-muted); transition: color 0.35s ease;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION DIVIDER
+═══════════════════════════════════════════════════════ */
+.sf-section-label {
+    font-size: 0.65rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted); margin-bottom: 0.95rem;
+    display: flex; align-items: center; gap: 0.7rem;
+    position: relative; z-index: 1;
+    transition: color 0.35s ease;
+}
+.sf-section-label::before {
+    content: '';
+    width: 18px; height: 3px; border-radius: 2px;
+    background: var(--accent-bar); flex-shrink: 0;
+    transition: background 0.35s ease;
+}
+.sf-section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border-panel); border-radius: 1px;
+    transition: background 0.35s ease;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHART PANELS
+═══════════════════════════════════════════════════════ */
+.chart-container {
+    position: relative;
+    background: var(--bg-panel);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border-radius: 24px; padding: 1.85rem;
+    border: 1px solid var(--border-panel);
+    box-shadow: var(--shadow);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: visible !important;
+}
+/* Inset gloss top edge */
+.chart-container::before {
+    content: '';
+    position: absolute; top: 0; left: 14px; right: 14px;
+    height: 1px; background: var(--shine); opacity: 0.5;
+    border-radius: 24px; pointer-events: none;
+}
+/* Shimmer sweep */
+.chart-container::after {
+    content: '';
+    position: absolute; top: 0; left: -55%; width: 35%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    transform: skewX(-20deg);
+    animation: panelShimmer 9s ease-in-out infinite;
+    pointer-events: none; border-radius: 24px;
+}
+@keyframes panelShimmer {
+    0%   { left: -55%; opacity: 0; }
+    12%  { opacity: 1; }
+    30%  { left: 115%; opacity: 0; }
+    100% { left: 115%; opacity: 0; }
+}
+.chart-container:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-hover);
+}
+
+.chart-title {
+    font-weight: 800; font-size: 1.05rem;
+    margin-bottom: 1.4rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    color: var(--text-secondary); transition: color 0.35s ease;
+    position: relative; z-index: 2;
+}
+.chart-title i { color: var(--accent-gold); font-size: 1.12rem; }
+
+.badge-count {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    background: rgba(255,199,0,0.15); color: #b45309;
+    padding: 2px 11px; border-radius: 20px; font-weight: 800;
+    transition: background 0.35s ease, color 0.35s ease;
+}
+body.dark-mode .badge-count { color: var(--accent-gold); background: rgba(255,199,0,0.20); }
+
+.click-hint {
+    font-size: 0.67rem; font-weight: 600; color: var(--text-muted);
+    opacity: 0; transition: opacity 0.3s ease;
+    display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.chart-container:hover .click-hint { opacity: 1; }
+
+.pie-wrapper   { min-height: 370px; display: flex; justify-content: center; align-items: center; position: relative; z-index: 2; }
+.graph-wrapper { height: 335px; overflow: visible !important; position: relative; z-index: 2; }
+.graph-wrapper canvas { width: 100% !important; height: 100% !important; max-height: 335px; }
+
+/* Today badge */
+.today-dot-container {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.74rem; font-weight: 700;
+    color: var(--text-primary); transition: color 0.35s ease;
+}
+.today-glow-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: #22c55e; display: inline-block;
+    box-shadow: 0 0 10px rgba(34,197,94,0.8);
+    animation: glowPulse 1.5s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{box-shadow:0 0 8px rgba(34,197,94,.6)} 50%{box-shadow:0 0 22px rgba(34,197,94,1)} }
+
+/* ═══════════════════════════════════════════════════════
+   ACTIVE FILTER BANNER
+═══════════════════════════════════════════════════════ */
+.active-filter-banner {
+    background: rgba(255,199,0,0.12);
+    border: 1px solid rgba(255,199,0,0.40);
+    border-radius: 13px; padding: 0.65rem 1rem;
+    font-size: 0.84rem; font-weight: 700;
+    margin-bottom: 1.15rem; display: none;
+    color: var(--text-primary); align-items: center; gap: 0.55rem;
+    transition: color 0.35s ease;
+}
+.active-filter-banner.show { display: flex; }
+.active-filter-banner i    { color: var(--accent-gold); flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════
+   DOCUMENTS TABLE
+═══════════════════════════════════════════════════════ */
+.table-responsive { border-radius: 14px; overflow: hidden; }
+
+.sf-table { width: 100%; border-collapse: collapse; }
+.sf-table thead tr  { background: var(--table-th-bg); transition: background 0.35s ease; }
+.sf-table th {
+    padding: 0.88rem 1.1rem;
+    font-size: 0.71rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.9px;
+    color: var(--text-secondary); border: none; white-space: nowrap;
+    transition: color 0.35s ease, background 0.35s ease;
+}
+.sf-table tbody tr {
+    border-bottom: 1px solid var(--border-panel);
+    transition: background 0.15s ease;
+}
+.sf-table tbody tr:last-child { border-bottom: none; }
+.sf-table tbody tr:hover { background: var(--glow); }
+.sf-table td {
+    padding: 0.82rem 1.1rem; font-size: 0.86rem;
+    color: var(--text-primary); vertical-align: middle;
+    transition: color 0.35s ease;
+}
+
+.doc-ref {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.79rem; font-weight: 700;
+    background: var(--table-th-bg);
+    padding: 3px 9px; border-radius: 7px;
+    border: 1px solid var(--border-panel);
+    color: var(--text-secondary);
+    transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+.badge-status {
+    padding: 4px 13px; border-radius: 30px;
+    font-weight: 700; font-size: 0.73rem;
+    white-space: nowrap; display: inline-block;
+}
+
+.doc-time {
+    display: block; font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px; transition: color 0.35s ease;
+}
+
+/* Buttons */
+.sf-btn-warn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.36rem 0.88rem; border-radius: 9px;
+    border: 1px solid rgba(255,199,0,0.48);
+    background: rgba(255,199,0,0.11); color: #c47a00;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.sf-btn-warn:hover { background: rgba(255,199,0,0.22); transform: translateY(-1px); }
+body.dark-mode .sf-btn-warn { color: var(--accent-gold); }
+
+.sf-btn-sec {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.36rem 0.88rem; border-radius: 9px;
+    border: 1px solid var(--border-panel);
+    background: var(--bg-panel); color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(8px);
+}
+.sf-btn-sec:hover { transform: translateY(-1px); }
+
+.sf-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+.sf-empty i { font-size: 2.8rem; opacity: 0.3; display: block; margin-bottom: 0.75rem; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-panel); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+.z1 { position: relative; z-index: 1; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 z1">
 
+    <!-- ══ PAGE HEADER ══ -->
     <div class="analytics-header">
         <div>
-            <h2 class="fw-bold m-0" style="color: #7c1f3f;"><i class="bi bi-graph-up-arrow me-2"></i>System Progress Metrics</h2>
-            <p class="text-muted m-0 small">Real-time status tracking and department processing metrics</p>
+            <h2><i class="bi bi-graph-up-arrow me-2"></i>System Progress Metrics</h2>
+            <p class="sub">Click any chart segment or bar to filter the documents table below.</p>
             <div class="live-indicator">
                 <span id="liveDot" class="live-dot"></span>
-                <span id="liveStatus" style="color:#ef4444;">Connecting…</span>
+                <span id="liveStatus">Connecting&hellip;</span>
+                <span id="liveTime"></span>
             </div>
         </div>
-        <a href="{% if user.role == 'admin' %}{% url 'admin_launchpad' %}{% else %}{% url 'dashboard' %}{% endif %}" class="btn btn-outline-secondary btn-sm">
+        <a href="{% url 'admin_workspace' %}" class="btn btn-outline-secondary btn-sm fw-bold">
             <i class="bi bi-arrow-left me-1"></i> Back
         </a>
     </div>
 
-    <div class="row g-4">
-        <!-- 1. DOCUMENT STATUS PIE CHART -->
-        <div class="col-12 col-lg-5">
-            <div class="chart-container h-100">
-                <h5 class="chart-title"><i class="bi bi-pie-chart-fill" style="color: #ffc700;"></i>Document Distribution Status</h5>
-                <div class="pie-wrapper">
-                    <canvas id="documentStatusChart"></canvas>
-                </div>
-            </div>
+    <!-- ══ KPI STRIP ══ -->
+    <div class="sf-kpi-strip">
+        <div class="sf-kpi sf-kpi-pending">
+            <div class="sf-kpi-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div class="sf-kpi-num">{{ pending_count|default:0 }}</div>
+            <div class="sf-kpi-label">Pending</div>
         </div>
-
-        <!-- 2. SUBMISSIONS TIMELINE -->
-        <div class="col-12 col-lg-7">
-            <div class="chart-container h-100">
-                <h5 class="chart-title"><i class="bi bi-activity" style="color: #ffc700;"></i>Submissions — Last 7 Days</h5>
-                <div class="graph-wrapper">
-                    <canvas id="submissionTimelineChart"></canvas>
-                </div>
-            </div>
+        <div class="sf-kpi sf-kpi-review">
+            <div class="sf-kpi-icon"><i class="bi bi-eye"></i></div>
+            <div class="sf-kpi-num">{{ review_count|default:0 }}</div>
+            <div class="sf-kpi-label">In Review</div>
         </div>
-
-        <!-- 3. DEPARTMENT BAR CHART -->
-        <div class="col-12">
-            <div class="chart-container">
-                <h5 class="chart-title"><i class="bi bi-bar-chart-steps" style="color: #ffc700;"></i>Departmental Document Distribution</h5>
-                <div class="graph-wrapper">
-                    <canvas id="departmentBarChart"></canvas>
-                </div>
-            </div>
+        <div class="sf-kpi sf-kpi-approved">
+            <div class="sf-kpi-icon"><i class="bi bi-check-circle"></i></div>
+            <div class="sf-kpi-num">{{ approved_count|default:0 }}</div>
+            <div class="sf-kpi-label">Approved</div>
+        </div>
+        <div class="sf-kpi sf-kpi-rejected">
+            <div class="sf-kpi-icon"><i class="bi bi-x-circle"></i></div>
+            <div class="sf-kpi-num">{{ rejected_count|default:0 }}</div>
+            <div class="sf-kpi-label">Rejected</div>
         </div>
     </div>
+
+    <!-- ══ SECTION: CHARTS ══ -->
+    <div class="sf-section-label">Analytics Overview</div>
+
+    <div class="row g-4 mb-4">
+
+        <!-- Doughnut -->
+        <div class="col-12 col-lg-5">
+            <div class="chart-container h-100">
+                <h5 class="chart-title">
+                    <span><i class="bi bi-pie-chart-fill me-2"></i>Document Distribution</span>
+                    <span class="click-hint"><i class="bi bi-cursor-fill"></i> Click to filter</span>
+                </h5>
+                <div class="pie-wrapper"><canvas id="documentStatusChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Line — submissions timeline -->
+        <div class="col-12 col-lg-7">
+            <div class="chart-container h-100">
+                <h5 class="chart-title">
+                    <span><i class="bi bi-activity me-2"></i>Submissions &mdash; Last 7 Days</span>
+                    <span class="today-dot-container">
+                        <span class="today-glow-dot"></span>
+                        <span>Today: <span id="todayDayName"></span></span>
+                    </span>
+                </h5>
+                <div class="graph-wrapper"><canvas id="submissionTimelineChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Bar — department -->
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="chart-title">
+                    <span><i class="bi bi-bar-chart-steps me-2"></i>Department Distribution</span>
+                    <span class="click-hint"><i class="bi bi-cursor-fill"></i> Click bar to filter</span>
+                </h5>
+                <div class="graph-wrapper"><canvas id="departmentBarChart"></canvas></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ SECTION: TABLE ══ -->
+    <div class="sf-section-label">Documents List</div>
+
+    <div class="chart-container" id="documents-table">
+        <div class="active-filter-banner" id="activeFilterBanner">
+            <i class="bi bi-funnel-fill"></i>
+            <span id="activeFilterText"></span>
+        </div>
+        <h5 class="chart-title">
+            <span>
+                <i class="bi bi-list-check me-2"></i>Documents
+                <small id="filterLabel" class="fw-normal ms-1" style="color:var(--text-muted);font-size:.85rem;">(All Documents)</small>
+                <span class="badge-count ms-2" id="docCount">{{ documents|length }}</span>
+            </span>
+            <div class="d-flex gap-2">
+                <button class="sf-btn-warn" id="clearFilterBtn" style="display:none;" onclick="filterDocuments('','')">
+                    <i class="bi bi-x-circle"></i> Clear Filter
+                </button>
+                <button class="sf-btn-sec" onclick="scrollToTop()">
+                    <i class="bi bi-arrow-up"></i> Top
+                </button>
+            </div>
+        </h5>
+
+        <div class="table-responsive">
+            <table class="sf-table" id="documentsTable">
+                <thead>
+                    <tr>
+                        <th>Ref No</th>
+                        <th>Title</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr data-status="{{ doc.status.status_code|default:'pending' }}"
+                        data-dept="{{ doc.department.dept_name|default:'N/A' }}">
+                        <td><span class="doc-ref">{{ doc.reference_no|default:'N/A' }}</span></td>
+                        <td>{{ doc.title|truncatechars:50 }}</td>
+                        <td>{{ doc.department.dept_name|default:'N/A' }}</td>
+                        <td>
+                            <span class="badge-status" style="
+                                {% if doc.status.status_code == 'approved' %}background:#22c55e22;color:#15803d;
+                                {% elif doc.status.status_code == 'rejected' %}background:#ef444422;color:#dc2626;
+                                {% elif doc.status.status_code == 'in_review' %}background:#ffc7002e;color:#92400e;
+                                {% else %}background:#6b728022;color:#374151;{% endif %}">
+                                {{ doc.status.status_name|default:doc.status.status_code|default:'Pending'|title }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ doc.created_at|date:"M d, Y" }}
+                            <span class="doc-time">{{ doc.created_at|date:"g:i A" }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="sf-empty">
+                                <i class="bi bi-inbox"></i>
+                                No documents found.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Register the datalabels plugin
-    Chart.register(ChartDataLabels);
+Chart.register(ChartDataLabels);
 
-    // Universal color context helper mapping dark mode
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    const labelColor = isDarkMode ? '#f5e6c8' : '#333';
-    const gridColor = isDarkMode ? 'rgba(201, 169, 106, 0.15)' : 'rgba(0, 0, 0, 0.05)';
-    const burgundy = '#7c1f3f';
-    const gold = '#ffc700';
+const STATUS_LABEL_TO_CODE = {
+    'pending': 'pending', 'in review': 'in_review',
+    'approved': 'approved', 'rejected': 'rejected'
+};
 
-    // Global Chart Defaults
-    Chart.defaults.color = labelColor;
-    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+/* ── FILTER TABLE ── */
+function filterDocuments(status, dept) {
+    const rows = document.querySelectorAll('#documentsTable tbody tr');
+    let visible = 0, label = '';
+    const sc = status ? (STATUS_LABEL_TO_CODE[status.toLowerCase()] || status.toLowerCase().replace(/\s+/g,'_')) : '';
+    const dl = dept   ? dept.toLowerCase() : '';
+
+    rows.forEach(row => {
+        const rs = (row.getAttribute('data-status') || '').toLowerCase();
+        const rd = (row.getAttribute('data-dept')   || '').toLowerCase();
+        const ok = (!sc || rs === sc) && (!dl || rd === dl);
+        row.style.display = ok ? '' : 'none';
+        if (ok) visible++;
+    });
+
+    if (status) label = 'Status: '     + status;
+    if (dept)   label = 'Department: ' + dept;
+    if (!label) label = 'All Documents';
+
+    document.getElementById('filterLabel').textContent = '(' + label + ')';
+    document.getElementById('docCount').textContent    = visible;
+
+    const banner   = document.getElementById('activeFilterBanner');
+    const bannerTx = document.getElementById('activeFilterText');
+    const clearBtn = document.getElementById('clearFilterBtn');
+
+    if (status || dept) {
+        bannerTx.textContent = 'Showing ' + label + ' — ' + visible + ' document(s)';
+        banner.classList.add('show');
+        clearBtn.style.display = '';
+    } else {
+        banner.classList.remove('show');
+        clearBtn.style.display = 'none';
+    }
+    document.getElementById('documents-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+/* ── CHART INSTANCES ── */
+let documentStatusChart, submissionTimelineChart, departmentBarChart;
+
+/* ═══════════════════════════════════════════════════════
+   BUILD ALL CHARTS — deferred to 'load' so base.html's
+   theme-detection script has already set body.dark-mode.
+═══════════════════════════════════════════════════════ */
+window.addEventListener('load', function () {
+    const isDark     = document.body.classList.contains('dark-mode');
+    const labelColor = isDark ? '#ffd700' : '#0f172a';
+    const gridColor  = isDark ? 'rgba(255,215,0,0.11)' : 'rgba(0,64,128,0.07)';
+    const lineColor  = isDark ? '#ffd700' : '#0057D9';
+    const pieBorder  = isDark ? '#2d0b1e' : '#ffffff';
+    const tooltipBg  = isDark ? '#3a1127' : '#ffffff';
+
+    Chart.defaults.color       = labelColor;
+    Chart.defaults.font.family = "'Inter','Segoe UI',system-ui,sans-serif";
     Chart.defaults.font.weight = '600';
 
-    // 1. Document Status Pie with DATA LABELS
+    /* ── 1. DOUGHNUT ── */
     const ctxPie = document.getElementById('documentStatusChart').getContext('2d');
+    const makeRG = (c1, c2) => {
+        const g = ctxPie.createRadialGradient(0,0,0,0,0,200);
+        g.addColorStop(0, c1); g.addColorStop(1, c2); return g;
+    };
+    const gPend = makeRG('#ffd700','#ffc700');
+    const gRev  = makeRG('#c9a96a','#a88c5a');
+    const gApp  = makeRG('#7ed957','#5cb85c');
+    const gRej  = makeRG('#ff8a8a','#e55b5b');
 
-    const gradientPending = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
-    gradientPending.addColorStop(0, '#ffd700');
-    gradientPending.addColorStop(1, '#ffc700');
-
-    const gradientReview = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
-    gradientReview.addColorStop(0, '#c9a96a');
-    gradientReview.addColorStop(1, '#a88c5a');
-
-    const gradientApproved = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
-    gradientApproved.addColorStop(0, '#7ed957');
-    gradientApproved.addColorStop(1, '#5cb85c');
-
-    const gradientRejected = ctxPie.createRadialGradient(0, 0, 0, 0, 0, 200);
-    gradientRejected.addColorStop(0, '#ff8a8a');
-    gradientRejected.addColorStop(1, '#e55b5b');
-
-    // NOTE: chart is now stored in a variable so the WebSocket handler
-    // below can update it live instead of only rendering once on load.
-    const documentStatusChart = new Chart(ctxPie, {
+    documentStatusChart = new Chart(ctxPie, {
         type: 'doughnut',
         data: {
-            labels: ['Pending', 'In Review', 'Approved', 'Rejected'],
+            labels: ['Pending','In Review','Approved','Rejected'],
             datasets: [{
                 data: [
                     {{ pending_count|default:0 }},
@@ -199,211 +669,233 @@
                     {{ approved_count|default:0 }},
                     {{ rejected_count|default:0 }}
                 ],
-                backgroundColor: [gradientPending, gradientReview, gradientApproved, gradientRejected],
-                borderWidth: 3,
-                borderColor: isDarkMode ? '#2d0b1e' : '#ffffff',
-                hoverOffset: 15
+                backgroundColor: [gPend, gRev, gApp, gRej],
+                borderWidth: 3, borderColor: pieBorder, hoverOffset: 24
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { animateRotate: true, animateScale: true, duration: 1200 },
+            responsive: true, maintainAspectRatio: false,
+            onClick: function(evt, els) {
+                if (els.length) filterDocuments(this.data.labels[els[0].index], '');
+            },
+            onHover: (evt, els) => { evt.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { padding: 25, font: { size: 14, weight: '700' }, usePointStyle: true, pointStyle: 'circle' }
+                    labels: { padding:22, font:{size:13,weight:'700'}, usePointStyle:true, pointStyle:'circle', color:labelColor }
                 },
                 datalabels: {
-                    color: '#ffffff',
-                    font: { weight: '800', size: 16 },
-                    formatter: function(value) { return value > 0 ? value : ''; },
-                    textShadowBlur: 4,
-                    textShadowColor: 'rgba(0,0,0,0.5)'
+                    color:'#ffffff', font:{weight:'900',size:17},
+                    formatter: v => v > 0 ? v : '',
+                    textShadowBlur:5, textShadowColor:'rgba(0,0,0,0.55)'
                 },
                 tooltip: {
-                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
-                    titleColor: gold,
-                    bodyColor: labelColor,
-                    borderColor: gold,
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 10
+                    backgroundColor:tooltipBg, titleColor:'#ffc700',
+                    bodyColor:labelColor, borderColor:'#ffc700',
+                    borderWidth:1, padding:13, cornerRadius:11
                 }
             },
-            cutout: '60%'
+            cutout: '64%'
         }
     });
 
-    // 2. Submissions Timeline with DATA LABELS
-    const ctxLine = document.getElementById('submissionTimelineChart').getContext('2d');
-    const lineGradient = ctxLine.createLinearGradient(0, 0, 0, 400);
-    lineGradient.addColorStop(0, 'rgba(255, 199, 0, 0.4)');
-    lineGradient.addColorStop(1, 'rgba(255, 199, 0, 0)');
+    /* ── 2. LINE ── */
+    const rawLabels = {{ timeline_labels|safe|default:"['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" }};
+    const todayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date().getDay()];
 
-    const submissionTimelineChart = new Chart(ctxLine, {
+    const pRadius=[], pHoverR=[], pBg=[], pBorder=[], pBW=[];
+    rawLabels.forEach(lbl => {
+        const today = lbl.toLowerCase().includes(todayName.toLowerCase());
+        pRadius.push(today ? 11 : 5);
+        pHoverR.push(today ? 15 : 8);
+        pBg.push(today ? '#22c55e' : lineColor);
+        pBorder.push(today ? lineColor : pieBorder);
+        pBW.push(today ? 3 : 2);
+    });
+
+    const ctxLine  = document.getElementById('submissionTimelineChart').getContext('2d');
+    const lineGrad = ctxLine.createLinearGradient(0,0,0,400);
+    lineGrad.addColorStop(0, isDark ? 'rgba(255,215,0,0.40)' : 'rgba(0,87,217,0.30)');
+    lineGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+    const todayGlowPlugin = {
+        id: 'todayGlow',
+        beforeDatasetsDraw(chart) {
+            const meta = chart.getDatasetMeta(0);
+            if (!meta || !meta.data || !meta.data.length) return;
+            const pt = meta.data[meta.data.length - 1];
+            if (!pt) return;
+            const {x,y} = pt.getProps(['x','y'], true);
+            const ctx = chart.ctx;
+            ctx.save();
+            const g = ctx.createRadialGradient(x,y,2,x,y,28);
+            g.addColorStop(0,'rgba(34,197,94,0.52)');
+            g.addColorStop(1,'rgba(34,197,94,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(x,y,28,0,Math.PI*2); ctx.fill();
+            ctx.restore();
+        }
+    };
+
+    submissionTimelineChart = new Chart(ctxLine, {
         type: 'line',
+        plugins: [todayGlowPlugin],
         data: {
-            labels: {{ timeline_labels|safe|default:"['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue']" }},
+            labels: rawLabels,
             datasets: [{
                 label: 'Documents Uploaded',
-                data: {{ timeline_data|safe|default:"[0, 0, 0, 0, 0, 0, 0]" }},
-                borderColor: gold,
-                backgroundColor: lineGradient,
-                fill: true,
-                tension: 0.4,
-                borderWidth: 4,
-                pointRadius: 6,
-                pointBackgroundColor: gold,
-                pointBorderColor: isDarkMode ? '#2d0b1e' : '#ffffff',
-                pointBorderWidth: 3,
-                pointHoverRadius: 8
+                data: {{ timeline_data|safe|default:"[0,0,0,0,0,0,0]" }},
+                borderColor: lineColor, backgroundColor: lineGrad,
+                fill: true, tension: 0.42, borderWidth: 3,
+                pointRadius: pRadius, pointHoverRadius: pHoverR,
+                pointBackgroundColor: pBg, pointBorderColor: pBorder,
+                pointBorderWidth: pBW
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 1500, easing: 'easeInOutQuart' },
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding:{top:12, right:24, bottom:0, left:0} },
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    color: gold,
-                    font: { weight: '800', size: 12 },
-                    align: 'top',
-                    offset: 4,
-                    formatter: function(value) { return value > 0 ? value : ''; }
+                    color:labelColor, font:{weight:'800',size:12},
+                    align:'top', offset:7,
+                    formatter: v => v > 0 ? v : ''
                 },
                 tooltip: {
-                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
-                    titleColor: gold,
-                    bodyColor: labelColor,
-                    borderColor: gold,
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 10
+                    backgroundColor:tooltipBg, titleColor:'#ffc700',
+                    bodyColor:labelColor, borderColor:'#ffc700',
+                    borderWidth:1, padding:13, cornerRadius:11,
+                    callbacks: {
+                        title: items => {
+                            const lbl = items[0].chart.data.labels[items[0].dataIndex];
+                            return lbl + (lbl.toLowerCase().includes(todayName.toLowerCase()) ? ' (Today)' : '');
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
-                    grid: { color: gridColor, borderDash: [4, 4] },
-                    ticks: { font: { weight: '700' } }
+                    grid: { color:gridColor, borderDash:[4,4] },
+                    ticks: {
+                        font:{weight:'700'}, maxRotation:0, autoSkip:false,
+                        color: ctx => ctx.tick.label.toLowerCase().includes(todayName.toLowerCase()) ? '#22c55e' : labelColor
+                    }
                 },
                 y: {
-                    grid: { color: gridColor },
-                    ticks: { precision: 0, font: { weight: '700' } }
+                    grid: { color:gridColor },
+                    ticks: { precision:0, font:{weight:'700'}, color:labelColor }
                 }
             }
         }
     });
+    document.getElementById('todayDayName').textContent = todayName;
 
-    // 3. Department Bar Chart with DATA LABELS
-    const ctxBar = document.getElementById('departmentBarChart').getContext('2d');
-    const barGradient = ctxBar.createLinearGradient(0, 0, 0, 400);
-    barGradient.addColorStop(0, gold);
-    barGradient.addColorStop(1, burgundy);
+    /* ── 3. BAR ── */
+    const ctxBar  = document.getElementById('departmentBarChart').getContext('2d');
+    const barGrad = ctxBar.createLinearGradient(0,0,0,400);
+    barGrad.addColorStop(0, lineColor);
+    barGrad.addColorStop(1, isDark ? '#7c1f3f' : '#002b66');
 
-    const departmentBarChart = new Chart(ctxBar, {
+    const barHoverGrad = ctxBar.createLinearGradient(0,0,0,400);
+    barHoverGrad.addColorStop(0, isDark ? '#ffe87a' : '#00c6ff');
+    barHoverGrad.addColorStop(1, isDark ? '#ffd700' : '#0057D9');
+
+    departmentBarChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: {{ dept_labels|safe|default:"['Registry', 'Human Resources', 'Finance', 'ICT', 'Academic Affairs', 'Admissions']" }},
+            labels: {{ dept_labels|safe|default:"['Registry','HR','Finance','ICT','Academics','Admissions']" }},
             datasets: [{
-                label: 'Active Records',
-                data: {{ dept_data|safe|default:"[0, 0, 0, 0, 0, 0]" }},
-                backgroundColor: barGradient,
-                borderColor: gold,
-                borderWidth: 2,
-                borderRadius: 12,
-                borderSkipped: false
+                label: 'Documents',
+                data: {{ dept_data|safe|default:"[0,0,0,0,0,0]" }},
+                backgroundColor: barGrad,
+                hoverBackgroundColor: barHoverGrad,
+                borderColor: lineColor, borderWidth: 2,
+                borderRadius: 12, borderSkipped: false
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 1200, easing: 'easeOutBounce' },
+            responsive: true, maintainAspectRatio: false,
+            onClick: function(evt, els) {
+                if (els.length) filterDocuments('', this.data.labels[els[0].index]);
+            },
+            onHover: (evt, els) => { evt.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    color: isDarkMode ? '#f5e6c8' : '#1a1a1a',
-                    font: { weight: '800', size: 13 },
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: function(value) { return value; }
+                    color:labelColor, font:{weight:'800',size:13},
+                    anchor:'end', align:'top',
+                    formatter: v => v > 0 ? v : ''
                 },
                 tooltip: {
-                    backgroundColor: isDarkMode ? '#3a1127' : '#ffffff',
-                    titleColor: gold,
-                    bodyColor: labelColor,
-                    borderColor: gold,
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 10
+                    backgroundColor:tooltipBg, titleColor:'#ffc700',
+                    bodyColor:labelColor, borderColor:'#ffc700',
+                    borderWidth:1, padding:13, cornerRadius:11
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { font: { weight: '700' } }
+                    ticks: { font:{weight:'700'}, color:labelColor, maxRotation:15, autoSkip:false }
                 },
                 y: {
-                    grid: { color: gridColor },
-                    ticks: { precision: 0, font: { weight: '700' } }
+                    grid: { color:gridColor },
+                    ticks: { precision:0, font:{weight:'700'}, color:labelColor }
                 }
             }
         }
     });
 
-    // ─────────────────────────────────────────────
-    // LIVE WEBSOCKET UPDATES
-    // Connects to the same "workflow_updates" group that
-    // workflow_overview.html listens to, so admin analytics
-    // refresh instantly whenever any user submits, registers,
-    // or approves/rejects a document — no page reload needed.
-    // ─────────────────────────────────────────────
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = protocol + '://' + window.location.host + '/ws/workflow/';
-    const socket = new WebSocket(wsUrl);
+    /* ── Apply URL-driven filter on load ── */
+    {% if status_filter %}
+    (function(){
+        const map = { pending:'Pending', in_review:'In Review', approved:'Approved', rejected:'Rejected' };
+        filterDocuments(map['{{ status_filter|escapejs }}'] || '{{ status_filter|escapejs }}', '{{ dept_filter|escapejs }}');
+    })();
+    {% elif dept_filter %}
+    filterDocuments('', '{{ dept_filter|escapejs }}');
+    {% endif %}
+});
 
-    socket.onopen = function() {
-        document.getElementById('liveDot').classList.add('connected');
-        document.getElementById('liveStatus').textContent = 'Live';
-        document.getElementById('liveStatus').style.color = '#22c55e';
-    };
+/* ── LIVE CLOCK ── */
+const liveTimeEl = document.getElementById('liveTime');
+function formatNow() {
+    return new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+liveTimeEl.textContent = formatNow();
+setInterval(() => { liveTimeEl.textContent = formatNow(); }, 1000);
 
-    socket.onclose = function() {
-        document.getElementById('liveDot').classList.remove('connected');
-        document.getElementById('liveStatus').textContent = 'Disconnected';
-        document.getElementById('liveStatus').style.color = '#ef4444';
-    };
+/* ── WEBSOCKET ── */
+const proto  = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const socket = new WebSocket(proto + '://' + window.location.host + '/ws/workflow/');
 
-    socket.onerror = function() {
-        document.getElementById('liveDot').classList.remove('connected');
-        document.getElementById('liveStatus').textContent = 'Error';
-        document.getElementById('liveStatus').style.color = '#ef4444';
-    };
-
-    socket.onmessage = function(e) {
-        try {
-            const response = JSON.parse(e.data);
-            if (response.type === 'connection') return;
-
-            if (response.type === 'workflow_update' && response.data) {
-                const d = response.data;
-
-                // Update pie chart
+socket.onopen = function () {
+    document.getElementById('liveDot').classList.add('connected');
+    const s = document.getElementById('liveStatus');
+    s.textContent = 'Live'; s.classList.add('ok');
+};
+socket.onclose = function () {
+    document.getElementById('liveDot').classList.remove('connected');
+    const s = document.getElementById('liveStatus');
+    s.textContent = 'Disconnected'; s.classList.remove('ok');
+};
+socket.onmessage = function (e) {
+    try {
+        const res = JSON.parse(e.data);
+        if (res.type === 'workflow_update' && res.data) {
+            const d = res.data;
+            if (d.status && d.status.data && documentStatusChart) {
                 documentStatusChart.data.datasets[0].data = d.status.data;
                 documentStatusChart.update();
-
-                // Update department bar chart
-                departmentBarChart.data.labels = d.dept.labels;
+            }
+            if (d.dept && d.dept.data && departmentBarChart) {
+                departmentBarChart.data.labels           = d.dept.labels;
                 departmentBarChart.data.datasets[0].data = d.dept.data;
                 departmentBarChart.update();
-
-                // Timeline chart isn't part of get_workflow_chart_data() yet,
-                // so it's left as-is here (see note below the code block).
             }
-        } catch (err) {
-            console.error('WebSocket message processing error:', err);
+            liveTimeEl.textContent = formatNow() + ' (updated)';
         }
-    };
+    } catch (err) { console.error(err); }
+};
 </script>
 {% endblock %}

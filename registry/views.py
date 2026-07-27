@@ -52,7 +52,6 @@ from .models import Assignment, AuditLog, Comment, Department, Document, Notific
 # ─────────────────────────────────────────────
 
 def log_action(request, action, entity_type, entity_id=None, details=''):
-    """Log user actions to audit trail"""
     if request.user.is_authenticated:
         ip = request.META.get('REMOTE_ADDR', '')
         AuditLog.objects.create(
@@ -65,7 +64,6 @@ def log_action(request, action, entity_type, entity_id=None, details=''):
         )
 
 def notify_user(user, document, msg, ntype='system'):
-    """Create notification and send email"""
     Notification.objects.create(
         user=user,
         document=document,
@@ -84,7 +82,6 @@ def notify_user(user, document, msg, ntype='system'):
         pass
 
 def role_required(*roles):
-    """Decorator to restrict access based on user roles"""
     def decorator(view_func):
         @login_required
         def _wrapped(request, *args, **kwargs):
@@ -96,24 +93,17 @@ def role_required(*roles):
     return decorator
 
 def admin_key_required(view_func):
-    """Ensure the administrator has passed the security key challenge"""
     @login_required
     def _wrapped(request, *args, **kwargs):
-        # 1. Check if they are an admin and haven't verified their session key yet
         if request.user.role == 'admin' and not request.session.get('admin_verified', False):
-            
-            # 2. CRITICAL FIX: If they are already trying to access 'admin_welcome', let them through!
             if request.resolver_match.view_name == 'admin_welcome':
                 return view_func(request, *args, **kwargs)
-                
             messages.warning(request, "Please enter your security credentials to access the console dashboard.")
             return redirect('admin_welcome')
-            
         return view_func(request, *args, **kwargs)
     return _wrapped
 
 def add_tracking_entry(document, user, action, details, request=None):
-    """Add a real-time tracking entry for a document"""
     tracking_entry = {
         'timestamp': timezone.now().isoformat(),
         'user': user.get_full_name() or user.username,
@@ -134,7 +124,6 @@ def add_tracking_entry(document, user, action, details, request=None):
     if request:
         log_action(request, action, 'Document', document.id, details)
     
-    # ─── BROADCAST LIVE PER-DOCUMENT UPDATE ───
     if CHANNELS_AVAILABLE:
         try:
             channel_layer = get_channel_layer()
@@ -155,9 +144,8 @@ def add_tracking_entry(document, user, action, details, request=None):
                 {"type": "document_update", "data": payload}
             )
         except Exception as e:
-            print(f"⚠️ Document WebSocket broadcast failed: {e}")
+            print(f"Document WebSocket broadcast failed: {e}")
     
-    # ─── BROADCAST LIVE STUDENT PROGRESS UPDATE ───
     if CHANNELS_AVAILABLE and document.student_requester:
         try:
             channel_layer = get_channel_layer()
@@ -167,12 +155,11 @@ def add_tracking_entry(document, user, action, details, request=None):
                 {"type": "progress_update", "data": progress_data}
             )
         except Exception as e:
-            print(f"⚠️ Student progress WebSocket broadcast failed: {e}")
+            print(f"Student progress WebSocket broadcast failed: {e}")
     
     return tracking_entry
 
 def get_greeting():
-    """Get time-based greeting"""
     current_hour = datetime.now().hour
     if current_hour < 12:
         return "Good morning"
@@ -186,7 +173,6 @@ def get_greeting():
 # ─────────────────────────────────────────────
 
 def landing_page(request):
-    """Landing page view"""
     if request.user.is_authenticated:
         if request.user.role == 'student':
             return redirect('student_dashboard')
@@ -196,11 +182,9 @@ def landing_page(request):
     return render(request, 'registry/landing.html')
 
 def learn_more(request):
-    """Learn more page"""
     return render(request, 'registry/learn_more.html')
 
 def role_selection(request):
-    """Role selection page"""
     return render(request, 'registry/role_selection.html')
 
 # ─────────────────────────────────────────────
@@ -208,7 +192,6 @@ def role_selection(request):
 # ─────────────────────────────────────────────
 
 def register_student(request):
-    """Student registration"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -226,7 +209,6 @@ def register_student(request):
     return render(request, 'registry/register.html', {'form': form, 'role': 'Student'})
 
 def register_clerk(request):
-    """Clerk registration"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -243,7 +225,6 @@ def register_clerk(request):
     return render(request, 'registry/register.html', {'form': form, 'role': 'Registry Clerk'})
 
 def register_staff(request):
-    """Staff registration"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -260,7 +241,6 @@ def register_staff(request):
     return render(request, 'registry/register.html', {'form': form, 'role': 'Staff Member'})
 
 def register_supervisor(request):
-    """Supervisor registration"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -277,7 +257,6 @@ def register_supervisor(request):
     return render(request, 'registry/register.html', {'form': form, 'role': 'Supervisor'})
 
 def register_admin(request):
-    """Admin registration (restricted)"""
     if request.user.is_authenticated:
         return redirect('dashboard')
     
@@ -304,7 +283,6 @@ def register_admin(request):
 # ─────────────────────────────────────────────
 
 def login_view(request):
-    """User login"""
     if request.user.is_authenticated:
         if request.user.role == 'student':
             return redirect('student_dashboard')
@@ -328,7 +306,6 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
-    """User logout"""
     log_action(request, 'LOGOUT', 'User', request.user.id)
     if 'admin_verified' in request.session:
         del request.session['admin_verified']
@@ -342,7 +319,6 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    """Router dashboard - redirects users to their role-specific dashboard"""
     user = request.user
     
     if user.role == 'student':
@@ -365,19 +341,22 @@ def dashboard(request):
 @login_required
 @role_required('student')
 def student_dashboard(request):
-    """Student dashboard view"""
     user = request.user
     unread = Notification.objects.filter(user=user, is_read=False).count()
+    
     my_requests = Document.objects.filter(student_requester=user).order_by('-created_at')
     
-    pending = my_requests.filter(status__status_code='pending').count()
-    approved = my_requests.filter(status__status_code='approved').count()
-    rejected = my_requests.filter(status__status_code='rejected').count()
-    in_review = my_requests.filter(status__status_code='in_review').count()
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        my_requests = my_requests.filter(status__status_code=status_filter)
+    
+    pending = Document.objects.filter(student_requester=user, status__status_code='pending').count()
+    approved = Document.objects.filter(student_requester=user, status__status_code='approved').count()
+    rejected = Document.objects.filter(student_requester=user, status__status_code='rejected').count()
+    in_review = Document.objects.filter(student_requester=user, status__status_code='in_review').count()
     
     recent_notifications = Notification.objects.filter(user=user)[:5]
     
-    # Monthly data for chart (last 6 months)
     monthly_data = []
     monthly_labels = []
     today = datetime.now().date()
@@ -405,6 +384,7 @@ def student_dashboard(request):
         'recent_notifications': recent_notifications,
         'monthly_labels': monthly_labels,
         'monthly_data': monthly_data,
+        'status_filter': status_filter,
     }
     
     return render(request, 'registry/student_dashboard.html', context)
@@ -412,32 +392,34 @@ def student_dashboard(request):
 @login_required
 @role_required('student')
 def student_check_progress(request):
-    """Dedicated page for student progress charts"""
     user = request.user
-    
-    my_requests = Document.objects.filter(student_requester=user)
-    pending = my_requests.filter(status__status_code='pending').count()
-    approved = my_requests.filter(status__status_code='approved').count()
-    rejected = my_requests.filter(status__status_code='rejected').count()
-    in_review = my_requests.filter(status__status_code='in_review').count()
-    
-    # Monthly data for chart (last 6 months)
+    status_filter = request.GET.get('status', '')
+
+    my_requests = Document.objects.filter(
+        student_requester=user
+    ).select_related('department', 'status').order_by('-created_at')
+
+    pending = Document.objects.filter(student_requester=user, status__status_code='pending').count()
+    approved = Document.objects.filter(student_requester=user, status__status_code='approved').count()
+    rejected = Document.objects.filter(student_requester=user, status__status_code='rejected').count()
+    in_review = Document.objects.filter(student_requester=user, status__status_code='in_review').count()
+
     monthly_data = []
     monthly_labels = []
     today = datetime.now().date()
-    
+
     for i in range(5, -1, -1):
-        month_date = today - timedelta(days=30*i)
+        month_date = today - timedelta(days=30 * i)
         month_name = month_date.strftime('%b %Y')
         monthly_labels.append(month_name)
-        
+
         count = Document.objects.filter(
             student_requester=user,
             created_at__year=month_date.year,
             created_at__month=month_date.month
         ).count()
         monthly_data.append(count)
-    
+
     context = {
         'my_requests': my_requests,
         'pending': pending,
@@ -447,14 +429,14 @@ def student_check_progress(request):
         'monthly_labels': monthly_labels,
         'monthly_data': monthly_data,
         'greeting': get_greeting(),
+        'status_filter': status_filter,
     }
-    
+
     return render(request, 'registry/student_check_progress.html', context)
 
 @login_required
 @role_required('student')
 def student_my_requests(request):
-    """Dedicated page for student requests list"""
     user = request.user
     my_requests = Document.objects.filter(student_requester=user).order_by('-created_at')
     
@@ -468,7 +450,6 @@ def student_my_requests(request):
 @login_required
 @role_required('student')
 def student_submit_request(request):
-    """Submit a new student request"""
     departments = Department.objects.all()
     
     if request.method == 'POST':
@@ -492,7 +473,6 @@ def student_submit_request(request):
             doc.status = pending_status
             doc.save()
             
-            # Generate QR Tracking Tag
             doc.generate_qr_code()
             doc.save()
             
@@ -508,7 +488,6 @@ def student_submit_request(request):
                 status='pending',
             )
             
-            # Notify staff
             staff_users = User.objects.filter(role__in=['clerk', 'supervisor', 'admin'])
             if doc.department:
                 dept_staff = User.objects.filter(department=doc.department, role__in=['clerk', 'supervisor'])
@@ -518,14 +497,14 @@ def student_submit_request(request):
             for staff in staff_users:
                 notify_user(
                     staff, doc,
-                    f'📄 NEW STUDENT REQUEST from {request.user.get_full_name()}: {doc.title}\n'
+                    f'NEW STUDENT REQUEST from {request.user.get_full_name()}: {doc.title}\n'
                     f'Department: {doc.department.dept_name if doc.department else "Registry"}\n'
                     f'Reference: {doc.reference_no}',
                     ntype='assignment'
                 )
             
             messages.success(request, 
-                f'✅ Your request "{doc.title}" has been submitted!\n'
+                f'Your request "{doc.title}" has been submitted!\n'
                 f'Reference: {doc.reference_no} | Forwarded to: {doc.department.dept_name if doc.department else "Registry"}'
             )
             
@@ -538,7 +517,7 @@ def student_submit_request(request):
                         {"type": "workflow_update", "data": data}
                     )
                 except Exception as e:
-                    print(f"⚠️ WebSocket broadcast failed: {e}")
+                    print(f"WebSocket broadcast failed: {e}")
             
             return redirect('student_dashboard')
         else:
@@ -555,7 +534,6 @@ def student_submit_request(request):
 @login_required
 @role_required('student')
 def student_track_request(request, pk):
-    """Track a specific student request"""
     doc = get_object_or_404(Document, pk=pk, student_requester=request.user)
     workflows = doc.workflows.all()
     comments = doc.comments.filter(visible_to_student=True).select_related('user').all()
@@ -573,7 +551,6 @@ def student_track_request(request, pk):
 @login_required
 @role_required('student')
 def student_profile(request):
-    """Student profile management"""
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
@@ -592,7 +569,6 @@ def student_profile(request):
 @login_required
 @role_required('student')
 def cancel_request(request, pk):
-    """Cancel a pending request"""
     doc = get_object_or_404(Document, pk=pk, student_requester=request.user)
     
     if doc.status.status_code != 'pending':
@@ -618,14 +594,13 @@ def cancel_request(request, pk):
     
     staff_users = User.objects.filter(role__in=['clerk', 'supervisor', 'admin'])
     for staff in staff_users:
-        notify_user(staff, doc, f'❌ Request {doc.reference_no} has been CANCELLED by {request.user.get_full_name()}.', ntype='system')
+        notify_user(staff, doc, f'Request {doc.reference_no} has been CANCELLED by {request.user.get_full_name()}.', ntype='system')
     
     messages.success(request, 'Your request has been cancelled successfully.')
     return redirect('student_dashboard')
 
 @login_required
 def change_password(request):
-    """Change user password"""
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -648,13 +623,16 @@ def change_password(request):
 @login_required
 @role_required('staff')
 def staff_dashboard(request):
-    """Dedicated dashboard for staff members"""
     user = request.user
     unread = Notification.objects.filter(user=user, is_read=False).count()
     
     assignments_qs = Assignment.objects.filter(
         assigned_to=user
     ).select_related('document', 'document__status', 'assigned_by')
+    
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        assignments_qs = assignments_qs.filter(document__status__status_code=status_filter)
     
     pending_count = assignments_qs.filter(document__status__status_code='pending').count()
     completed_count = assignments_qs.filter(document__status__status_code='approved').count()
@@ -669,6 +647,7 @@ def staff_dashboard(request):
         'completed_count': completed_count,
         'total_count': total_count,
         'unread': unread,
+        'status_filter': status_filter,
     }
     return render(request, 'registry/staff_dashboard.html', context)
 
@@ -679,15 +658,20 @@ def staff_dashboard(request):
 @login_required
 @role_required('clerk')
 def clerk_dashboard(request):
-    """Dedicated dashboard for registry clerks"""
     user = request.user
     unread = Notification.objects.filter(user=user, is_read=False).count()
     
-    docs = Document.objects.filter(submitted_by=user).order_by('-created_at')[:10]
+    docs = Document.objects.filter(submitted_by=user).order_by('-created_at')
+    
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        docs = docs.filter(status__status_code=status_filter)
+    
     total_docs = Document.objects.filter(submitted_by=user).count()
     pending = Document.objects.filter(submitted_by=user, status__status_code='pending').count()
     approved = Document.objects.filter(submitted_by=user, status__status_code='approved').count()
     rejected = Document.objects.filter(submitted_by=user, status__status_code='rejected').count()
+    in_review = Document.objects.filter(submitted_by=user, status__status_code='in_review').count()
     
     context = {
         'greeting': get_greeting(),
@@ -696,14 +680,15 @@ def clerk_dashboard(request):
         'pending': pending,
         'approved': approved,
         'rejected': rejected,
+        'in_review': in_review,
         'unread': unread,
+        'status_filter': status_filter,
     }
     
     return render(request, 'registry/clerk_dashboard.html', context)
 
 @role_required('clerk', 'admin')
 def document_register(request):
-    """Register a new document"""
     form = DocumentForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         doc = form.save(commit=False)
@@ -728,7 +713,7 @@ def document_register(request):
                     {"type": "workflow_update", "data": data}
                 )
             except Exception as e:
-                print(f"⚠️ WebSocket broadcast failed: {e}")
+                print(f"WebSocket broadcast failed: {e}")
         
         return redirect('document_list')
     
@@ -736,7 +721,6 @@ def document_register(request):
 
 @role_required('clerk', 'admin')
 def bulk_upload_documents(request):
-    """Bulk upload documents from CSV"""
     if request.method == 'POST':
         form = BulkUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -781,9 +765,9 @@ def bulk_upload_documents(request):
                 except Exception:
                     error_count += 1
             
-            messages.success(request, f'✅ {success_count} documents uploaded successfully!')
+            messages.success(request, f'{success_count} documents uploaded successfully!')
             if error_count > 0:
-                messages.warning(request, f'⚠️ {error_count} records failed verification structural checks.')
+                messages.warning(request, f'{error_count} records failed verification structural checks.')
             
             log_action(request, 'BULK_UPLOAD', 'Document', None, f'Uploaded {success_count} documents')
             return redirect('document_list')
@@ -798,13 +782,16 @@ def bulk_upload_documents(request):
 @login_required
 @role_required('supervisor')
 def supervisor_dashboard(request):
-    """Integrated dashboard for supervisors"""
     user = request.user
     unread = Notification.objects.filter(user=user, is_read=False).count()
     
     workflows = Workflow.objects.filter(
         Q(assigned_to=user) | Q(status='in_review')
     ).select_related('document').order_by('-started_at')[:10]
+    
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        workflows = workflows.filter(status=status_filter)
     
     pending_approvals = Workflow.objects.filter(status='in_review').count()
     total_approved = Workflow.objects.filter(status='approved').count()
@@ -855,13 +842,13 @@ def supervisor_dashboard(request):
         'dept_chart_raw': dept_chart,
         'monthly_labels_raw': monthly_labels,
         'monthly_data_raw': monthly_data,
+        'status_filter': status_filter,
     }
     return render(request, 'registry/supervisor_dashboard.html', context)
 
 @login_required
 @role_required('supervisor')
 def workflow_overview(request):
-    """Full workflow overview page with detailed charts and all pending approvals"""
     user = request.user
     unread = Notification.objects.filter(user=user, is_read=False).count()
     
@@ -929,7 +916,6 @@ def workflow_overview(request):
 
 @role_required('supervisor', 'admin')
 def approval_view(request, pk):
-    """Approve or reject a document with WebSocket broadcast"""
     doc = get_object_or_404(Document, pk=pk)
     form = ApprovalForm(request.POST or None)
     
@@ -937,35 +923,41 @@ def approval_view(request, pk):
         action = form.cleaned_data['action']
         comment_text = form.cleaned_data.get('comment', '')
         
+        target_status = 'processed' if action in ('approved', 'processed') else 'rejected'
+        display_step = 'Processed & Ready' if target_status == 'processed' else 'Request Rejected'
+
         wf = doc.workflows.last()
         if wf:
-            wf.status = action
-            wf.current_step = action.capitalize()
-            if action in ('approved', 'rejected', 'processed'):
-                wf.completed_at = timezone.now()
+            wf.status = target_status
+            wf.current_step = display_step
+            wf.completed_at = timezone.now()
             wf.save()
         
         new_status, _ = Status.objects.get_or_create(
-            status_code=action,
-            defaults={'status_name': action.capitalize()}
+            status_code=target_status,
+            defaults={'status_name': target_status.capitalize()}
         )
         doc.status = new_status
         doc.save()
         
-        add_tracking_entry(doc, request.user, action.upper(), 
-            f'Document {action} by {request.user.get_full_name()}. Comments: {comment_text[:100] if comment_text else "No comments"}', 
-            request)
+        add_tracking_entry(
+            doc, 
+            request.user, 
+            target_status.upper(), 
+            f'Document set to {target_status} by {request.user.get_full_name()}. Comments: {comment_text[:100] if comment_text else "None"}', 
+            request
+        )
         
         if comment_text:
             Comment.objects.create(document=doc, user=request.user, comment=comment_text)
         
-        ntype = 'approval' if action == 'approved' else 'rejection'
-        msg = f'Your document "{doc.title}" (Ref: {doc.reference_no}) has been {action} by {request.user.get_full_name()}.'
+        ntype = 'approval' if target_status == 'processed' else 'rejection'
+        msg = f'Your document "{doc.title}" (Ref: {doc.reference_no}) has been {target_status} by {request.user.get_full_name()}.'
         if doc.submitted_by:
             notify_user(doc.submitted_by, doc, msg, ntype=ntype)
         
-        log_action(request, action.upper(), 'Document', doc.id, comment_text)
-        messages.success(request, f'Document has been {action}.')
+        log_action(request, target_status.upper(), 'Document', doc.id, comment_text)
+        messages.success(request, f'Document has been successfully set to {target_status}.')
         
         if CHANNELS_AVAILABLE:
             try:
@@ -978,9 +970,8 @@ def approval_view(request, pk):
                         "data": data
                     }
                 )
-                print(f"📡 Live update broadcasted for document {doc.reference_no}")
             except Exception as e:
-                print(f"⚠️ WebSocket broadcast failed: {e}")
+                print(f"WebSocket broadcast failed: {e}")
         
         return redirect('document_detail', pk=pk)
     
@@ -992,7 +983,6 @@ def approval_view(request, pk):
 
 @login_required
 def document_list(request):
-    """List all documents"""
     user = request.user
     if user.role in ('admin', 'supervisor'):
         docs = Document.objects.select_related('department', 'submitted_by', 'status').all()
@@ -1010,7 +1000,6 @@ def document_list(request):
 
 @login_required
 def document_detail(request, pk):
-    """View document details"""
     doc = get_object_or_404(Document, pk=pk)
     workflows = doc.workflows.all()
     comments = doc.comments.select_related('user').all()
@@ -1037,7 +1026,6 @@ def document_detail(request, pk):
 
 @role_required('clerk', 'admin')
 def document_assign(request, pk):
-    """Assign a document to a user"""
     doc = get_object_or_404(Document, pk=pk)
     form = AssignDocumentForm(request.POST or None)
     
@@ -1078,7 +1066,7 @@ def document_assign(request, pk):
         )
         
         log_action(request, 'ASSIGN_DOCUMENT', 'Document', doc.id, f'→ {assignee.username}')
-        messages.success(request, f'✅ Document successfully assigned to {assignee.get_full_name() or assignee.username}.')
+        messages.success(request, f'Document successfully assigned to {assignee.get_full_name() or assignee.username}.')
         return redirect('document_detail', pk=pk)
     
     return render(request, 'registry/assign_form.html', {'form': form, 'doc': doc})
@@ -1089,7 +1077,6 @@ def document_assign(request, pk):
 
 @login_required
 def notifications_view(request):
-    """View all notifications"""
     notes = Notification.objects.filter(user=request.user).order_by('-sent_at')
     has_new = notes.filter(is_read=False).exists()
     notes.filter(is_read=False).update(is_read=True)
@@ -1107,7 +1094,6 @@ def notifications_view(request):
 
 @role_required('supervisor', 'admin')
 def reports_view(request):
-    """Generate reports"""
     dept_stats = Department.objects.annotate(
         doc_count=Count('documents'),
         approved=Count('documents', filter=Q(documents__status__status_code='approved')),
@@ -1130,7 +1116,6 @@ def reports_view(request):
 
 @role_required('supervisor', 'admin')
 def export_to_excel(request):
-    """Export all documents to CSV"""
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="smartflow_documents_export.csv"'
     
@@ -1156,7 +1141,6 @@ def export_to_excel(request):
 
 @login_required
 def export_document_pdf(request, pk):
-    """Export a single document to PDF"""
     doc = get_object_or_404(Document, pk=pk)
     
     response = HttpResponse(content_type='application/pdf')
@@ -1166,14 +1150,12 @@ def export_document_pdf(request, pk):
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     
-    # Header Banner
     p.setFillColorRGB(0.05, 0.23, 0.43)
     p.rect(0, height - 60, width, 60, fill=1)
     p.setFillColorRGB(1, 1, 1)
     p.setFont("Helvetica-Bold", 18)
     p.drawString(50, height - 40, "SmartFlow - Document Report")
     
-    # Document Metadata
     p.setFillColorRGB(0, 0, 0)
     p.setFont("Helvetica-Bold", 14)
     p.drawString(50, height - 100, f"Reference: {doc.reference_no}")
@@ -1190,7 +1172,6 @@ def export_document_pdf(request, pk):
     if doc.department:
         p.drawString(50, height - 270, f"Department: {doc.department.dept_name}")
     
-    # Footer
     p.setFont("Helvetica", 8)
     p.setFillColorRGB(0.5, 0.5, 0.5)
     p.drawString(50, 30, "Generated by SmartFlow - TelOne Registry Department")
@@ -1210,7 +1191,6 @@ def export_document_pdf(request, pk):
 
 @login_required
 def advanced_search(request):
-    """Advanced search with multi-parameter metadata filtering"""
     departments = Department.objects.all()
     statuses = Status.objects.all()
     documents = Document.objects.select_related('department', 'submitted_by', 'status')
@@ -1256,7 +1236,6 @@ def advanced_search(request):
 @login_required
 @admin_key_required
 def admin_welcome(request):
-    """Phase 1 Gatekeeper Splash Screen"""
     if request.user.role != 'admin':
         return redirect('dashboard')
     
@@ -1275,7 +1254,6 @@ def admin_welcome(request):
 @login_required
 @admin_key_required
 def admin_launchpad(request):
-    """Phase 2 Command Launchpad"""
     if request.user.role != 'admin':
         return redirect('dashboard')
     
@@ -1291,7 +1269,6 @@ def admin_launchpad(request):
 @login_required
 @admin_key_required
 def admin_workspace(request):
-    """Phase 2.5 Hub - 6-module grid framework"""
     if request.user.role != 'admin':
         return redirect('dashboard')
     
@@ -1307,40 +1284,52 @@ def admin_workspace(request):
 @login_required
 @admin_key_required
 def admin_dashboard(request):
-    """Admin dashboard with analytics"""
     if request.user.role != 'admin':
         return redirect('dashboard')
-    
+    return check_progress(request)
+
+# ─────────────────────────────────────────────
+# CHECK PROGRESS VIEW
+# ─────────────────────────────────────────────
+
+@login_required
+@admin_key_required
+def check_progress(request):
+    if request.user.role != 'admin':
+        return redirect('dashboard')
+
+    status_filter = request.GET.get('status', '')
+    dept_filter = request.GET.get('department', '')
+
+    documents = Document.objects.select_related(
+        'department', 'status', 'submitted_by'
+    ).order_by('-created_at')
+
     pending_count = Document.objects.filter(status__status_code='pending').count()
     review_count = Document.objects.filter(status__status_code='in_review').count()
     approved_count = Document.objects.filter(status__status_code='approved').count()
     rejected_count = Document.objects.filter(status__status_code='rejected').count()
-    
+
     today = timezone.now().date()
     timeline_labels = []
     timeline_data = []
-    
+
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
         timeline_labels.append(day.strftime('%a'))
         day_count = Document.objects.filter(created_at__date=day).count()
         timeline_data.append(day_count)
-    
+
     dept_metrics = Department.objects.annotate(
         doc_count=Count('documents')
     ).order_by('-doc_count')
-    
+
     dept_labels = [dept.dept_name for dept in dept_metrics]
     dept_data = [dept.doc_count for dept in dept_metrics]
-    
-    status_chart = {
-        'labels': ['Pending', 'In Review', 'Approved', 'Rejected'],
-        'data': [pending_count, review_count, approved_count, rejected_count],
-        'colors': ['#ffc107', '#0dcaf0', '#198754', '#dc3545']
-    }
-    
+
     context = {
         'greeting': get_greeting(),
+        'documents': documents,
         'pending_count': pending_count,
         'review_count': review_count,
         'approved_count': approved_count,
@@ -1349,30 +1338,36 @@ def admin_dashboard(request):
         'timeline_data': json.dumps(timeline_data),
         'dept_labels': json.dumps(dept_labels),
         'dept_data': json.dumps(dept_data),
-        'status_chart_json': json.dumps(status_chart),
+        'status_filter': status_filter,
+        'dept_filter': dept_filter,
         'unread': Notification.objects.filter(user=request.user, is_read=False).count(),
     }
-    
+
     return render(request, 'registry/check_progress.html', context)
+
+# ─────────────────────────────────────────────
+# AUDIT TRAIL
+# ─────────────────────────────────────────────
 
 @role_required('admin')
 @admin_key_required
 def audit_trail(request):
-    """View audit trail"""
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
     return render(request, 'registry/audit_trail.html', {'logs': logs, 'greeting': get_greeting()})
+
+# ─────────────────────────────────────────────
+# USER MANAGEMENT
+# ─────────────────────────────────────────────
 
 @role_required('admin')
 @admin_key_required
 def manage_users(request):
-    """Manage users"""
     users = User.objects.select_related('department').all()
     return render(request, 'registry/manage_users.html', {'users': users, 'greeting': get_greeting()})
 
 @role_required('admin')
 @admin_key_required
 def create_user(request):
-    """Create a new user"""
     form = UserCreateForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.save()
@@ -1381,17 +1376,19 @@ def create_user(request):
         return redirect('manage_users')
     return render(request, 'registry/user_form.html', {'form': form, 'action': 'Create'})
 
+# ─────────────────────────────────────────────
+# DEPARTMENT MANAGEMENT
+# ─────────────────────────────────────────────
+
 @role_required('admin')
 @admin_key_required
 def manage_departments(request):
-    """Manage departments"""
     depts = Department.objects.annotate(member_count=Count('members'))
     return render(request, 'registry/manage_departments.html', {'depts': depts, 'greeting': get_greeting()})
 
 @role_required('admin')
 @admin_key_required
 def create_department(request):
-    """Create a new department"""
     form = DepartmentForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         dept = form.save()
@@ -1405,17 +1402,10 @@ def create_department(request):
 # ─────────────────────────────────────────────
 
 def handler404(request, exception):
-    """Custom 404 error handler"""
     return render(request, 'errors/404.html', status=404)
 
 def handler500(request):
-    """Custom 500 error handler"""
     return render(request, 'errors/500.html', status=500)
 
 def handler403(request, exception):
-    """Custom 403 error handler"""
     return render(request, 'errors/403.html', status=403)
-
-# ============================================
-# END OF views.py
-# ============================================

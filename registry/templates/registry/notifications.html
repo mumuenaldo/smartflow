@@ -1,167 +1,164 @@
 {% extends 'registry/base.html' %}
-{% block title %}Notifications{% endblock %}
+{% block title %}Notifications — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    
-    /* DARK MODE FOR NOTIFICATIONS */
-    
-
-    body.dark-mode .page-header h4 {
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
-
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-        color: #ffffff;
-    }
-
-    body.dark-mode .card-body .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .card-body .text-muted.small {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .card-body div[style*="font-size:.92rem;"] {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .btn-outline-primary {
-        color: #ffc700;
-        border-color: #ffc700;
-    }
-
-    body.dark-mode .btn-outline-primary:hover {
-        background: #ffc700;
-        color: #2d0b1e; 
-        border-color: #ffc700;
-    }
-
-    body.dark-mode .badge.bg-primary {
-        background: #ffc700 !important; 
-        color: #2d0b1e !important; 
-        border: 1px solid #ffc700;
-    }
-
-    body.dark-mode .text-success {
-        color: #4cff91 !important; 
-    }
-
-    body.dark-mode .text-danger {
-        color: #ff6b6b !important; 
-    }
-
-    body.dark-mode .text-primary {
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .text-warning {
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .text-secondary {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .bi-info-circle-fill {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .text-center h6 {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .text-center .text-muted {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .text-center .bi-bell-slash {
-        color: #4a1a32 !important; 
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .card:hover {
-        box-shadow: 0 4px 20px rgba(255, 199, 0, 0.1) !important; /* Subtle gold glow */
-    }
+:root{
+    --sf-accent:#00f2fe; --sf-accent2:#4facfe;
+    --sf-text:#0f172a; --sf-muted:#475569; --sf-card:#ffffff; --sf-border:#e2e8f0;
+}
+body.dark-mode{
+    --sf-accent:#facc15; --sf-accent2:#eab308;
+    --sf-text:#fde047; --sf-muted:#fcd34d; --sf-card:rgba(45,11,30,0.65); --sf-border:rgba(124,31,63,0.4);
+}
+.sf-wrap{
+    padding:2.5rem 0; min-height:calc(100vh - 160px);
+    background:radial-gradient(1000px 500px at 90% -10%, var(--sf-accent) 0%, transparent 60%),
+               linear-gradient(180deg, #0b2240 0%, #061324 100%);
+}
+body.dark-mode .sf-wrap{
+    background:radial-gradient(1000px 500px at 90% -10%, var(--sf-accent) 0%, transparent 60%),
+               linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+}
+.sf-header{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; padding:18px 24px;
+    background:var(--sf-card); border:1px solid var(--sf-border); border-radius:20px;
+    position:relative; overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.15)
+}
+.sf-header::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--sf-accent), var(--sf-accent2));
+}
+body.dark-mode .sf-header{backdrop-filter:blur(20px)}
+.sf-header-left{display:flex; align-items:center; gap:16px}
+.sf-header-icon{
+    width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); 
+    color:#061324; font-size:1.6rem; box-shadow:0 0 25px rgba(0,242,254,.35)
+}
+body.dark-mode .sf-header-icon{box-shadow:0 0 25px rgba(250,204,21,.35)}
+.sf-header h4{margin:0; font-weight:900; font-size:1.8rem; color:var(--sf-text)}
+.btn-sf-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:10px;padding:.55rem 1.1rem;font-weight:800;font-size:.85rem;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem}
+.btn-sf-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+body.dark-mode .btn-sf-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .btn-sf-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
+.sf-card{
+    background:var(--sf-card); border:1px solid var(--sf-border);
+    border-radius:16px; padding:20px 24px; margin-bottom:14px; transition:.3s; 
+    position:relative; overflow:hidden; color:var(--sf-text);
+    box-shadow:0 4px 12px rgba(0,0,0,.1)
+}
+body.dark-mode .sf-card{backdrop-filter:blur(20px)}
+.sf-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--sf-accent), var(--sf-accent2)); 
+    opacity:0; transition:opacity .3s
+}
+.sf-card:hover::before{opacity:1}
+.sf-card:hover{transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.sf-grid{display:grid; grid-template-columns: auto 1fr auto; gap:16px; align-items:start}
+.sf-icon{
+    width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.04); border:1px solid var(--sf-border); font-size:1.3rem;
+}
+body.dark-mode .sf-icon{background:rgba(0,0,0,.25)}
+.sf-card.approval .sf-icon{color:#059669; background:rgba(16,185,129,.12)}
+.sf-card.rejection .sf-icon{color:#dc2626; background:rgba(239,68,68,.12)}
+.sf-card.assignment .sf-icon{color:#2563eb; background:rgba(59,130,246,.12)}
+.sf-card.reminder .sf-icon{color:#d97706; background:rgba(245,158,11,.12)}
+body.dark-mode .sf-card.approval .sf-icon{color:#34d399}
+body.dark-mode .sf-card.rejection .sf-icon{color:#f87171}
+body.dark-mode .sf-card.reminder .sf-icon{color:#fbbf24}
+.sf-msg{font-size:.95rem; font-weight:600; line-height:1.5}
+.sf-meta{font-size:.75rem; color:var(--sf-muted); margin-top:4px}
+.sf-date{text-align:right; min-width:110px}
+.sf-date .d{font-weight:700; font-size:.85rem; color:var(--sf-text)}
+.sf-date .t{font-size:.75rem; color:var(--sf-muted)}
+.btn-sf{
+    display:inline-flex; align-items:center; gap:6px;
+    border:1px solid var(--sf-border); color:var(--sf-text); 
+    border-radius:50px; font-size:.78rem; font-weight:800; padding:.4rem .9rem; 
+    text-decoration:none; margin-top:8px; transition:.2s
+}
+.btn-sf:hover{
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); 
+    color:#061324; border-color:transparent; transform:translateX(2px)
+}
+.sf-badge{
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); 
+    color:#061324; font-size:.65rem; font-weight:900; padding:3px 10px; border-radius:50px;
+    text-transform:uppercase; letter-spacing:.5px
+}
+.sf-empty{
+    background:var(--sf-card); border:1px solid var(--sf-border); border-radius:20px; 
+    padding:4rem 2rem; text-align:center; color:var(--sf-muted);
+    box-shadow:0 10px 40px rgba(0,0,0,.1)
+}
+body.dark-mode .sf-empty{backdrop-filter:blur(20px)}
+.sf-empty i{font-size:3.5rem; color:var(--sf-accent); margin-bottom:1rem; opacity:.7}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h4><i class="bi bi-bell me-2"></i>Notifications</h4>
-</div>
-
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-
-    {% if notifications %}
-      {% for n in notifications %}
-      <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body py-3 px-4">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="d-flex gap-3 align-items-start">
-
-              <!-- Icon -->
-              <div style="font-size:1.5rem; margin-top:2px;">
-                {% if n.type == 'approval' %}
-                  <i class="bi bi-check-circle-fill text-success"></i>
-                {% elif n.type == 'rejection' %}
-                  <i class="bi bi-x-circle-fill text-danger"></i>
-                {% elif n.type == 'assignment' %}
-                  <i class="bi bi-person-check-fill text-primary"></i>
-                {% elif n.type == 'reminder' %}
-                  <i class="bi bi-alarm-fill text-warning"></i>
-                {% else %}
-                  <i class="bi bi-info-circle-fill text-secondary"></i>
-                {% endif %}
-              </div>
-
-              <div>
-                <div style="font-size:.92rem;">{{ n.message }}</div>
-                {% if n.document %}
-                <div class="mt-1">
-                  <a href="{% url 'document_detail' n.document.pk %}"
-                     class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size:.78rem;">
-                    <i class="bi bi-eye me-1"></i>View Document
-                  </a>
-                </div>
-                {% endif %}
-              </div>
+<div class="sf-wrap">
+  <div class="container">
+    <div class="col-lg-8 mx-auto">
+        <div class="sf-header">
+            <div class="sf-header-left">
+                <div class="sf-header-icon"><i class="bi bi-bell-fill"></i></div>
+                <h4>Notifications</h4>
             </div>
-
-            <div class="text-end" style="min-width:110px;">
-              <div class="text-muted small">{{ n.sent_at|date:"d M Y" }}</div>
-              <div class="text-muted" style="font-size:.75rem;">{{ n.sent_at|date:"H:i" }}</div>
-              {% if not n.is_read %}
-                <span class="badge bg-primary mt-1" style="font-size:.68rem;">New</span>
-              {% endif %}
+            <div>
+                {% if request.user.role == 'admin' %}
+                <a href="{% url 'admin_workspace' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+                {% elif request.user.role == 'clerk' %}
+                <a href="{% url 'clerk_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+                {% elif request.user.role == 'supervisor' %}
+                <a href="{% url 'supervisor_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+                {% elif request.user.role == 'staff' %}
+                <a href="{% url 'staff_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+                {% elif request.user.role == 'student' %}
+                <a href="{% url 'student_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if notifications %}
+          {% for n in notifications %}
+          <div class="sf-card {{ n.type }}">
+            <div class="sf-grid">
+                <div class="sf-icon">
+                    {% if n.type == 'approval' %}<i class="bi bi-check-circle-fill"></i>
+                    {% elif n.type == 'rejection' %}<i class="bi bi-x-circle-fill"></i>
+                    {% elif n.type == 'assignment' %}<i class="bi bi-person-check-fill"></i>
+                    {% elif n.type == 'reminder' %}<i class="bi bi-alarm-fill"></i>
+                    {% else %}<i class="bi bi-info-circle-fill"></i>{% endif %}
+                </div>
+                <div>
+                    <div class="sf-msg">{{ n.message }}</div>
+                    {% if n.document %}<div class="sf-meta">Ref: {{ n.document.reference_no }}</div>{% endif %}
+                    {% if n.document %}
+                    <a href="{% url 'document_detail' n.document.pk %}" class="btn-sf">
+                        <i class="bi bi-eye"></i> View Document
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="sf-date">
+                    <div class="d">{{ n.sent_at|date:"d M Y" }}</div>
+                    <div class="t">{{ n.sent_at|date:"H:i" }}</div>
+                    {% if not n.is_read %}<span class="sf-badge mt-2 d-inline-block">New</span>{% endif %}
+                </div>
             </div>
           </div>
-        </div>
-      </div>
-      {% endfor %}
-
-    {% else %}
-      <div class="card border-0 shadow-sm">
-        <div class="card-body text-center py-5">
-          <i class="bi bi-bell-slash fs-1 text-muted d-block mb-3"></i>
-          <h6 class="text-muted">No notifications yet</h6>
-          <p class="text-muted small">You will receive alerts here for approvals, rejections, and assignments.</p>
-        </div>
-      </div>
-    {% endif %}
-
+          {% endfor %}
+        {% else %}
+          <div class="sf-empty">
+              <i class="bi bi-bell-slash"></i>
+              <h6 style="color:var(--sf-text); font-weight:800">No notifications yet</h6>
+              <p>Approvals, rejections, and assignments will appear here.</p>
+          </div>
+        {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

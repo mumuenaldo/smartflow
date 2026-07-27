@@ -5,144 +5,39 @@
 
 {% block extra_css %}
 <style>
-    
-    /* DARK MODE FOR REGISTER PAGE  */
-    
-
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .card-header {
-        background: #3a1428 !important; 
-        border-bottom: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .card-header h3 {
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .card-header .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-    }
-
-    body.dark-mode .form-label {
-        color: #ffffff !important; 
-    }
-
-    body.dark-mode .form-control {
-        background: #3a1428 !important; 
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .form-control:focus {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border-color: #ffc700 !important; 
-        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
-    }
-
-    body.dark-mode .form-control::placeholder {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .form-control.is-invalid {
-        border-color: #ff6b6b !important;
-    }
-
-    body.dark-mode .form-select {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .form-select:focus {
-        border-color: #ffc700 !important;
-        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
-    }
-
-    body.dark-mode .form-select option {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .form-text {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .alert {
-        background: #3a1428 !important;
-        border-color: #4a1a32 !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .alert-danger {
-        border-color: #ff6b6b !important;
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .btn-primary {
-        background: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-        color: #2d0b1e !important; 
-    }
-
-    body.dark-mode .btn-primary:hover {
-        background: #ffd700 !important; 
-        border-color: #ffd700 !important;
-        color: #2d0b1e !important;
-    }
-
-    body.dark-mode hr {
-        border-color: #4a1a32 !important;
-    }
-
-    body.dark-mode .text-center p {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .text-center a {
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .text-center a:hover {
-        color: #ffd700 !important; 
-    }
-
-    body.dark-mode .text-decoration-none {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .text-decoration-none:hover {
-        color: #ffc700 !important;
-    }
-
-    body.dark-mode .invalid-feedback {
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .bg-white {
-        background: #2d0b1e !important;
-    }
-
-    body.dark-mode .bg-white.text-center.py-3 {
-        background: #3a1428 !important;
-    }
-
-    body.dark-mode [style*="color: var(--blue-deep);"] {
-        color: #ffc700 !important; /* Gold for header */
-    }
+body.dark-mode .card{background:#2d0b1e!important;border:1px solid #4a1a32!important;box-shadow:0 4px 16px rgba(0,0,0,0.5)!important}
+body.dark-mode .card-header{background:#3a1428!important;border-bottom:1px solid #4a1a32!important}
+body.dark-mode .card-header h3{color:#ffc700!important}
+body.dark-mode .card-header .text-muted{color:#c9a96a!important}
+body.dark-mode .card-body{background:#2d0b1e!important}
+body.dark-mode .form-label{color:#ffffff!important}
+body.dark-mode .form-control{background:#3a1428!important;color:#ffffff!important;border:1px solid #4a1a32!important}
+body.dark-mode .form-control:focus{background:#3a1428!important;color:#ffffff!important;border-color:#ffc700!important;box-shadow:0 0 0 3px rgba(255,199,0,0.2)!important}
+body.dark-mode .form-control::placeholder{color:#c9a96a!important}
+body.dark-mode .form-control.is-invalid{border-color:#ff6b6b!important}
+body.dark-mode .form-select{background:#3a1428!important;color:#ffffff!important;border:1px solid #4a1a32!important}
+body.dark-mode .form-select:focus{border-color:#ffc700!important;box-shadow:0 0 0 3px rgba(255,199,0,0.2)!important}
+body.dark-mode .form-select option{background:#3a1428!important;color:#ffffff!important}
+body.dark-mode .form-text{color:#c9a96a!important}
+body.dark-mode .alert{background:#3a1428!important;border-color:#4a1a32!important;color:#ffffff!important}
+body.dark-mode .alert-danger{border-color:#ff6b6b!important;color:#ff6b6b!important}
+body.dark-mode .btn-primary{background:#ffc700!important;border:1px solid #ffc700!important;color:#2d0b1e!important}
+body.dark-mode .btn-primary:hover{background:#ffd700!important;border-color:#ffd700!important;color:#2d0b1e!important}
+body.dark-mode hr{border-color:#4a1a32!important}
+body.dark-mode .text-center p{color:#c9a96a!important}
+body.dark-mode .text-center a{color:#ffc700!important}
+body.dark-mode .text-center a:hover{color:#ffd700!important}
+body.dark-mode .text-decoration-none{color:#c9a96a!important}
+body.dark-mode .text-decoration-none:hover{color:#ffc700!important}
+body.dark-mode .invalid-feedback{color:#ff6b6b!important}
+body.dark-mode .shadow-sm{box-shadow:0 4px 16px rgba(0,0,0,0.5)!important}
+body.dark-mode .bg-white{background:#2d0b1e!important}
+body.dark-mode .bg-white.text-center.py-3{background:#3a1428!important}
+body.dark-mode [style*="color: var(--blue-deep);"]{color:#ffc700!important}
+.sf-btn-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:10px;padding:.5rem .9rem;font-weight:800;font-size:.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.sf-btn-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+body.dark-mode .sf-btn-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .sf-btn-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
 </style>
 {% endblock %}
 
@@ -150,6 +45,9 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'role_selection' %}" class="sf-btn-back"><i class="bi bi-arrow-left"></i>Back</a>
+            </div>
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white text-center py-3">
                     <h3 class="fw-bold" style="color: var(--blue-deep);">
@@ -171,7 +69,6 @@
                 <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
-                        
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger">
                                 {% for error in form.non_field_errors %}
@@ -179,8 +76,6 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-
-                        <!-- Username -->
                         <div class="mb-3">
                             <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">Username </label>
                             <input type="text" name="username" id="{{ form.username.id_for_label }}" 
@@ -190,9 +85,7 @@
                                 <div class="invalid-feedback">{{ form.username.errors }}</div>
                             {% endif %}
                         </div>
-
                         <div class="row">
-                            <!-- First Name -->
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">First Name </label>
                                 <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" 
@@ -202,8 +95,6 @@
                                     <div class="invalid-feedback">{{ form.first_name.errors }}</div>
                                 {% endif %}
                             </div>
-
-                            <!-- Last Name -->
                             <div class="col-md-6 mb-3">
                                 <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">Last Name </label>
                                 <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" 
@@ -214,8 +105,6 @@
                                 {% endif %}
                             </div>
                         </div>
-
-                        <!-- Email -->
                         <div class="mb-3">
                             <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">Email Address </label>
                             <input type="email" name="email" id="{{ form.email.id_for_label }}" 
@@ -225,8 +114,6 @@
                                 <div class="invalid-feedback">{{ form.email.errors }}</div>
                             {% endif %}
                         </div>
-
-                        <!-- Password -->
                         <div class="mb-3">
                             <label for="{{ form.password.id_for_label }}" class="form-label fw-bold">Password </label>
                             <input type="password" name="password" id="{{ form.password.id_for_label }}" 
@@ -236,8 +123,6 @@
                                 <div class="invalid-feedback">{{ form.password.errors }}</div>
                             {% endif %}
                         </div>
-
-                        <!-- Confirm Password -->
                         <div class="mb-3">
                             <label for="{{ form.confirm_password.id_for_label }}" class="form-label fw-bold">Confirm Password </label>
                             <input type="password" name="confirm_password" id="{{ form.confirm_password.id_for_label }}" 
@@ -246,8 +131,6 @@
                                 <div class="invalid-feedback">{{ form.confirm_password.errors }}</div>
                             {% endif %}
                         </div>
-
-                        <!-- Department (for staff roles) -->
                         {% if role != 'Student' %}
                         <div class="mb-3">
                             <label for="{{ form.department.id_for_label }}" class="form-label fw-bold">Department</label>
@@ -265,8 +148,6 @@
                             {% endif %}
                         </div>
                         {% endif %}
-
-                        <!-- Student-specific fields -->
                         {% if role == 'Student' %}
                         <div class="mb-3">
                             <label for="{{ form.student_id.id_for_label }}" class="form-label fw-bold">Student ID </label>
@@ -277,21 +158,17 @@
                                 <div class="invalid-feedback">{{ form.student_id.errors }}</div>
                             {% endif %}
                         </div>
-
                         <div class="mb-3">
                             <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-bold">Phone Number</label>
                             <input type="tel" name="phone_number" id="{{ form.phone_number.id_for_label }}" 
                                    class="form-control" placeholder="e.g., 0771234567">
                         </div>
-
                         <div class="mb-3">
                             <label for="{{ form.address.id_for_label }}" class="form-label fw-bold">Address</label>
                             <textarea name="address" id="{{ form.address.id_for_label }}" 
                                       class="form-control" rows="2" placeholder="Your address"></textarea>
                         </div>
                         {% endif %}
-
-                        <!-- Admin Registration Key -->
                         {% if role == 'Administrator' %}
                         <div class="mb-3">
                             <label for="{{ form.admin_key.id_for_label }}" class="form-label fw-bold">Admin Registration Key *</label>
@@ -302,21 +179,16 @@
                             {% endif %}
                         </div>
                         {% endif %}
-
                         <hr class="my-4">
-
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
                             <i class="bi bi-person-plus me-2"></i> Register as {{ role }}
                         </button>
                     </form>
-
                     <div class="text-center mt-3">
                         <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
                     </div>
                 </div>
             </div>
-
-            <!-- Back to Home -->
             <div class="text-center mt-4">
                 <a href="{% url 'landing_page' %}" class="text-decoration-none">
                     <i class="bi bi-arrow-left me-1"></i> Back to Home

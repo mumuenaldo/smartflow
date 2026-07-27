@@ -1,336 +1,714 @@
 {% extends 'registry/base.html' %}
 {% load static %}
 
-{% block content %}
+{% block title %}Admin Workspace — SmartFlow{% endblock %}
+
+{% block extra_css %}
 <style>
-    /* ============================================================
-       SmartFlow Admin Workspace Colors 
-       ============================================================ */
-    :root {
-        /* ===== DAY THEME  ===== */
-        --accent-day: #00d2d3;              
-        --bg-day: #181d52f7;                  
-        --card-day: rgba(255, 255, 255, 0.05); 
-        --text-day: #ffffff;                
-        --border-day: rgba(255,255,255,0.2);   
-        --blue-day: #3498db;                
 
-        /* NIGHT THEME  */
-        --bg-night-gradient: linear-gradient(135deg, #1a0a0a, #2c0e1e); /* Burgundy */
-        --accent-night: #f1c40f;            
-        --accent-secondary-night: #9b59b6;  
-        --blue-night: #3498db;              
-        --text-night: #f5e6d3;             
-        --card-night: rgba(60, 20, 40, 0.7); 
-        --border-night: rgba(245, 230, 211, 0.2); 
-    }
+:root {
+  --navy-deep:      #0a1e3d;    
+  --navy-mid:       #0f3b6a;    
+  --navy-light:     #1a5a9e;    
+  --cyan:           #00d4ff;    
+  --cyan-dim:       rgba(0, 212, 255, 0.12);
+  --cyan-glow:      rgba(0, 212, 255, 0.45);
+  --white:          #ffffff;
+  --off-white:      #f0f8ff;    
+  --text-base:      #071326;   
+  --text-muted:     #2a4b6e;    
+  --border-day:     rgba(0, 212, 255, 0.25);
+  --card-day:       rgba(255, 255, 255, 0.95);
+  --shadow-day:     0 12px 40px rgba(10, 30, 61, 0.25);
 
-    /* Auto-switch based on body.dark-mode from base.html */
-    .workspace-container {
-        padding: 2rem 1rem;
-        min-height: 100vh;
-        background: var(--bg-day);
-        color: var(--text-day);
-        transition: background 0.3s ease, color 0.3s ease;
-    }
-    body.dark-mode .workspace-container {
-        background: var(--bg-night-gradient);
-        color: var(--text-night);
-    }
+  --burgundy:       #1e0816;
+  --burgundy-mid:   #2d0b1e;
+  --gold:           #ffc700;
+  --gold-dim:       rgba(255, 199, 0, 0.10);
+  --gold-glow:      rgba(255, 199, 0, 0.30);
+  --text-night:     #f5e6d3;
+  --text-night-muted:#c9a96a;
+  --border-night:   rgba(255, 199, 0, 0.20);
+  --card-night:     rgba(30, 8, 22, 0.85);
+  --shadow-night:   0 8px 32px rgba(0, 0, 0, 0.45);
+}
 
-    /* Navigation Bar - Gold accent on night */
-    .control-nav-bar {
-        background: var(--card-day);
-        border-left: 5px solid var(--accent-day);
-        padding: 1rem;
-        border-radius: 4px;
-        margin-bottom: 3rem;
-        border: 1px solid var(--border-day);
-        transition: all 0.3s ease;
-    }
-    body.dark-mode .control-nav-bar {
-        background: var(--card-night);
-        border-left-color: var(--accent-night); 
-        border-color: var(--border-night);
-    }
+/* ─── WORKSPACE SHELL ─── */
+.workspace-container {
+  min-height: 100vh;
+  padding: 0 0 5rem;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 75% -5%, rgba(0, 212, 255, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 5% 90%, rgba(10, 30, 61, 0.30) 0%, transparent 65%),
+    linear-gradient(165deg, #e6f3ff 0%, #cae4ff 45%, #a8d4ff 100%);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+body.dark-mode .workspace-container {
+  background:
+    radial-gradient(ellipse 70% 50% at 75% -5%, rgba(255, 199, 0, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 5% 90%, rgba(45, 11, 30, 0.6) 0%, transparent 65%),
+    linear-gradient(170deg, #1e0816 0%, #160510 45%, #0e030b 100%);
+}
 
-    .btn-back-workspace {
-        color: var(--accent-day);
-        font-weight: 700;
-        text-decoration: none;
-        border: 1px solid var(--accent-day);
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        transition: 0.3s;
-    }
-    body.dark-mode .btn-back-workspace {
-        color: var(--accent-night); 
-        border-color: var(--accent-night);
-    }
+.workspace-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 20%, transparent 100%);
+  pointer-events: none;
+}
+body.dark-mode .workspace-container::before {
+  background-image:
+    linear-gradient(rgba(255, 199, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 199, 0, 0.03) 1px, transparent 1px);
+}
 
-    .btn-back-workspace:hover {
-        background: var(--accent-day);
-        color: #000;
-    }
-    body.dark-mode .btn-back-workspace:hover {
-        background: var(--accent-night); 
-        color: #000;
-    }
+/* ─── HERO HEADER BAND ─── */
+.ws-hero {
+  position: relative;
+  padding: 3.5rem 0 2.5rem;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(145deg, #0a1e3d 0%, #0f3b6a 55%, #1a5a9e 100%);
+  overflow: hidden;
+}
+body.dark-mode .ws-hero {
+  background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-mid) 60%, #3d1029 100%);
+}
 
-    /* Module Matrix Cards  */
-    .grid-card {
-        background: var(--card-day);
-        border: 1px solid var(--border-day);
-        border-radius: 12px;
-        padding: 1.5rem;
-        transition: 0.3s;
-        height: 100%;
-        text-decoration: none;
-        display: block;
-        color: inherit;
-    }
-    body.dark-mode .grid-card {
-        background: var(--card-night);
-        border-color: var(--border-night);
-    }
+.ws-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.10) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+body.dark-mode .ws-hero::after {
+  background-image:
+    linear-gradient(rgba(255, 199, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 199, 0, 0.05) 1px, transparent 1px);
+}
 
-    .grid-card:hover {
-        border-color: var(--blue-day); 
-        box-shadow: 0 0 12px var(--blue-day); 
-        transform: translateY(-5px);
-    }
-    body.dark-mode .grid-card:hover {
-        border-color: var(--blue-night);
-        box-shadow: 0 0 12px var(--accent-secondary-night);
-    }
+.ws-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+}
+.ws-hero-orb-1 {
+  width: 320px; height: 320px;
+  background: rgba(0, 212, 255, 0.20);
+  top: -80px; right: 8%;
+  animation: orbFloat 18s ease-in-out infinite alternate;
+}
+.ws-hero-orb-2 {
+  width: 180px; height: 180px;
+  background: rgba(26, 90, 158, 0.25);
+  bottom: -40px; left: 15%;
+  animation: orbFloat 22s ease-in-out infinite alternate-reverse;
+}
+body.dark-mode .ws-hero-orb-1 { background: rgba(255, 199, 0, 0.10); }
+body.dark-mode .ws-hero-orb-2 { background: rgba(255, 20, 147, 0.08); }
+@keyframes orbFloat {
+  0%   { transform: translate(0,0) scale(1); }
+  100% { transform: translate(30px,-35px) scale(1.12); }
+}
 
-    /* ─── AI TOOLS SPECIAL CARD ─── */
-    .grid-card.ai-tools-card {
-        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(109, 40, 217, 0.25) 100%);
-        border: 2px solid rgba(124, 58, 237, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .grid-card.ai-tools-card::after {
-        content: '✨ AI';
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
-        color: white;
-        font-size: 0.55rem;
-        padding: 2px 10px;
-        border-radius: 50px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-    
-    .grid-card.ai-tools-card:hover {
-        border-color: #8b5cf6;
-        box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
-        transform: translateY(-8px) scale(1.02);
-    }
-    
-    .grid-card.ai-tools-card .icon-box-cyan {
-        color: #a78bfa;
-    }
-    
-    .grid-card.ai-tools-card:hover .icon-box-cyan {
-        color: #c4b5fd;
-    }
-    
-    .grid-card.ai-tools-card .btn-action-outline {
-        border-color: #8b5cf6;
-        color: #a78bfa;
-    }
-    
-    .grid-card.ai-tools-card .btn-action-outline:hover {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
-        color: #ffffff;
-        border-color: #7c3aed;
-    }
-    
-    body.dark-mode .grid-card.ai-tools-card {
-        background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(109, 40, 217, 0.35) 100%);
-        border-color: rgba(124, 58, 237, 0.4);
-    }
-    
-    body.dark-mode .grid-card.ai-tools-card:hover {
-        border-color: #8b5cf6;
-        box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);
-    }
-    
-    body.dark-mode .grid-card.ai-tools-card .icon-box-cyan {
-        color: #a78bfa;
-    }
-    
-    body.dark-mode .grid-card.ai-tools-card .btn-action-outline {
-        border-color: #8b5cf6;
-        color: #a78bfa;
-    }
-    
-    body.dark-mode .grid-card.ai-tools-card .btn-action-outline:hover {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
-        color: #ffffff;
-        border-color: #7c3aed;
-    }
+.ws-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-    .icon-box-cyan {
-        color: var(--accent-day);
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-    }
-    body.dark-mode .icon-box-cyan {
-        color: var(--accent-secondary-night); 
-    }
+.ws-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 212, 255, 0.20);
+  border: 1px solid rgba(0, 212, 255, 0.45);
+  border-radius: 50px;
+  color: #c0e6ff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0.28rem 0.9rem;
+  margin-bottom: 0.75rem;
+}
+body.dark-mode .ws-hero-eyebrow {
+  background: rgba(255, 199, 0, 0.10);
+  border-color: rgba(255, 199, 0, 0.28);
+  color: var(--gold);
+}
 
-    .btn-action-outline {
-        border: 1px solid var(--accent-day);
-        color: var(--accent-day);
-        border-radius: 20px;
-        margin-top: 1rem;
-        background: transparent;
-        transition: 0.3s;
-        padding: 0.3rem 1.2rem;
-        font-size: 0.85rem;
-        text-decoration: none;
-        display: inline-block;
-    }
-    body.dark-mode .btn-action-outline {
-        border-color: var(--accent-night); 
-        color: var(--accent-night); 
-    }
+.ws-hero-eyebrow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4cff91;
+  box-shadow: 0 0 6px #4cff91;
+  flex-shrink: 0;
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-    .btn-action-outline:hover {
-        background-color: var(--accent-day);
-        color: #000;
-    }
-    body.dark-mode .btn-action-outline:hover {
-        background-color: var(--accent-night); 
-        color: #000;
-    }
+.ws-hero-title {
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+.ws-hero-title span {
+  background: linear-gradient(90deg, #00d4ff 0%, #7ac7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.dark-mode .ws-hero-title span {
+  background: linear-gradient(90deg, var(--gold) 0%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-    /* Bottom Stat Strip - Blue both themes */
-    .stat-pill {
-        background: var(--card-day);
-        border: 1px solid var(--blue-day); 
-        border-radius: 10px;
-        padding: 1.5rem;
-        color: var(--blue-day); 
-        text-align: center;
-        transition: 0.3s;
-    }
-    body.dark-mode .stat-pill {
-        background: var(--card-night);
-        border-color: var(--blue-night); 
-        color: var(--blue-night);
-    }
+.ws-hero-sub {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.88rem;
+  font-weight: 400;
+}
 
-    .stat-pill:hover {
-        box-shadow: 0 0 10px var(--blue-day);
-    }
-    body.dark-mode .stat-pill:hover {
-        box-shadow: 0 0 10px var(--accent-secondary-night); 
-    }
+.btn-back-workspace {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  padding: 0.6rem 1.3rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+.btn-back-workspace:hover {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--cyan-glow);
+}
+body.dark-mode .btn-back-workspace:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+  box-shadow: 0 6px 20px var(--gold-glow);
+}
 
-    /* Bottom border line - Blue both themes */
-    .mt-5.pt-5 {
-        border-top: 1px solid var(--blue-day) !important;
-    }
-    body.dark-mode .mt-5.pt-5 {
-        border-top-color: var(--blue-night) !important;
-    }
+/* ─── SECTION LABEL ─── */
+.ws-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+.ws-section-label-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-day), transparent);
+}
+body.dark-mode .ws-section-label-line {
+  background: linear-gradient(90deg, var(--border-night), transparent);
+}
+.ws-section-label span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #0a3d6b;
+  white-space: nowrap;
+}
+body.dark-mode .ws-section-label span { color: var(--gold); }
 
-    /* H5 in navbar icon - Gold on night */
-    .control-nav-bar h5 i {
-        color: var(--accent-day);
-    }
-    body.dark-mode .control-nav-bar h5 i {
-        color: var(--accent-night); 
-    }
+/* ─── MODULE GRID CARDS ─── */
+.grid-card {
+  position: relative;
+  background: var(--card-day);
+  border: 1.5px solid var(--border-day);
+  border-radius: 20px;
+  padding: 1.9rem 1.6rem 1.6rem;
+  transition: all 0.3s ease;
+  height: 100%;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  overflow: hidden;
+  box-shadow: var(--shadow-day);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+body.dark-mode .grid-card {
+  background: var(--card-night);
+  border-color: var(--border-night);
+  box-shadow: var(--shadow-night);
+}
+
+.grid-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3.5px;
+  background: linear-gradient(90deg, var(--cyan), #4dc9ff);
+  border-radius: 20px 20px 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+body.dark-mode .grid-card::before {
+  background: linear-gradient(90deg, var(--gold), #ffd966);
+}
+
+.grid-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -70%;
+  width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.08), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.6s ease;
+}
+body.dark-mode .grid-card::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 199, 0, 0.06), transparent);
+}
+
+.grid-card:hover::before { opacity: 1; }
+.grid-card:hover::after  { left: 130%; }
+.grid-card:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 16px 48px rgba(0, 212, 255, 0.22), 0 0 0 1px rgba(0, 212, 255, 0.15);
+  transform: translateY(-5px);
+  color: inherit;
+}
+body.dark-mode .grid-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 16px 48px rgba(255, 199, 0, 0.14), 0 0 0 1px rgba(255, 199, 0, 0.12);
+}
+
+.icon-box {
+  width: 50px; height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
+  flex-shrink: 0;
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 212, 255, 0.30);
+  transition: all 0.3s ease;
+}
+body.dark-mode .icon-box {
+  background: var(--gold-dim);
+  color: var(--gold);
+  border-color: rgba(255, 199, 0, 0.22);
+}
+.grid-card:hover .icon-box {
+  background: var(--cyan);
+  color: #fff;
+  box-shadow: 0 4px 18px var(--cyan-glow);
+  transform: scale(1.08) rotate(-3deg);
+}
+body.dark-mode .grid-card:hover .icon-box {
+  background: var(--gold);
+  color: #000;
+  box-shadow: 0 4px 18px var(--gold-glow);
+}
+
+.grid-card h5 {
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.45rem;
+  color: var(--text-base);
+  letter-spacing: -0.2px;
+}
+body.dark-mode .grid-card h5 { color: #fff; }
+
+.grid-card p {
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  line-height: 1.65;
+  flex: 1;
+  margin-bottom: 1.2rem;
+}
+body.dark-mode .grid-card p { color: var(--text-night-muted); }
+
+.btn-action-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1.5px solid var(--cyan);
+  color: var(--cyan);
+  border-radius: 9px;
+  padding: 0.42rem 1.1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  background: transparent;
+  align-self: flex-start;
+  letter-spacing: 0.2px;
+}
+body.dark-mode .btn-action-outline {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-action-outline:hover,
+.grid-card:hover .btn-action-outline {
+  background: var(--cyan);
+  color: #fff;
+  border-color: var(--cyan);
+  box-shadow: 0 3px 14px var(--cyan-glow);
+}
+body.dark-mode .btn-action-outline:hover,
+body.dark-mode .grid-card:hover .btn-action-outline {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+  box-shadow: 0 3px 14px var(--gold-glow);
+}
+
+/* AI special card */
+.grid-card.ai-card {
+  background: linear-gradient(145deg, rgba(0, 212, 255, 0.08) 0%, rgba(10, 30, 61, 0.06) 100%);
+  border-color: rgba(0, 212, 255, 0.45);
+  border-width: 1.5px;
+}
+body.dark-mode .grid-card.ai-card {
+  background: linear-gradient(145deg, rgba(255, 199, 0, 0.06) 0%, rgba(255, 20, 147, 0.04) 100%);
+  border-color: rgba(255, 199, 0, 0.3);
+}
+
+.ai-badge {
+  position: absolute;
+  top: 14px; right: 14px;
+  background: linear-gradient(135deg, #0a1e3d, #0f3b6a);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+body.dark-mode .ai-badge {
+  background: linear-gradient(135deg, var(--burgundy-mid), var(--gold));
+  color: #000;
+}
+
+/* ─── STAT CARDS ─── */
+.stats-band {
+  margin-top: 3.5rem;
+  position: relative;
+}
+
+.stat-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 2.2rem 1.8rem;
+  overflow: hidden;
+  text-align: center;
+  transition: all 0.35s ease;
+  cursor: default;
+}
+
+/* Pure Navy + Cyan gradients */
+.stat-card-docs {
+  background: linear-gradient(145deg, #0a1e3d 0%, #1a5a9e 100%);
+  box-shadow: 0 12px 40px rgba(10, 30, 61, 0.45), 0 0 0 1px rgba(0, 212, 255, 0.20);
+}
+.stat-card-users {
+  background: linear-gradient(145deg, #0c2f55 0%, #0099cc 100%);
+  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.30), 0 0 0 1px rgba(0, 212, 255, 0.20);
+}
+.stat-card-depts {
+  background: linear-gradient(145deg, #063a5e 0%, #0077b3 100%);
+  box-shadow: 0 12px 40px rgba(0, 119, 179, 0.35), 0 0 0 1px rgba(0, 212, 255, 0.20);
+}
+
+body.dark-mode .stat-card-docs {
+  background: linear-gradient(145deg, #3d1029 0%, #7c1d44 100%);
+  box-shadow: 0 12px 40px rgba(61, 16, 41, 0.6), 0 0 0 1px rgba(255, 199, 0, 0.15);
+}
+body.dark-mode .stat-card-users {
+  background: linear-gradient(145deg, #4a1a00 0%, #b45309 100%);
+  box-shadow: 0 12px 40px rgba(180, 83, 9, 0.3), 0 0 0 1px rgba(255, 199, 0, 0.15);
+}
+body.dark-mode .stat-card-depts {
+  background: linear-gradient(145deg, #2d1a00 0%, #ffc700 100%);
+  box-shadow: 0 12px 40px rgba(255, 199, 0, 0.25), 0 0 0 1px rgba(255, 199, 0, 0.2);
+}
+
+.stat-card-num {
+  font-size: 3.4rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+body.dark-mode .stat-card-depts .stat-card-num { color: #1e0816; }
+
+.stat-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.7);
+  position: relative;
+  z-index: 2;
+}
+body.dark-mode .stat-card-depts .stat-card-label { color: rgba(30, 8, 22, 0.7); }
+
+.stat-card-icon {
+  position: absolute;
+  bottom: -12px; right: -10px;
+  font-size: 5.5rem;
+  color: rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, color 0.3s ease;
+  z-index: 1;
+  line-height: 1;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+  z-index: 3;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  transform: skewX(-20deg);
+  animation: scanSweep 6s ease-in-out infinite;
+  z-index: 4;
+}
+@keyframes scanSweep {
+  0%   { left: -60%; opacity: 0; }
+  15%  { opacity: 1; }
+  40%  { left: 130%; opacity: 0; }
+  100% { left: 130%; }
+}
+
+.stat-card:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+.stat-card:hover .stat-card-icon {
+  transform: scale(1.15) rotate(-8deg);
+  color: rgba(255, 255, 255, 0.15);
+}
+.stat-card-docs:hover  { box-shadow: 0 24px 60px rgba(10, 30, 61, .6),  0 0 0 1px rgba(0, 212, 255, 0.30); }
+.stat-card-users:hover { box-shadow: 0 24px 60px rgba(0, 212, 255, .45), 0 0 0 1px rgba(0, 212, 255, 0.30); }
+.stat-card-depts:hover { box-shadow: 0 24px 60px rgba(0, 119, 179, .45), 0 0 0 1px rgba(0, 212, 255, 0.30); }
+body.dark-mode .stat-card-docs:hover  { box-shadow: 0 24px 60px rgba(124, 29, 68, .5), 0 0 0 1px rgba(255, 199, 0, 0.25); }
+body.dark-mode .stat-card-users:hover { box-shadow: 0 24px 60px rgba(180, 83, 9, .4),  0 0 0 1px rgba(255, 199, 0, 0.25); }
+body.dark-mode .stat-card-depts:hover { box-shadow: 0 24px 60px rgba(255, 199, 0, .35), 0 0 0 1px rgba(255, 199, 0, 0.35); }
+
+.stats-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-day), transparent);
+  margin-bottom: 2.5rem;
+}
+body.dark-mode .stats-divider {
+  background: linear-gradient(90deg, transparent, var(--border-night), transparent);
+}
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="workspace-container">
+
+  <!-- HERO HEADER -->
+  <div class="ws-hero">
+    <div class="ws-hero-orb ws-hero-orb-1"></div>
+    <div class="ws-hero-orb ws-hero-orb-2"></div>
     <div class="container">
-        <!-- Navigation Bar -->
-        <div class="control-nav-bar d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-cpu"></i> Admin Control Workspace</h5>
-            <a href="{% url 'admin_launchpad' %}" class="btn-back-workspace"><i class="bi bi-grid-3x3-gap-fill"></i> Launchpad</a>
+      <div class="ws-hero-inner">
+        <div>
+          <div class="ws-hero-eyebrow">
+            <span class="ws-hero-eyebrow-dot"></span>
+            System Control
+          </div>
+          <h1 class="ws-hero-title">Admin <span>Workspace</span></h1>
+          <p class="ws-hero-sub">Full-spectrum control over users, documents, and workflows.</p>
         </div>
-
-        <!-- Module Matrix (6 cards - 2 rows of 3) -->
-        <div class="row g-4">
-            <!-- Card 1: User Management -->
-            <div class="col-md-4">
-                <a href="{% url 'manage_users' %}" class="grid-card">
-                    <div class="icon-box-cyan"><i class="bi bi-people-fill"></i></div>
-                    <h5>User Management</h5>
-                    <p class="small">Provision and configure secure profiles.</p>
-                    <span class="btn-action-outline">Open Directory</span>
-                </a>
-            </div>
-            
-            <!-- Card 2: Departments -->
-            <div class="col-md-4">
-                <a href="{% url 'manage_departments' %}" class="grid-card">
-                    <div class="icon-box-cyan"><i class="bi bi-diagram-3-fill"></i></div>
-                    <h5>Departments</h5>
-                    <p class="small">Manage units and routing matrices.</p>
-                    <span class="btn-action-outline">View Units</span>
-                </a>
-            </div>
-            
-            <!-- Card 3: Audit Trail -->
-            <div class="col-md-4">
-                <a href="{% url 'audit_trail' %}" class="grid-card">
-                    <div class="icon-box-cyan"><i class="bi bi-shield-lock-fill"></i></div>
-                    <h5>Audit Trail</h5>
-                    <p class="small">Review security events and logs.</p>
-                    <span class="btn-action-outline">Review Logs</span>
-                </a>
-            </div>
-            
-            <!-- Card 4: All Documents -->
-            <div class="col-md-4">
-                <a href="{% url 'document_list' %}" class="grid-card">
-                    <div class="icon-box-cyan"><i class="bi bi-folder-fill"></i></div>
-                    <h5>All Documents</h5>
-                    <p class="small">Global document access and overrides.</p>
-                    <span class="btn-action-outline">Browse Docs</span>
-                </a>
-            </div>
-            
-            <!-- Card 5: Check Progress -->
-            <div class="col-md-4">
-                <a href="{% url 'check_progress' %}" class="grid-card">
-                    <div class="icon-box-cyan"><i class="bi bi-activity"></i></div>
-                    <h5>Check Progress</h5>
-                    <p class="small">Analyze pipeline processing trends.</p>
-                    <span class="btn-action-outline">Monitor Flows</span>
-                </a>
-            </div>
-            
-            <!-- ⭐ Card 6: AI TOOLS -->
-            <div class="col-md-4">
-                <a href="{% url 'admin_ai_dashboard' %}" class="grid-card ai-tools-card">
-                    <div class="icon-box-cyan"><i class="bi bi-robot"></i></div>
-                    <h5>AI Analytics</h5>
-                    <p class="small">System intelligence &amp; predictions.</p>
-                    <span class="btn-action-outline">Launch AI</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Bottom Stats Deck -->
-        <div class="mt-5 pt-5">
-            <div class="row g-3">
-                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_docs|default:"0" }}</h3><h6>Total Documents</h6></div></div>
-                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_users|default:"0" }}</h3><h6>Active Users</h6></div></div>
-                <div class="col-md-4"><div class="stat-pill"><h3>{{ total_depts|default:"0" }}</h3><h6>Departments</h6></div></div>
-            </div>
-        </div>
+        <a href="{% url 'admin_launchpad' %}" class="btn-back-workspace">
+          <i class="bi bi-grid-3x3-gap-fill"></i> Launchpad
+        </a>
+      </div>
     </div>
-</div>
+  </div>
+
+  <!-- MODULE GRID -->
+  <div class="container" style="position:relative;z-index:1;">
+
+    <div class="ws-section-label">
+      <span>Control Modules</span>
+      <div class="ws-section-label-line"></div>
+    </div>
+
+    <div class="row g-4">
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'manage_users' %}" class="grid-card">
+          <div class="icon-box"><i class="bi bi-people-fill"></i></div>
+          <h5>User Management</h5>
+          <p>Provision and configure secure profiles with role-based access controls across all departments.</p>
+          <span class="btn-action-outline">Open Directory <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'manage_departments' %}" class="grid-card">
+          <div class="icon-box"><i class="bi bi-diagram-3-fill"></i></div>
+          <h5>Departments</h5>
+          <p>Manage organisational units and configure routing matrices for automated workflow dispatch.</p>
+          <span class="btn-action-outline">View Units <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'audit_trail' %}" class="grid-card">
+          <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
+          <h5>Audit Trail</h5>
+          <p>Review security events, access logs, and a full chronological history of system activity.</p>
+          <span class="btn-action-outline">Review Logs <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'document_list' %}" class="grid-card">
+          <div class="icon-box"><i class="bi bi-folder-fill"></i></div>
+          <h5>All Documents</h5>
+          <p>Global document access with advanced search, filter overrides, and bulk operations.</p>
+          <span class="btn-action-outline">Browse Docs <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'check_progress' %}" class="grid-card">
+          <div class="icon-box"><i class="bi bi-activity"></i></div>
+          <h5>Check Progress</h5>
+          <p>Analyse pipeline processing trends, approval rates, and identify bottlenecks in real time.</p>
+          <span class="btn-action-outline">Monitor Flows <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'admin_ai_dashboard' %}" class="grid-card ai-card">
+          <span class="ai-badge">AI</span>
+          <div class="icon-box"><i class="bi bi-robot"></i></div>
+          <h5>AI Analytics</h5>
+          <p>System intelligence, predictive insights, anomaly detection, and smart workflow recommendations.</p>
+          <span class="btn-action-outline">Launch AI <i class="bi bi-arrow-right-short"></i></span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-band">
+      <div class="stats-divider"></div>
+
+      <div class="ws-section-label">
+        <span>System Overview</span>
+        <div class="ws-section-label-line"></div>
+      </div>
+
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <div class="stat-card stat-card-docs">
+            <i class="bi bi-folder-fill stat-card-icon"></i>
+            <div class="stat-card-num" id="numDocs" data-target="{{ total_docs|default:'0' }}">0</div>
+            <div class="stat-card-label">Total Documents</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-card stat-card-users">
+            <i class="bi bi-people-fill stat-card-icon"></i>
+            <div class="stat-card-num" id="numUsers" data-target="{{ total_users|default:'0' }}">0</div>
+            <div class="stat-card-label">Active Users</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-card stat-card-depts">
+            <i class="bi bi-diagram-3-fill stat-card-icon"></i>
+            <div class="stat-card-num" id="numDepts" data-target="{{ total_depts|default:'0' }}">0</div>
+            <div class="stat-card-label">Departments</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /workspace-container -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10) || 0;
+  if (target === 0) { el.textContent = '0'; return; }
+  const duration = 1200;
+  const step     = Math.max(1, Math.round(target / (duration / 16)));
+  let   current  = 0;
+  const tick = () => {
+    current = Math.min(current + step, target);
+    el.textContent = current.toLocaleString();
+    if (current < target) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+const counters = document.querySelectorAll('.stat-card-num[data-target]');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(e.target);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+counters.forEach(c => io.observe(c));
+</script>
 {% endblock %}

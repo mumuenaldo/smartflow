@@ -6,8 +6,8 @@
 {% block extra_css %}
 <style>
     .sf-progress { background: #F7F8FA; min-height: calc(100vh - 160px); }
-    body.dark-mode .sf-progress { background: #1a0a14; } 
-    
+    body.dark-mode .sf-progress { background: #1a0a14; }
+
     .sf-progress .sf-card {
         background: #fff;
         border-radius: 20px;
@@ -15,31 +15,44 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         margin-bottom: 1.5rem;
         border: 1px solid #eee;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    .sf-progress .sf-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
     }
     body.dark-mode .sf-progress .sf-card {
-        background: #2d0b1e; 
+        background: #2d0b1e;
         border: 1px solid #4a1a32;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-    
+    body.dark-mode .sf-progress .sf-card:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    }
+
     .sf-progress .card-title {
         font-weight: 700;
         font-size: 1rem;
         color: #1E3A5F;
         margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
     }
-    body.dark-mode .sf-progress .card-title { color: #ffc700; } 
-    
+    body.dark-mode .sf-progress .card-title { color: #ffc700; }
+
     .sf-progress .chart-wrap {
         height: 280px;
         width: 100%;
         position: relative;
     }
-    
+
     .sf-progress .back-link {
         color: var(--sf-muted, #6c757d);
         text-decoration: none;
         font-size: 0.85rem;
+        transition: color 0.2s ease;
     }
     .sf-progress .back-link:hover { color: #1E3A5F; }
     body.dark-mode .sf-progress .back-link { color: #c9a96a; }
@@ -47,11 +60,99 @@
 
     body.dark-mode .text-muted { color: #c9a96a !important; }
     body.dark-mode .text-warning { color: #ffc700 !important; }
-    body.dark-mode .text-info { color: #c084fc !important; } 
+    body.dark-mode .text-info { color: #c084fc !important; }
     body.dark-mode .text-success { color: #4cff91 !important; }
     body.dark-mode .text-danger { color: #ff6b6b !important; }
 
     body.dark-mode h4.fw-bold { color: #ffc700 !important; }
+
+    .click-hint {
+        font-size: 0.6rem;
+        color: #94a3b8;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .sf-card:hover .click-hint { opacity: 1; }
+
+    .table-responsive { border-radius: 12px; overflow: hidden; }
+    .sf-progress .table th {
+        background: rgba(30, 58, 95, 0.06);
+        font-weight: 800;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #1E3A5F;
+    }
+    body.dark-mode .sf-progress .table th { 
+        background: rgba(255, 199, 0, 0.08);
+        color: #ffc700;
+    }
+    .sf-progress .table td { vertical-align: middle; }
+    .sf-progress .table tbody tr {
+        transition: background 0.2s ease;
+    }
+    .sf-progress .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.05);
+    }
+    body.dark-mode .sf-progress .table tbody tr:hover {
+        background: rgba(255, 199, 0, 0.08);
+    }
+    .badge-status { 
+        padding: 6px 14px; 
+        border-radius: 20px; 
+        font-weight: 700; 
+        font-size: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+    .doc-time { display: block; font-size: 0.7rem; opacity: 0.75; }
+    .badge-count {
+        font-size: 0.75rem;
+        background: rgba(255, 199, 0, 0.15);
+        color: #b8860b;
+        padding: 2px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+    body.dark-mode .badge-count { color: #ffc700; }
+    .active-filter-banner {
+        background: linear-gradient(135deg, rgba(255, 199, 0, 0.12), rgba(255, 199, 0, 0.05));
+        border: 1px solid rgba(255, 199, 0, 0.4);
+        border-radius: 12px;
+        padding: 10px 18px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    .active-filter-banner.show { display: block; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+    body.dark-mode .stat-card:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+    .stat-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
 </style>
 {% endblock %}
 
@@ -74,34 +175,37 @@
         <!-- Stats Cards -->
         <div class="row g-3 mb-4">
             <div class="col-md-3 col-6">
-                <div class="sf-card text-center">
-                    <div class="text-warning fs-3 fw-bold">{{ pending|default:"0" }}</div>
-                    <div class="text-muted small">Pending</div>
+                <div class="sf-card text-center stat-card" style="cursor:pointer; border-left: 4px solid #F0A030;" onclick="filterDocuments('Pending')">
+                    <div class="text-warning stat-number">{{ pending|default:"0" }}</div>
+                    <div class="text-muted stat-label">Pending</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="sf-card text-center">
-                    <div class="text-info fs-3 fw-bold">{{ in_review|default:"0" }}</div>
-                    <div class="text-muted small">In Review</div>
+                <div class="sf-card text-center stat-card" style="cursor:pointer; border-left: 4px solid #4A90D9;" onclick="filterDocuments('In Review')">
+                    <div class="text-info stat-number">{{ in_review|default:"0" }}</div>
+                    <div class="text-muted stat-label">In Review</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="sf-card text-center">
-                    <div class="text-success fs-3 fw-bold">{{ approved|default:"0" }}</div>
-                    <div class="text-muted small">Approved</div>
+                <div class="sf-card text-center stat-card" style="cursor:pointer; border-left: 4px solid #2EA86B;" onclick="filterDocuments('Approved')">
+                    <div class="text-success stat-number">{{ approved|default:"0" }}</div>
+                    <div class="text-muted stat-label">Approved</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
-                <div class="sf-card text-center">
-                    <div class="text-danger fs-3 fw-bold">{{ rejected|default:"0" }}</div>
-                    <div class="text-muted small">Rejected</div>
+                <div class="sf-card text-center stat-card" style="cursor:pointer; border-left: 4px solid #E55B5B;" onclick="filterDocuments('Rejected')">
+                    <div class="text-danger stat-number">{{ rejected|default:"0" }}</div>
+                    <div class="text-muted stat-label">Rejected</div>
                 </div>
             </div>
         </div>
 
         <!-- Status Distribution Chart -->
         <div class="sf-card">
-            <div class="card-title"><i class="bi bi-pie-chart me-2"></i> Request Status Breakdown</div>
+            <div class="card-title">
+                <span><i class="bi bi-pie-chart me-2"></i> Request Status Breakdown</span>
+                <span class="click-hint"><i class="bi bi-hand-pointer me-1"></i> Click to filter</span>
+            </div>
             <div class="chart-wrap">
                 <canvas id="statusChart"></canvas>
             </div>
@@ -109,9 +213,67 @@
 
         <!-- Monthly Trends Chart -->
         <div class="sf-card mt-4">
-            <div class="card-title"><i class="bi bi-bar-chart me-2"></i> Monthly Request Trends</div>
+            <div class="card-title"><i class="bi bi-bar-chart-line me-2"></i> Monthly Request Trends</div>
             <div class="chart-wrap">
                 <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="sf-card mt-4" id="requests-table">
+            <div class="active-filter-banner" id="activeFilterBanner"></div>
+            <div class="card-title">
+                <span>
+                    <i class="bi bi-list-check me-2"></i>
+                    Your Requests
+                    <small id="filterLabel" class="text-muted fw-normal">(All)</small>
+                    <span class="badge-count" id="docCount">{{ my_requests|length }}</span>
+                </span>
+                <button class="btn btn-sm btn-outline-warning" id="clearFilterBtn" style="display:none;" onclick="filterDocuments('')">
+                    <i class="bi bi-x-circle me-1"></i> Clear Filter
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th>Ref No</th>
+                            <th>Title</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in my_requests %}
+                        <tr data-status="{{ doc.status.status_code|default:'pending' }}">
+                            <td class="fw-bold"><code>{{ doc.reference_no|default:'N/A' }}</code></td>
+                            <td>{{ doc.title|truncatechars:50 }}</td>
+                            <td>{{ doc.department.dept_name|default:'N/A' }}</td>
+                            <td>
+                                <span class="badge-status" style="background:
+                                    {% if doc.status.status_code == 'approved' %}#22c55e22; color:#22c55e
+                                    {% elif doc.status.status_code == 'rejected' %}#ef444422; color:#ef4444
+                                    {% elif doc.status.status_code == 'in_review' %}#ffc70022; color:#b8860b
+                                    {% else %}#6b728022; color:#6b7280{% endif %}">
+                                    {{ doc.status.status_name|default:doc.status.status_code|default:'Pending'|title }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">
+                                {{ doc.created_at|date:"M d, Y" }}
+                                <span class="doc-time">{{ doc.created_at|date:"g:i A" }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                                No requests yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -122,61 +284,138 @@
 <script>
     const isDark = document.body.classList.contains('dark-mode');
 
-    // Chart Colors
+    // Enhanced Chart Colors with gradients
     const colors = isDark ? {
-        pending: '#ffc700',      // Gold
-        inReview: '#c084fc',     // Purple
-        approved: '#4cff91',     // Green
-        rejected: '#ff6b6b',     // Red
-        grid: 'rgba(201, 169, 106, 0.2)',
-        text: '#c9a96a'
+        pending: '#ffc700',
+        inReview: '#c084fc',
+        approved: '#4cff91',
+        rejected: '#ff6b6b',
+        grid: 'rgba(201, 169, 106, 0.15)',
+        text: '#c9a96a',
+        border: '#3a1528'
     } : {
         pending: '#F0A030',
         inReview: '#4A90D9',
         approved: '#2EA86B',
         rejected: '#E55B5B',
-        grid: 'rgba(0,0,0,0.08)',
-        text: '#6c757d'
+        grid: 'rgba(0,0,0,0.06)',
+        text: '#6c757d',
+        border: '#ffffff'
     };
 
-    // Status Chart
+    // ─── LABEL -> STATUS_CODE MAP ───
+    const STATUS_LABEL_TO_CODE = {
+        'pending': 'pending',
+        'in review': 'in_review',
+        'approved': 'approved',
+        'rejected': 'rejected'
+    };
+
+    // ─── FILTER FUNCTION ───
+    function filterDocuments(status) {
+        const rows = document.querySelectorAll('#requestsTable tbody tr');
+        let visibleCount = 0;
+        const statusCode = status ? (STATUS_LABEL_TO_CODE[status.toLowerCase()] || status.toLowerCase().replace(/\s+/g, '_')) : '';
+
+        rows.forEach(row => {
+            const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
+            const show = !statusCode || rowStatus === statusCode;
+            row.style.display = show ? '' : 'none';
+            if (show) visibleCount++;
+        });
+
+        document.getElementById('filterLabel').textContent = status ? '(' + status + ')' : '(All)';
+        document.getElementById('docCount').textContent = visibleCount;
+
+        const banner = document.getElementById('activeFilterBanner');
+        const clearBtn = document.getElementById('clearFilterBtn');
+        if (status) {
+            banner.innerHTML = '<i class="bi bi-funnel me-2"></i> Showing: ' + status + ' — ' + visibleCount + ' request(s)';
+            banner.classList.add('show');
+            clearBtn.style.display = '';
+        } else {
+            banner.classList.remove('show');
+            clearBtn.style.display = 'none';
+        }
+
+        document.getElementById('requests-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ─── STATUS CHART ───
     const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
+    const statusChart = new Chart(statusCtx, {
         type: 'doughnut',
         data: {
             labels: ['Pending', 'In Review', 'Approved', 'Rejected'],
             datasets: [{
                 data: [{{ pending|default:"0" }}, {{ in_review|default:"0" }}, {{ approved|default:"0" }}, {{ rejected|default:"0" }}],
-                backgroundColor: [colors.pending, colors.inReview, colors.approved, colors.rejected],
-                borderWidth: 2,
-                borderColor: isDark ? '#2d0b1e' : '#fff',
-                hoverOffset: 6
+                backgroundColor: [
+                    colors.pending,
+                    colors.inReview,
+                    colors.approved,
+                    colors.rejected
+                ],
+                borderWidth: 3,
+                borderColor: colors.border,
+                hoverOffset: 12,
+                hoverBorderWidth: 4
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '62%',
+            cutout: '65%',
+            animation: {
+                animateRotate: true,
+                duration: 800
+            },
+            onClick: function(evt, elements) {
+                if (elements.length > 0) {
+                    const label = statusChart.data.labels[elements[0].index];
+                    filterDocuments(label);
+                }
+            },
+            onHover: (evt, elements) => {
+                evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { 
-                        usePointStyle: true, 
-                        pointStyle: 'circle', 
-                        padding: 16,
-                        color: colors.text
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20,
+                        color: colors.text,
+                        font: {
+                            weight: '600',
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                            return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                        }
                     }
                 }
             }
         }
     });
 
-    // Monthly Chart
+    // ─── MONTHLY CHART ───
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     const monthlyLabels = {{ monthly_labels|safe }} || [];
     const monthlyData = {{ monthly_data|safe }} || [];
 
     if (monthlyLabels.length > 0 && monthlyData.length > 0) {
+        // Create gradient for bar chart
+        const gradient = monthlyCtx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, isDark ? '#ffc700' : '#F0A030');
+        gradient.addColorStop(1, isDark ? 'rgba(255, 199, 0, 0.3)' : 'rgba(240, 160, 48, 0.3)');
+        
         new Chart(monthlyCtx, {
             type: 'bar',
             data: {
@@ -184,33 +423,78 @@
                 datasets: [{
                     label: 'Requests submitted',
                     data: monthlyData,
-                    backgroundColor: colors.pending,
-                    borderRadius: 8,
-                    maxBarThickness: 42
+                    backgroundColor: gradient,
+                    borderRadius: 10,
+                    maxBarThickness: 44,
+                    hoverBackgroundColor: isDark ? '#ffc700' : '#F0A030'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { 
-                    legend: { display: false } 
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: { 
+                        display: false 
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? 'rgba(45, 11, 30, 0.9)' : 'rgba(255,255,255,0.9)',
+                        titleColor: isDark ? '#ffc700' : '#1E3A5F',
+                        bodyColor: isDark ? '#c9a96a' : '#6c757d',
+                        borderColor: isDark ? 'rgba(255, 199, 0, 0.3)' : 'rgba(0,0,0,0.1)',
+                        borderWidth: 1,
+                        cornerRadius: 12,
+                        padding: 12
+                    }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Number of requests', color: colors.text },
-                        ticks: { stepSize: 1, color: colors.text },
-                        grid: { color: colors.grid }
+                        title: { 
+                            display: true, 
+                            text: 'Number of requests', 
+                            color: colors.text,
+                            font: { weight: '600', size: 12 }
+                        },
+                        ticks: { 
+                            stepSize: 1, 
+                            color: colors.text,
+                            font: { size: 11 }
+                        },
+                        grid: { 
+                            color: colors.grid,
+                            drawBorder: false
+                        }
                     },
-                    x: { 
+                    x: {
                         grid: { display: false },
-                        ticks: { color: colors.text }
+                        ticks: { 
+                            color: colors.text,
+                            font: { size: 11 }
+                        }
                     }
                 }
             }
         });
     } else {
-        monthlyCtx.canvas.parentElement.innerHTML = `<p class="text-muted text-center py-5 mb-0"><i class="bi bi-bar-chart fs-2 d-block mb-2"></i>No data yet. Submit some requests to see trends!</p>`;
+        monthlyCtx.canvas.parentElement.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-bar-chart-line fs-1 d-block mb-3" style="color: ${colors.text}; opacity: 0.4;"></i>
+                <p class="text-muted mb-0">No data yet. Submit some requests to see trends!</p>
+            </div>
+        `;
     }
+
+    // ─── APPLY FILTER FROM URL ───
+    {% if status_filter %}
+    (function() {
+        const codeToLabel = { pending: 'Pending', in_review: 'In Review', approved: 'Approved', rejected: 'Rejected' };
+        const initLabel = codeToLabel['{{ status_filter|escapejs }}'] || '{{ status_filter|escapejs }}';
+        filterDocuments(initLabel);
+    })();
+    {% endif %}
 </script>
 {% endblock %}

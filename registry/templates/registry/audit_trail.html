@@ -3,224 +3,151 @@
 
 {% block extra_css %}
 <style>
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .page-header h4 {
-        font-weight: 700;
-        color: #0d3b6e;
-    }
-    .table-audit tr {
-        transition: background 0.15s;
-    }
-    .table-audit tr:hover {
-        background: #f8f9fa;
-    }
-    .badge-action {
-        font-weight: 500;
-        padding: 0.35rem 0.7rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-    }
+/* ===== DAY MODE ===== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.page-header h4 {
+    font-weight: 900;
+    color: #0f2b48;
+}
+.page-header h4 .bi{color:#00b8d9} 
 
-    
-    /* DARK MODE FOR AUDIT TRAIL */
-    
+.sf-card{background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(15, 43, 72, 0.08);overflow-x:auto}
+.sf-table{width:100%;border-collapse:collapse;color:#1e293b;min-width:900px}
+.sf-table thead{background:linear-gradient(135deg,#0f2b48,#1a3d60)} /* NAVY HEADER */
+.sf-table thead th{padding:16px 18px;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;font-weight:900;color:#ffffff;text-align:left;border-right:1px solid rgba(255,255,255,.15)}
+.sf-table thead th:last-child{border-right:0}
 
-    body.dark-mode .page-header h4 {
-        color: #ffc700 !important; 
-    }
 
-    body.dark-mode .btn-outline-secondary {
-        color: #c9a96a;
-        border-color: #4a1a32;
-    }
+.sf-table tbody td{padding:16px 18px;font-size:.9rem;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;background:#fff}
+.sf-table tbody td:last-child{border-right:0}
+.sf-table tbody tr:hover td{background:#f0f9ff} /* LIGHT CYAN HOVER */
 
-    body.dark-mode .btn-outline-secondary:hover {
-        background: #4a1a32;
-        color: #ffffff;
-    }
+.fw-semibold{color:#0f2b48;font-weight:900}
+.text-muted{color:#64748b}
 
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
+/* BADGES DAY */
+.badge-action {
+    font-weight: 900;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    border:0;
+}
+.bg-primary {background:linear-gradient(135deg,#00b8d9,#0f2b48)!important}
+.bg-success {background:linear-gradient(135deg,#10b981,#059669)!important}
+.bg-danger  {background:linear-gradient(135deg,#ef4444,#dc2626)!important}
+.bg-info    {background:linear-gradient(135deg,#7c3aed,#6d28d0)!important}
+.bg-warning {background:linear-gradient(135deg,#f59e0b,#d97706)!important;color:#fff!important}
+.bg-secondary {background:linear-gradient(135deg,#64748b,#475569)!important}
+.bg-dark    {background:linear-gradient(135deg,#1e293b,#0f172a)!important}
 
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-    }
+/* ===== NIGHT MODE - BURGUNDY + GOLD ===== */
+body.dark-mode .page-header h4 {color: #ffc700 !important} /* GOLD */
+body.dark-mode .page-header h4 .bi{color:#ffc700}
 
-    body.dark-mode .table {
-        color: #ffffff !important;
-    }
+body.dark-mode .sf-card{background:#2d0b1e;border:1px solid #4a1a32}
+body.dark-mode .sf-table{color:#f1f5f9}
+body.dark-mode .sf-table thead{background:linear-gradient(135deg,#4a1a32,#2d0b1e)} /* DARK BURGUNDY */
+body.dark-mode .sf-table thead th{color:#ffc700;border-right:1px solid rgba(255,199,0,.2)} /* GOLD TEXT + GOLD GRID */
+body.dark-mode .sf-table tbody td{background:#2d0b1e;border-bottom:1px solid #4a1a32;border-right:1px solid #4a1a32;color:#e2e8f0} /* VISIBLE GRID */
+body.dark-mode .sf-table tbody tr:hover td{background:rgba(255,199,0,.05)}
 
-    body.dark-mode .table-light {
-        background: #3a1428 !important; 
-        color: #ffc700 !important; 
-    }
+body.dark-mode .fw-semibold{color:#ffc700} /* GOLD NAMES */
+body.dark-mode .text-muted{color:#c9a96a !important} /* GOLD MUTED */
 
-    body.dark-mode .table thead th {
-        color: #ffc700 !important;
-        border-bottom: 1px solid #4a1a32 !important;
-    }
+/* BADGES NIGHT */
+body.dark-mode .bg-primary {background:linear-gradient(135deg,#ffc700,#d4af37)!important;color:#2d0b1e!important}
+body.dark-mode .bg-success {background:linear-gradient(135deg,#4cff91,#22c55e)!important;color:#2d0b1e!important}
+body.dark-mode .bg-danger  {background:linear-gradient(135deg,#ff6b6b,#ef4444)!important;color:#fff!important}
+body.dark-mode .bg-info    {background:linear-gradient(135deg,#7c1f3f,#a8325e)!important;color:#ffc700!important}
+body.dark-mode .bg-warning {background:linear-gradient(135deg,#ffc700,#d4af37)!important;color:#2d0b1e!important}
+body.dark-mode .bg-secondary {background:linear-gradient(135deg,#4a1a32,#2d0b1e)!important;color:#ffc700!important;border:1px solid #ffc700}
+body.dark-mode .bg-dark    {background:#000!important;color:#ff6b6b!important;border:1px solid #4a1a32}
 
-    body.dark-mode .table tbody td {
-        border-bottom: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .table-audit tr:hover {
-        background: rgba(255, 199, 0, 0.05) !important; 
-    }
-
-    body.dark-mode .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .text-muted.small {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .fw-semibold {
-        color: #ffffff !important;
-    }
-
-    /* Action Badges */
-    body.dark-mode .badge-action.bg-primary {
-        background: rgba(255, 199, 0, 0.15) !important; 
-        color: #ffc700 !important;
-        border: 1px solid #ffc700;
-    }
-
-    body.dark-mode .badge-action.bg-secondary {
-        background: #4a1a32 !important; 
-        color: #c9a96a !important;
-        border: 1px solid #4a1a32;
-    }
-
-    body.dark-mode .badge-action.bg-success {
-        background: rgba(76, 255, 145, 0.15) !important; 
-        color: #4cff91 !important;
-        border: 1px solid #4cff91;
-    }
-
-    body.dark-mode .badge-action.bg-danger {
-        background: rgba(255, 107, 107, 0.15) !important; 
-        color: #ff6b6b !important;
-        border: 1px solid #ff6b6b;
-    }
-
-    body.dark-mode .badge-action.bg-info {
-        background: rgba(124, 31, 63, 0.3) !important; 
-        color: #ffc700 !important;
-        border: 1px solid #7c1f3f;
-    }
-
-    body.dark-mode .badge-action.bg-dark {
-        background: #4a1a32 !important; 
-        color: #ff6b6b !important;
-        border: 1px solid #4a1a32;
-    }
-
-    body.dark-mode .badge-action.bg-warning {
-        background: rgba(255, 199, 0, 0.15) !important; 
-        color: #ffc700 !important;
-        border: 1px solid #ffc700;
-    }
-
-    /* Pagination */
-    body.dark-mode .pagination .page-link {
-        background: #3a1428;
-        border-color: #4a1a32;
-        color: #ffc700;
-    }
-
-    body.dark-mode .pagination .page-link:hover {
-        background: #4a1a32;
-        color: #ffffff;
-    }
-
-    body.dark-mode .pagination .page-item.active .page-link {
-        background: #ffc700;
-        border-color: #ffc700;
-        color: #2d0b1e; 
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
+/* Pagination */
+body.dark-mode .pagination .page-link {
+    background: #3a1428;
+    border-color: #4a1a32;
+    color: #ffc700;
+}
+body.dark-mode .pagination .page-item.active .page-link {
+    background: #ffc700;
+    border-color: #ffc700;
+    color: #2d0b1e; 
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h4><i class="bi bi-clock-history me-2"></i>Audit Trail</h4>
-    <!-- UPDATED ACTION TARGET AND LABEL TO ALIGN WITH COHESIVE ADMIN CONSOLE BRANDING -->
-    <a href="{% url 'admin_launchpad' %}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left me-1"></i> Back to Command Center
+    <a href="{% url 'admin_workspace' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Back to Workspace
     </a>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover table-audit mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 160px;">Time</th>
-                        <th style="width: 140px;">User</th>
-                        <th style="width: 140px;">Action</th>
-                        <th>Details</th>
-                        <th style="width: 120px;">IP Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in logs %}
-                    <tr>
-                        <td class="text-muted small">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
-                        <td>
-                            {% if log.user %}
-                                <span class="fw-semibold">{{ log.user.get_full_name|default:log.user.username }}</span>
-                            {% else %}
-                                <span class="text-muted">System</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge badge-action 
-                                {% if 'LOGIN' in log.action %}bg-primary
-                                {% elif 'LOGOUT' in log.action %}bg-secondary
-                                {% elif 'APPROVE' in log.action or 'approved' in log.action %}bg-success
-                                {% elif 'REJECT' in log.action or 'rejected' in log.action %}bg-danger
-                                {% elif 'CREATE' in log.action %}bg-info
-                                {% elif 'DELETE' in log.action %}bg-dark
-                                {% else %}bg-warning text-dark{% endif %}">
-                                {{ log.action }}
-                            </span>
-                        </td>
-                        <td>
-                            {{ log.details|truncatechars:80 }}
-                            {% if log.entity_type %}
-                                <span class="text-muted small">({{ log.entity_type }}{% if log.entity_id %} #{{ log.entity_id }}{% endif %})</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="text-muted small">{{ log.ip_address|default:"—" }}</span>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-5">
-                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                            No audit logs found yet.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="sf-card">
+    <div class="table-responsive">
+        <table class="sf-table table-audit mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 160px;">TIME</th>
+                    <th style="width: 140px;">USER</th>
+                    <th style="width: 140px;">ACTION</th>
+                    <th>DETAILS</th>
+                    <th style="width: 120px;">IP ADDRESS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-muted small">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+                    <td>
+                        {% if log.user %}
+                            <span class="fw-semibold">{{ log.user.get_full_name|default:log.user.username }}</span>
+                        {% else %}
+                            <span class="text-muted">SYSTEM</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-action 
+                            {% if 'LOGIN' in log.action %}bg-primary
+                            {% elif 'LOGOUT' in log.action %}bg-secondary
+                            {% elif 'APPROVE' in log.action or 'approved' in log.action %}bg-success
+                            {% elif 'REJECT' in log.action or 'rejected' in log.action %}bg-danger
+                            {% elif 'CREATE' in log.action %}bg-info
+                            {% elif 'DELETE' in log.action %}bg-dark
+                            {% else %}bg-warning{% endif %}">
+                            {{ log.action }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ log.details|truncatechars:80 }}
+                        {% if log.entity_type %}
+                            <span class="text-muted small">({{ log.entity_type }}{% if log.entity_id %} #{{ log.entity_id }}{% endif %})</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="text-muted small">{{ log.ip_address|default:"—" }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        No audit logs found yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 

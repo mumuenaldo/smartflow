@@ -5,7 +5,6 @@
 
 {% block extra_css %}
 <style>
-    /*STAFF DASHBOARD  THEME*/
     .sf-staff {
         min-height: calc(100vh - 120px);
         padding: 3rem 0;
@@ -13,7 +12,6 @@
         color: #ffffff;
         position: relative;
         overflow: hidden;
-        transition: background 0.3s ease, color 0.3s ease;
     }
     body.dark-mode .sf-staff {
         background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
@@ -21,19 +19,44 @@
 
     .sf-staff .orb {
         position: absolute;
-        width: 500px;
-        height: 500px;
+        width: 600px;
+        height: 600px;
         border-radius: 50%;
-        filter: blur(140px);
+        filter: blur(160px);
         pointer-events: none;
         z-index: 0;
-        opacity: 0.14;
-        top: -100px;
-        right: -50px;
-        background: #00f2fe;
+        opacity: 0.12;
+        top: -150px;
+        right: -100px;
+        background: radial-gradient(circle, #00f2fe, #4facfe);
+        animation: orbFloat 20s ease-in-out infinite;
+    }
+    .sf-staff .orb2 {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.08;
+        bottom: -100px;
+        left: -100px;
+        background: radial-gradient(circle, #facc15, #f59e0b);
+        animation: orbFloat 25s ease-in-out infinite reverse;
     }
     body.dark-mode .sf-staff .orb {
-        background: #facc15;
+        background: radial-gradient(circle, #facc15, #f59e0b);
+        opacity: 0.08;
+    }
+    body.dark-mode .sf-staff .orb2 {
+        background: radial-gradient(circle, #a78bfa, #7c3aed);
+        opacity: 0.1;
+    }
+    @keyframes orbFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(50px, -30px) scale(1.1); }
+        66% { transform: translate(-30px, 40px) scale(0.9); }
     }
 
     .sf-staff .container {
@@ -41,24 +64,34 @@
         z-index: 1;
     }
 
-    /* ───  GREET BANNER ─── */
     .sf-greet-banner {
-        background: linear-gradient(135deg, #0f2b48 0%, #1a3d60 100%);
-        border: 1px solid rgba(0, 242, 254, 0.2);
-        border-radius: 24px;
-        padding: 2.5rem 2.5rem;
+        background: linear-gradient(135deg, rgba(15, 43, 72, 0.9) 0%, rgba(26, 61, 96, 0.9) 100%);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 242, 254, 0.15);
+        border-radius: 28px;
+        padding: 2.5rem 3rem;
         color: #fff;
         margin-bottom: 2.5rem;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
     body.dark-mode .sf-greet-banner {
-        background: linear-gradient(135deg, #4c1130 0%, #31071c 100%);
-        border: 1px solid rgba(250, 204, 21, 0.2);
+        background: linear-gradient(135deg, rgba(44, 11, 30, 0.95) 0%, rgba(23, 4, 14, 0.95) 100%);
+        border: 1px solid rgba(250, 204, 21, 0.15);
+    }
+    .sf-greet-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(0, 242, 254, 0.05) 50%, transparent 100%);
+        pointer-events: none;
     }
     .sf-greet-banner::after {
         content: '';
@@ -67,48 +100,58 @@
         top: 0;
         bottom: 0;
         width: 6px;
-        background: #00f2fe;
-        border-radius: 24px 0 0 24px;
+        background: linear-gradient(180deg, #00f2fe, #4facfe);
+        border-radius: 28px 0 0 28px;
     }
     body.dark-mode .sf-greet-banner::after {
-        background: #facc15;
+        background: linear-gradient(180deg, #facc15, #f59e0b);
     }
     .sf-greet-banner h4 {
         font-weight: 800;
-        font-size: 2rem;
+        font-size: 2.2rem;
         margin-bottom: 0.3rem;
+        background: linear-gradient(135deg, #ffffff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    body.dark-mode .sf-greet-banner h4 {
+        background: linear-gradient(135deg, #facc15, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     .sf-clock-badge {
         font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 700;
-        background: #040d1a;
+        background: rgba(0, 0, 0, 0.4);
         color: #00f2fe;
-        padding: 8px 18px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 242, 254, 0.25);
+        padding: 10px 24px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 30px rgba(0, 242, 254, 0.05);
     }
     body.dark-mode .sf-clock-badge {
-        background: #12020a;
         color: #facc15;
-        border-color: rgba(250, 204, 21, 0.25);
+        border-color: rgba(250, 204, 21, 0.2);
     }
 
-    /* ─── SQUARE ACTION BUTTONS ─── */
     .sf-action-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 2.5rem;
-        margin-bottom: 3rem;
+        gap: 2rem;
+        margin-bottom: 3.5rem;
         justify-items: center;
     }
     .sf-action-card {
-        width: 140px;
-        height: 140px;
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(16px);
-        border: 2px solid rgba(255, 255, 255, 0.08);
+        width: 150px;
+        height: 150px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -116,64 +159,66 @@
         color: #ffffff;
         text-decoration: none !important;
         font-weight: 700;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        animation: float 4s ease-in-out infinite;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
     }
-    .sf-action-card:nth-child(1) { animation-delay: 0s; }
-    .sf-action-card:nth-child(2) { animation-delay: 0.5s; }
-    .sf-action-card:nth-child(3) { animation-delay: 1s; }
-    .sf-action-card:nth-child(4) { animation-delay: 1.5s; }
-
+    .sf-action-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 28px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
     .sf-action-card i {
-        font-size: 2.8rem;
-        margin-bottom: 0.3rem;
-        transition: transform 0.3s ease;
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.4s ease;
         color: #00f2fe;
     }
     .sf-action-card .title {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 700;
+        letter-spacing: 0.3px;
     }
 
     .sf-action-card:hover {
-        transform: translateY(-12px) scale(1.05);
+        transform: translateY(-15px) scale(1.05);
         border-color: #00f2fe;
-        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-        color: #040d1a !important;
-        box-shadow: 0 15px 40px rgba(0, 242, 254, 0.3);
-        animation-play-state: paused;
+        background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.2));
+        box-shadow: 0 20px 60px rgba(0, 242, 254, 0.2);
     }
     body.dark-mode .sf-action-card:hover {
         border-color: #facc15;
-        background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
-        color: #12020a !important;
-        box-shadow: 0 15px 40px rgba(250, 204, 21, 0.3);
+        background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(245, 158, 11, 0.2));
+        box-shadow: 0 20px 60px rgba(250, 204, 21, 0.15);
     }
     .sf-action-card:hover i {
-        color: #040d1a;
-        transform: scale(1.15);
+        color: #00f2fe;
+        transform: scale(1.15) rotate(-5deg);
     }
     body.dark-mode .sf-action-card:hover i {
-        color: #12020a;
+        color: #facc15;
     }
 
-    /* ─── AI TOOLS SPECIAL CARD ─── */
     .sf-action-card.ai-tools-card {
-        background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(109, 40, 217, 0.3) 100%);
-        border: 2px solid rgba(124, 58, 237, 0.4);
-        box-shadow: 0 0 40px rgba(124, 58, 237, 0.25);
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(109, 40, 217, 0.3));
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        box-shadow: 0 0 40px rgba(124, 58, 237, 0.15);
         position: relative;
-        animation: ai-glow 3s ease-in-out infinite, float 4s ease-in-out infinite;
+        overflow: hidden;
     }
-    .sf-action-card.ai-tools-card::before {
-        content: '✦';
+    .sf-action-card.ai-tools-card::after {
+        content: '';
         position: absolute;
-        top: -8px;
-        right: -8px;
-        font-size: 18px;
-        color: #facc15;
-        animation: sparkle 2s ease-in-out infinite;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 50%, rgba(124, 58, 237, 0.1) 100%);
+        pointer-events: none;
     }
     .sf-action-card.ai-tools-card i {
         color: #a78bfa;
@@ -182,41 +227,42 @@
         color: #a78bfa;
     }
     .sf-action-card.ai-tools-card:hover {
-        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         border-color: #a78bfa;
-        color: #ffffff !important;
-        box-shadow: 0 0 80px rgba(124, 58, 237, 0.8);
+        box-shadow: 0 0 80px rgba(124, 58, 237, 0.6);
     }
     .sf-action-card.ai-tools-card:hover i,
     .sf-action-card.ai-tools-card:hover .title {
         color: #ffffff;
     }
-    body.dark-mode .sf-action-card.ai-tools-card {
-        background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(109, 40, 217, 0.4) 100%);
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-12px); }
-    }
-    @keyframes ai-glow {
-        0%, 100% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); }
-        50% { box-shadow: 0 0 80px rgba(124, 58, 237, 0.7); }
-    }
-    @keyframes sparkle {
-        0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        50% { transform: scale(1.3) rotate(180deg); opacity: 0.5; }
-    }
-
 
     .sf-subtitle {
         color: #94a3b8;
         font-size: 0.9rem;
         font-weight: 700;
-        margin: 3rem 0 1.5rem 0;
+        margin: 3.5rem 0 1.5rem 0;
         text-align: center;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
+        letter-spacing: 1.5px;
+        position: relative;
+    }
+    .sf-subtitle::before,
+    .sf-subtitle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 242, 254, 0.2));
+    }
+    .sf-subtitle::before { left: 0; }
+    .sf-subtitle::after { right: 0; background: linear-gradient(270deg, transparent, rgba(0, 242, 254, 0.2)); }
+    body.dark-mode .sf-subtitle::before,
+    body.dark-mode .sf-subtitle::after {
+        background: linear-gradient(90deg, transparent, rgba(250, 204, 21, 0.2));
+    }
+    body.dark-mode .sf-subtitle::after {
+        background: linear-gradient(270deg, transparent, rgba(250, 204, 21, 0.2));
     }
     .sf-subtitle i { color: #00f2fe; margin-right: 8px; }
     body.dark-mode .sf-subtitle i { color: #facc15; }
@@ -226,73 +272,209 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
         justify-items: center;
+        margin-top: 1.5rem;
     }
     .sf-stat-card {
         background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(16px);
-        border-radius: 18px;
-        padding: 1.5rem 1.2rem;
-        width: 150px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 1.8rem 1.5rem;
+        width: 160px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
         border: 1px solid rgba(255, 255, 255, 0.06);
         text-align: center;
-        animation: heartbeat 2.5s infinite;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
-    .sf-stat-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); }
-    .sf-stat-card:nth-child(1) { animation-delay: 0s; border-left: 3px solid #f59e0b; }
-    .sf-stat-card:nth-child(2) { animation-delay: 0.4s; border-left: 3px solid #3b82f6; }
-    .sf-stat-card:nth-child(3) { animation-delay: 0.8s; border-left: 3px solid #10b981; }
+    .sf-stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+    }
+    .sf-stat-card:nth-child(1)::before {
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    .sf-stat-card:nth-child(2)::before {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    }
+    .sf-stat-card:nth-child(3)::before {
+        background: linear-gradient(90deg, #10b981, #34d399);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    .sf-stat-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+    body.dark-mode .sf-stat-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+    
+    .sf-stat-card .stat-icon-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+    .sf-stat-card:nth-child(1) .stat-icon-wrap {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+    }
+    .sf-stat-card:nth-child(2) .stat-icon-wrap {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+    }
+    .sf-stat-card:nth-child(3) .stat-icon-wrap {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+    }
+    body.dark-mode .sf-stat-card:nth-child(1) .stat-icon-wrap {
+        background: rgba(59, 130, 246, 0.2);
+    }
+    body.dark-mode .sf-stat-card:nth-child(2) .stat-icon-wrap {
+        background: rgba(245, 158, 11, 0.2);
+    }
+    body.dark-mode .sf-stat-card:nth-child(3) .stat-icon-wrap {
+        background: rgba(16, 185, 129, 0.2);
+    }
     
     .sf-stat-card .number {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         font-weight: 900;
         display: block;
         line-height: 1.2;
+        letter-spacing: -0.5px;
     }
     .sf-stat-card .label {
         font-size: 0.75rem;
         color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         font-weight: 700;
+        margin-top: 0.2rem;
+        display: block;
     }
-    .num-pending { color: #f59e0b; }
-    .num-review { color: #3b82f6; }
-    .num-approved { color: #10b981; }
-    
-    @keyframes heartbeat {
-        0%, 100% { transform: scale(1); }
-        14% { transform: scale(1.05); }
-        28% { transform: scale(1); }
-        42% { transform: scale(1.03); }
-        70% { transform: scale(1); }
-    }
+    .num-assigned { color: #60a5fa; }
+    .num-pending { color: #fbbf24; }
+    .num-approved { color: #34d399; }
 
-    /* ─── TABLE ─── */
     .sf-table-container {
         background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 24px;
         overflow: hidden;
         margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    .sf-table-header {
+        padding: 1.25rem 2rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .sf-table-header h6 {
+        margin-bottom: 0;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+    }
+    .sf-table-header h6 i {
+        color: #00f2fe;
+        margin-right: 8px;
+    }
+    body.dark-mode .sf-table-header h6 i {
+        color: #facc15;
     }
     .table { margin-bottom: 0; color: #ffffff !important; }
-    .table thead th { background: rgba(0, 0, 0, 0.2) !important; font-size: 0.75rem; color: #7ec8f7 !important; padding: 14px 1.5rem; }
-    .table td { padding: 16px 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
-    .sf-badge { padding: 4px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
-    .sf-badge.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .table thead th {
+        background: rgba(0, 0, 0, 0.3) !important;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #94a3b8 !important;
+        padding: 14px 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .table td {
+        padding: 16px 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+    }
+    .table tbody tr {
+        transition: background 0.3s ease;
+    }
+    .table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .table code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+    .sf-badge {
+        padding: 5px 16px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+    }
+    .sf-badge.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+    .sf-badge.in_review { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .sf-badge.approved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .sf-badge.rejected { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+    
+    .btn-outline-light {
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #94a3b8;
+        font-weight: 700;
+        font-size: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        transform: translateX(4px);
+    }
+    body.dark-mode .btn-outline-light:hover {
+        background: rgba(250, 204, 21, 0.1);
+        border-color: rgba(250, 204, 21, 0.3);
+    }
 
-    /* ─── Responsive ─── */
     @media (max-width: 1024px) {
         .sf-action-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .sf-stat-grid { grid-template-columns: repeat(2, 1fr); }
+        .sf-greet-banner { padding: 2rem; }
     }
     @media (max-width: 600px) {
         .sf-action-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
         .sf-action-card { width: 110px; height: 110px; }
         .sf-action-card i { font-size: 2.2rem; }
         .sf-stat-grid { grid-template-columns: 1fr; gap: 1rem; }
-        .sf-greet-banner { flex-direction: column; text-align: center; gap: 1rem; }
+        .sf-stat-card { width: 100%; max-width: 200px; }
+        .sf-greet-banner { 
+            flex-direction: column; 
+            text-align: center; 
+            padding: 1.5rem;
+        }
+        .sf-greet-banner h4 { font-size: 1.8rem; }
+        .sf-table-header { padding: 1rem; }
+        .table thead th { padding: 10px 1rem; font-size: 0.6rem; }
+        .table td { padding: 12px 1rem; font-size: 0.85rem; }
     }
 </style>
 {% endblock %}
@@ -300,46 +482,43 @@
 {% block content %}
 <div class="sf-staff">
     <div class="orb"></div>
+    <div class="orb2"></div>
     <div class="container">
 
-        <!-- Banner with Greeting -->
         <div class="sf-greet-banner">
             <div>
-                <h4 id="greeting-text" class="fw-bold"></h4>
-                <p id="role-text" class="mb-0 text-white-50">
+                <h4 id="greeting-text"></h4>
+                <p id="role-text" class="mb-0 text-white-50" style="font-weight: 500; letter-spacing: 0.3px;">
                     {{ request.user.get_full_name|default:request.user.username }} · Staff Member · Registry Department
                 </p>
             </div>
             <div class="text-end">
-                <span class="sf-clock-badge"><i class="bi bi-clock"></i> <span id="live-time"></span></span>
+                <span class="sf-clock-badge"><i class="bi bi-clock me-2"></i><span id="live-time"></span></span>
             </div>
         </div>
 
-        <!-- Actions Grid - SQUARE BUTTONS ON TOP -->
         <div class="sf-action-grid">
-            <a href="{% url 'document_list' %}" class="sf-action-card" aria-label="My Documents">
+            <a href="{% url 'document_list' %}" class="sf-action-card">
                 <i class="bi bi-folder2-open"></i>
                 <div class="title">Documents</div>
             </a>
-            <a href="{% url 'notifications' %}" class="sf-action-card" aria-label="Notifications">
+            <a href="{% url 'notifications' %}" class="sf-action-card">
                 <i class="bi bi-bell"></i>
                 <div class="title">Alerts</div>
             </a>
-            <a href="{% url 'advanced_search' %}" class="sf-action-card" aria-label="Search">
+            <a href="{% url 'advanced_search' %}" class="sf-action-card">
                 <i class="bi bi-search"></i>
                 <div class="title">Search</div>
             </a>
-            <!-- AI TOOLS CARD -->
-            <a href="{% url 'staff_ai_dashboard' %}" class="sf-action-card ai-tools-card" aria-label="AI Tools">
+            <a href="{% url 'staff_ai_dashboard' %}" class="sf-action-card ai-tools-card">
                 <i class="bi bi-robot"></i>
                 <div class="title">AI Tools</div>
             </a>
         </div>
 
-        <!-- Table -->
         <div class="sf-table-container">
-            <div class="sf-table-header" style="padding: 1.25rem 1.5rem;">
-                <h6 class="mb-0 fw-bold"><i class="bi bi-list-check"></i> My Assigned Documents</h6>
+            <div class="sf-table-header">
+                <h6><i class="bi bi-list-check"></i> My Assigned Documents</h6>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -366,7 +545,7 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a href="{% url 'document_detail' a.document.pk %}" class="btn btn-sm btn-outline-light rounded-pill px-3">View</a>
+                                <a href="{% url 'document_detail' a.document.pk %}" class="btn btn-outline-light rounded-pill px-4 py-1">View</a>
                             </td>
                         </tr>
                         {% empty %}
@@ -377,24 +556,23 @@
             </div>
         </div>
 
-        <!-- Stats Grid - MOVED TO BOTTOM -->
         <div class="sf-subtitle">
             <i class="bi bi-bar-chart-line-fill"></i>
             Performance Overview
         </div>
         <div class="sf-stat-grid">
             <div class="sf-stat-card">
-                <i class="bi bi-folder2 stat-icon" style="font-size: 1.8rem; color: #3b82f6; display: block; margin-bottom: 0.3rem;"></i>
-                <span class="number num-review" id="stat-total">{{ total_count|default:"0" }}</span>
+                <div class="stat-icon-wrap"><i class="bi bi-folder2"></i></div>
+                <span class="number num-assigned" id="stat-total">{{ total_count|default:"0" }}</span>
                 <span class="label">Assigned</span>
             </div>
             <div class="sf-stat-card">
-                <i class="bi bi-hourglass-split stat-icon" style="font-size: 1.8rem; color: #f59e0b; display: block; margin-bottom: 0.3rem;"></i>
+                <div class="stat-icon-wrap"><i class="bi bi-hourglass-split"></i></div>
                 <span class="number num-pending" id="stat-pending">{{ pending_count|default:"0" }}</span>
                 <span class="label">Pending</span>
             </div>
             <div class="sf-stat-card">
-                <i class="bi bi-check-circle-fill stat-icon" style="font-size: 1.8rem; color: #10b981; display: block; margin-bottom: 0.3rem;"></i>
+                <div class="stat-icon-wrap"><i class="bi bi-check-circle-fill"></i></div>
                 <span class="number num-approved" id="stat-completed">{{ completed_count|default:"0" }}</span>
                 <span class="label">Completed</span>
             </div>
@@ -404,7 +582,6 @@
 </div>
 
 <script>
-    // Dynamic Greeting
     function updateGreeting() {
         const hour = new Date().getHours();
         let greeting = "Good Evening";
@@ -412,21 +589,17 @@
         else if (hour < 18) greeting = "Good Afternoon";
         
         document.getElementById('greeting-text').innerText = `${greeting}, {{ request.user.first_name|default:'Staff' }}`;
-        
-        // Keep role text updated too
         document.getElementById('role-text').innerText = `{{ request.user.get_full_name|default:request.user.username }} · Staff Member · Registry Department`;
     }
 
-    // Live Clock
     function updateClock() {
         document.getElementById('live-time').innerText = new Date().toLocaleTimeString();
     }
 
-    // Animated counters
     document.querySelectorAll('.number').forEach(el => {
         const target = parseInt(el.innerText) || 0;
         let count = 0;
-        const step = Math.max(1, Math.ceil(target / 25));
+        const step = Math.max(1, Math.ceil(target / 30));
         if (target > 0) {
             const timer = setInterval(() => {
                 count += step;
@@ -436,21 +609,24 @@
                 } else {
                     el.textContent = count;
                 }
-            }, 40);
+            }, 35);
         }
     });
 
-    // Refresh data every 30 seconds
     function refreshDashboard() {
         fetch(window.location.href)
             .then(response => response.text())
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                document.getElementById('stat-total').innerText = doc.getElementById('stat-total').innerText;
-                document.getElementById('stat-pending').innerText = doc.getElementById('stat-pending').innerText;
-                document.getElementById('stat-completed').innerText = doc.getElementById('stat-completed').innerText;
-            });
+                const total = doc.getElementById('stat-total');
+                const pending = doc.getElementById('stat-pending');
+                const completed = doc.getElementById('stat-completed');
+                if (total) document.getElementById('stat-total').innerText = total.innerText;
+                if (pending) document.getElementById('stat-pending').innerText = pending.innerText;
+                if (completed) document.getElementById('stat-completed').innerText = completed.innerText;
+            })
+            .catch(() => {});
     }
 
     updateGreeting();

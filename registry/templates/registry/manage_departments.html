@@ -1,148 +1,89 @@
 {% extends 'registry/base.html' %}
-{% block title %}Manage Departments{% endblock %}
+{% block title %}Manage Departments — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    
-    /* DARK MODE FOR MANAGE DEPARTMENTS  */
+.sf-dept{padding:2.5rem 0;min-height:calc(100vh - 160px);background:#f8fafc}
+.sf-header{margin-bottom:1.75rem}
+.sf-title{font-size:1.75rem;font-weight:900;color:#0f2b48;margin:0;display:flex;align-items:center;gap:.6rem}
+.sf-title .bi{color:#00b8d9;font-size:1.5rem}
+.sf-btn-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:8px;padding:.5rem .9rem;font-weight:700;font-size:.85rem;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem}
+.sf-btn-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+.sf-btn{background:linear-gradient(135deg,#00b8d9,#0f2b48);color:#fff;border:0;border-radius:12px;padding:.7rem 1.3rem;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 6px 18px rgba(0,184,217,.25);transition:transform .2s}
+.sf-btn:hover{transform:translateY(-2px);color:#fff}
 
-    body.dark-mode .page-header h4 {
-        color: #ffc700 !important; 
-    }
+.sf-card{background:#ffffff;border-radius:20px;border:1px solid #cffafe;box-shadow:0 10px 40px rgba(0,184,217,.08);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.sf-card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,#00b8d9,#0891b2)}
+.sf-card:hover{transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,184,217,.18)}
+.sf-card-body{padding:1.5rem}
+.sf-icon{background:#e0f7fa;color:#00b8d9;border-radius:12px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.sf-dept-name{font-weight:900;color:#0f2b48;font-size:1.05rem;margin:0}
+.sf-muted{color:#64748b}
+.sf-badge{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:900;padding:6px 12px;border-radius:50px;background:#e0f7fa;color:#0f2b48;border:1px solid #b2ebf2}
+.sf-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;text-align:center}
 
-    body.dark-mode .btn-primary {
-        background: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-        color: #2d0b1e !important; 
-    }
+body.dark-mode .sf-dept{background:#17040e}
+body.dark-mode .sf-title{color:#ffc700}
+body.dark-mode .sf-title .bi{color:#ffc700}
+body.dark-mode .sf-btn-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .sf-btn-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
+body.dark-mode .sf-btn{background:linear-gradient(135deg,#ffc700,#d4af37);color:#2d0b1e;box-shadow:0 6px 18px rgba(255,199,0,.25)}
+body.dark-mode .sf-btn:hover{color:#2d0b1e}
 
-    body.dark-mode .btn-primary:hover {
-        background: #ffd700 !important;
-        border-color: #ffd700 !important;
-        color: #2d0b1e !important;
-    }
-
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
-
-    body.dark-mode .card:hover {
-        box-shadow: 0 4px 20px rgba(255, 199, 0, 0.1) !important; 
-    }
-
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-    }
-
-    body.dark-mode .card-body h6 {
-        color: #ffffff !important; 
-    }
-
-    body.dark-mode .text-muted {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .badge.bg-light {
-        background: #4a1a32 !important; 
-        color: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-    }
-
-    body.dark-mode .badge.bg-light .text-muted {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode [style*="color:#0d3b6e"] {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode [style*="background:#e8f0fe"] {
-        background: #4a1a32 !important; 
-        color: #ffc700 !important; 
-    }
-
-    body.dark-mode .text-center h6 {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .text-muted small {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .small.text-muted {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode .border-0 {
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .card-body .d-flex .bg-light {
-        background: #4a1a32 !important;
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .text-dark {
-        color: #ffffff !important;
-    }
+body.dark-mode .sf-card{background:#2d0b1e;border:1px solid #4a1a32;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+body.dark-mode .sf-card::before{background:linear-gradient(180deg,#ffc700,#d4af37)}
+body.dark-mode .sf-card:hover{box-shadow:0 16px 50px rgba(255,199,0,.12)}
+body.dark-mode .sf-card-body{background:#2d0b1e}
+body.dark-mode .sf-icon{background:#4a1a32;color:#ffc700}
+body.dark-mode .sf-dept-name{color:#ffc700}
+body.dark-mode .sf-muted{color:#c9a96a}
+body.dark-mode .sf-badge{background:#4a1a32;color:#ffc700;border:1px solid #ffc700}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header d-flex align-items-center justify-content-between">
-  <h4><i class="bi bi-building me-2"></i>Manage Departments</h4>
-  <a href="{% url 'create_department' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-lg me-1"></i>Add Department
-  </a>
-</div>
+<div class="sf-dept">
+  <div class="container">
+    <div class="sf-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <h4 class="sf-title"><i class="bi bi-building"></i>Manage Departments</h4>
+      <div class="d-flex gap-2">
+        <a href="{% url 'admin_workspace' %}" class="sf-btn-back"><i class="bi bi-arrow-left"></i>Back</a>
+        <a href="{% url 'create_department' %}" class="sf-btn"><i class="bi bi-plus-lg"></i>Add Department</a>
+      </div>
+    </div>
 
-<div class="row g-3">
-  {% for dept in depts %}
-  <div class="col-md-6 col-lg-4">
-    <div class="card border-0 shadow-sm h-100">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center gap-3 mb-3">
-          <div style="background:#e8f0fe; color:#1a73e8; border-radius:10px;
-                      width:44px; height:44px; display:flex;
-                      align-items:center; justify-content:center; font-size:1.3rem;">
-            <i class="bi bi-building"></i>
-          </div>
-          <div>
-            <h6 class="mb-0 fw-bold" style="color:#0d3b6e;">{{ dept.dept_name }}</h6>
-            <small class="text-muted">
-              <i class="bi bi-geo-alt me-1"></i>{{ dept.location|default:"No location set" }}
-            </small>
+    <div class="row g-4">
+      {% for dept in depts %}
+      <div class="col-md-6 col-lg-4">
+        <div class="sf-card h-100">
+          <div class="sf-card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="sf-icon"><i class="bi bi-building"></i></div>
+              <div>
+                <h6 class="sf-dept-name">{{ dept.dept_name }}</h6>
+                <small class="sf-muted"><i class="bi bi-geo-alt me-1"></i>{{ dept.location|default:"No location set" }}</small>
+              </div>
+            </div>
+            <p class="sf-muted small mb-3">{{ dept.description|default:"No description available." }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="sf-badge"><i class="bi bi-people"></i>{{ dept.member_count }} member{{ dept.member_count|pluralize }}</span>
+              <small class="sf-muted">Since {{ dept.created_at|date:"M Y" }}</small>
+            </div>
           </div>
         </div>
-        <p class="text-muted small mb-3">
-          {{ dept.description|default:"No description available." }}
-        </p>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="badge bg-light text-dark border">
-            <i class="bi bi-people me-1"></i>{{ dept.member_count }} member{{ dept.member_count|pluralize }}
-          </span>
-          <small class="text-muted">Since {{ dept.created_at|date:"M Y" }}</small>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="sf-card">
+          <div class="sf-empty">
+            <i class="bi bi-building fs-1 sf-muted mb-3"></i>
+            <h6 class="sf-muted mb-3">No departments yet</h6>
+            <a href="{% url 'create_department' %}" class="sf-btn"><i class="bi bi-plus-lg"></i>Add First Department</a>
+          </div>
         </div>
       </div>
+      {% endfor %}
     </div>
   </div>
-  {% empty %}
-  <div class="col-12">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body text-center py-5">
-        <i class="bi bi-building fs-1 text-muted d-block mb-3"></i>
-        <h6 class="text-muted">No departments yet</h6>
-        <a href="{% url 'create_department' %}" class="btn btn-primary btn-sm mt-2">
-          <i class="bi bi-plus-lg me-1"></i>Add First Department
-        </a>
-      </div>
-    </div>
-  </div>
-  {% endfor %}
 </div>
 {% endblock %}

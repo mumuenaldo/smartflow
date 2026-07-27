@@ -1,185 +1,304 @@
 {% extends 'registry/base.html' %}
-{% block title %}Bulk Upload Documents{% endblock %}
+{% load static %}
+
+{% block title %}Bulk Upload Documents — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* This card will inherit day colors from base, and switch to burgundy/gold in dark-mode */
-    .custom-bulk-card {
-        background: transparent !important;
-        border: none !important;
+    /* ============================================================
+       BULK UPLOAD — PREMIUM EDITION
+       Day mode: cyan accent | Night mode: gold accent
+       ============================================================ */
+
+    .sf-bulk {
+        --sf-accent: #00f2fe;
+        --sf-accent-soft: rgba(0, 242, 254, 0.15);
+        --sf-accent-border: rgba(0, 242, 254, 0.30);
+        --sf-ink: #ffffff;
+        --sf-muted: #94a3b8;
+        --sf-faint: #64748b;
+        --sf-card: rgba(255, 255, 255, 0.04);
+        --sf-card-border: rgba(255, 255, 255, 0.08);
+        --sf-field: rgba(255, 255, 255, 0.05);
+
+        padding: 2.5rem 0;
+        min-height: calc(100vh - 160px);
+        background:
+            radial-gradient(1200px 600px at 85% -10%, rgba(0, 242, 254, 0.10), transparent 60%),
+            linear-gradient(180deg, #0b2240 0%, #061324 100%);
+        color: var(--sf-ink);
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
     }
 
-    .custom-bulk-card .card-header {
-        background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%) !important;
-        border-bottom: 3px solid var(--accent) !important;
-        color: white !important;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        padding: 1.25rem;
-        font-weight: 700;
-    }
-    
-    .custom-bulk-card .card-body {
-        background: white !important;
-        border: 2px solid var(--accent) !important;
-        border-top: none;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        padding: 2rem;
+    body.dark-mode .sf-bulk {
+        --sf-accent: #facc15;
+        --sf-accent-soft: rgba(250, 204, 21, 0.15);
+        --sf-accent-border: rgba(250, 204, 21, 0.30);
+        background:
+            radial-gradient(1200px 600px at 85% -10%, rgba(250, 204, 21, 0.10), transparent 60%),
+            linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
     }
 
-    /* FORM ELEMENTS - DAY */
-    .custom-bulk-card label {
-        color: var(--blue-deep) !important;
+    /* Ambient orbs */
+    .sf-bulk .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.18;
+        background: var(--sf-accent);
+    }
+    .sf-bulk .orb-1 { width: 460px; height: 460px; top: -150px; right: -100px; }
+    .sf-bulk .orb-2 { width: 360px; height: 360px; bottom: -160px; left: -120px; opacity: 0.10; }
+
+    .sf-bulk .container { position: relative; z-index: 1; }
+
+    /* Page heading */
+    .sf-bulk-head {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 1.75rem;
+    }
+    .sf-bulk-head .icon-badge {
+        width: 56px; height: 56px;
+        flex-shrink: 0;
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem;
+        color: #040d1a;
+        background: var(--sf-accent);
+        box-shadow: 0 6px 18px var(--sf-accent-soft);
+    }
+    body.dark-mode .sf-bulk-head .icon-badge { color: #12020a; }
+    .sf-bulk-head h4 {
+        margin: 0;
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+    .sf-bulk-head p {
+        margin: 2px 0 0 0;
+        color: var(--sf-muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+
+    /* Glass card */
+    .sf-glass-card {
+        position: relative;
+        background: var(--sf-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--sf-card-border);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+
+    .sf-glass-card .sf-card-body { padding: 2rem; }
+
+    /* Accent top rail */
+    .sf-glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--sf-accent);
+    }
+
+    /* Info / format alert */
+    .sf-info-alert {
+        background: var(--sf-accent-soft);
+        border: 1px solid var(--sf-accent-border);
+        border-radius: 12px;
+        padding: 1.1rem 1.25rem;
+        color: var(--sf-ink);
+        margin-bottom: 1.75rem;
+    }
+    .sf-info-alert .alert-head {
+        display: flex; align-items: center; gap: 8px;
+        font-weight: 700; font-size: 0.95rem;
+    }
+    .sf-info-alert .alert-head .bi { color: var(--sf-accent); }
+    .sf-info-alert hr {
+        border: none;
+        border-top: 1px solid var(--sf-card-border);
+        margin: 0.75rem 0;
+    }
+    .sf-info-alert code {
+        display: block;
+        background: rgba(0, 0, 0, 0.30);
+        color: var(--sf-accent);
+        padding: 0.6rem 0.9rem;
+        border-radius: 8px;
+        font-family: 'JetBrains Mono', 'Consolas', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+    }
+
+    /* Form fields (styles Django's {{ form.as_p }} output) */
+    .sf-form p { margin-bottom: 1.25rem; }
+    .sf-form label {
+        display: block;
+        color: var(--sf-ink) !important;
         font-weight: 600;
+        font-size: 0.9rem;
         margin-bottom: 0.5rem;
     }
-    .custom-bulk-card .form-control, 
-    .custom-bulk-card .form-select {
-        background: #f8fbff !important;
-        border: 2px solid var(--accent) !important;
-        color: var(--blue-deep) !important;
-        border-radius: 8px;
+    .sf-form input,
+    .sf-form select,
+    .sf-form textarea,
+    .sf-form .form-control,
+    .sf-form .form-select {
+        width: 100%;
+        background: var(--sf-field) !important;
+        border: 1px solid var(--sf-card-border) !important;
+        color: var(--sf-ink) !important;
+        border-radius: 10px !important;
+        padding: 0.7rem 0.9rem !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .custom-bulk-card .form-control:focus {
-        border-color: var(--blue-brand) !important;
-        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+    .sf-form input:focus,
+    .sf-form select:focus,
+    .sf-form textarea:focus,
+    .sf-form .form-control:focus,
+    .sf-form .form-select:focus {
+        outline: none;
+        border-color: var(--sf-accent) !important;
+        box-shadow: 0 0 0 3px var(--sf-accent-soft) !important;
+        background: rgba(255, 255, 255, 0.07) !important;
     }
-    .custom-alert {
-        background: rgba(0, 198, 255, 0.1) !important;
-        border: 2px solid var(--accent) !important;
-        color: var(--blue-deep) !important;
-    }
-    .custom-alert code {
-        color: var(--blue-brand) !important;
-        background: rgba(0,0,0,0.05);
-        padding: 0.2rem 0.4rem;
-        border-radius: 4px;
-    }
-
-    /* BUTTONS - DAY */
-    .btn-smartflow-primary {
-        background: var(--blue-brand) !important;
-        color: white !important;
-        font-weight: 700;
-        border: none;
-    }
-    .btn-smartflow-secondary {
-        border: 2px solid var(--blue-brand) !important;
-        color: var(--blue-brand) !important;
-        font-weight: 700;
+    .sf-form ::placeholder { color: var(--sf-faint); }
+    .sf-form .helptext,
+    .sf-form .form-text,
+    .sf-form small {
+        display: block;
+        color: var(--sf-muted);
+        font-size: 0.78rem;
+        margin-top: 0.35rem;
     }
 
-    /* ===== DARK MODE ===== */
-    body.dark-mode .custom-bulk-card .card-header {
-        background: linear-gradient(135deg, #4a1a32 0%, #7c1f3f 100%) !important; 
-        border-bottom: 3px solid #ffc700 !important; 
-        color: #ffc700 !important; 
-    }
-    
-    body.dark-mode .custom-bulk-card .card-body {
-        background: #2d0b1e !important; 
-        border: 2px solid #ffc700 !important; 
-    }
-
-    body.dark-mode .custom-bulk-card label {
-        color: #ffffff !important;
-    }
-    
-    /* Input field styling in dark mode */
-    body.dark-mode .custom-bulk-card .form-control, 
-    body.dark-mode .custom-bulk-card .form-select {
-        background: #3a1428 !important; 
-        border: 2px solid #ffc700 !important; 
-        color: #ffffff !important;
-    }
-    body.dark-mode .custom-bulk-card .form-control:focus {
-        border-color: #ffc700 !important;
-        box-shadow: 0 0 0 0.2rem rgba(255, 199, 0, 0.25) !important; 
-    }
-
-    /* Fixes the invisible/white browser button on file inputs in dark mode */
-    body.dark-mode .custom-bulk-card input[type="file"]::file-selector-button {
-        background-color: #4a1a32 !important; 
-        color: #ffffff !important;
-        border: 1px solid #ffc700 !important; 
-        border-radius: 4px;
-        padding: 0.25rem 0.7rem;
-        margin-right: 10px;
-    }
-    body.dark-mode .custom-bulk-card input[type="file"]::file-selector-button:hover {
-        background-color: #ffc700 !important; 
-        color: #2d0b1e !important; 
+    /* File input styling */
+    .sf-form input[type="file"] {
+        padding: 0.55rem 0.7rem !important;
         cursor: pointer;
     }
-    
-    /* Fix for any muted help text underneath the file input box */
-    body.dark-mode .custom-bulk-card .text-muted,
-    body.dark-mode .custom-bulk-card .helptext {
-        color: #c9a96a !important; 
+    .sf-form input[type="file"]::file-selector-button {
+        background: var(--sf-accent);
+        color: #040d1a;
+        border: none;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        margin-right: 12px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: transform 0.15s ease, filter 0.15s ease;
     }
-    
-    body.dark-mode .custom-alert {
-        background: rgba(255, 199, 0, 0.08) !important; 
-        border: 2px solid #ffc700 !important;
-        color: #ffffff !important;
-    }
-    body.dark-mode .custom-alert code {
-        color: #ffc700 !important;
-        background: rgba(124, 31, 63, 0.3);
+    body.dark-mode .sf-form input[type="file"]::file-selector-button { color: #12020a; }
+    .sf-form input[type="file"]::file-selector-button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
     }
 
-    /* BUTTONS - NIGHT */
-    body.dark-mode .btn-smartflow-primary {
-        background: #ffc700 !important; 
-        color: #2d0b1e !important; 
-        font-weight: 800;
+    /* Buttons */
+    .sf-btn-primary {
+        background: var(--sf-accent);
+        color: #040d1a;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 0.7rem 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.15s ease, box-shadow 0.2s ease;
     }
-    body.dark-mode .btn-smartflow-primary:hover {
-        background: #ffd700 !important;
-        color: #2d0b1e !important;
+    body.dark-mode .sf-btn-primary { color: #12020a; }
+    .sf-btn-primary:hover {
+        transform: translateY(-2px);
+        color: #040d1a;
+        box-shadow: 0 10px 28px var(--sf-accent-soft);
     }
-    body.dark-mode .btn-smartflow-secondary {
-        border: 2px solid #ffc700 !important;
-        color: #ffc700 !important;
+    body.dark-mode .sf-btn-primary:hover { color: #12020a; }
+
+    .sf-btn-secondary {
+        background: transparent;
+        border: 1px solid var(--sf-card-border);
+        color: var(--sf-ink);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 0.7rem 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
     }
-    body.dark-mode .btn-smartflow-secondary:hover {
-        background: #ffc700 !important;
-        color: #2d0b1e !important;
+    .sf-btn-secondary:hover {
+        border-color: var(--sf-accent);
+        color: var(--sf-accent);
+        background: var(--sf-accent-soft);
     }
-    
-    /* Specific Bootstrap Icons Target */
-    body.dark-mode .bi { color: #ffc700 !important; }
+
+    @media (max-width: 600px) {
+        .sf-bulk-head { flex-direction: column; text-align: center; }
+        .sf-glass-card .sf-card-body { padding: 1.4rem; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card custom-bulk-card">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="bi bi-upload me-2"></i>Bulk Upload Documents</h4>
-                </div>
-                <div class="card-body">
-                    <div class="alert custom-alert">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>CSV Format Required:</strong>
-                        <hr class="my-2">
-                        <code>title,description,document_type,department</code>
+<div class="sf-bulk">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+
+                <!-- Heading -->
+                <div class="sf-bulk-head">
+                    <div class="icon-badge"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+                    <div>
+                        <h4>Bulk Upload Documents</h4>
+                        <p>Import multiple registry entries from a single CSV file</p>
                     </div>
-                    
-                    <form method="post" enctype="multipart/form-data" class="mt-4">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="mt-4 d-flex gap-2">
-                            <button type="submit" class="btn btn-smartflow-primary">
-                                <i class="bi bi-cloud-upload me-1"></i>Upload
-                            </button>
-                            <a href="{% url 'document_list' %}" class="btn btn-smartflow-secondary">Cancel</a>
-                        </div>
-                    </form>
                 </div>
+
+                <!-- Card -->
+                <div class="sf-glass-card">
+                    <div class="sf-card-body">
+
+                        <div class="sf-info-alert">
+                            <div class="alert-head">
+                                <i class="bi bi-info-circle-fill"></i>
+                                CSV Format Required
+                            </div>
+                            <hr>
+                            <code>title,description,document_type,department</code>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data" class="sf-form">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="mt-4 d-flex gap-2 flex-wrap">
+                                <button type="submit" class="sf-btn-primary">
+                                    <i class="bi bi-cloud-upload"></i> Upload
+                                </button>
+                                <a href="{% url 'document_list' %}" class="sf-btn-secondary">
+                                    <i class="bi bi-x-lg"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

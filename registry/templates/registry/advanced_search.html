@@ -1,89 +1,242 @@
 {% extends 'registry/base.html' %}
+{% block title %}Advanced Search — SmartFlow{% endblock %}
 
-{% block title %}Advanced Search{% endblock %}
+{% block extra_css %}
+<style>
+:root{
+    --sf-accent:#00f2fe; --sf-accent2:#4facfe;
+    --sf-text:#0f172a; --sf-muted:#475569; --sf-card:#ffffff; --sf-border:#e2e8f0;
+}
+body.dark-mode{
+    --sf-accent:#facc15; --sf-accent2:#eab308;
+    --sf-text:#fde047; --sf-muted:#fcd34d; --sf-card:rgba(45,11,30,0.65); --sf-border:rgba(124,31,63,0.4);
+}
+.sf-wrap{
+    padding:2.5rem 0; min-height:calc(100vh - 160px);
+    background:radial-gradient(1000px 500px at 90% -10%, var(--sf-accent) 0%, transparent 60%),
+               linear-gradient(180deg, #0b2240 0%, #061324 100%);
+}
+body.dark-mode .sf-wrap{
+    background:radial-gradient(1000px 500px at 90% -10%, var(--sf-accent) 0%, transparent 60%),
+               linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
+}
+.sf-header{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; padding:18px 24px;
+    background:var(--sf-card); border:1px solid var(--sf-border); border-radius:20px;
+    position:relative; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.15)
+}
+.sf-header::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--sf-accent), var(--sf-accent2));
+}
+body.dark-mode .sf-header{backdrop-filter:blur(20px)}
+.sf-header-left{display:flex; align-items:center; gap:14px}
+.sf-header-icon{
+    width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); 
+    color:#061324; font-size:1.6rem; box-shadow:0 0 25px rgba(0,242,254,.35)
+}
+body.dark-mode .sf-header-icon{box-shadow:0 0 25px rgba(250,204,21,.35)}
+.sf-header h4{margin:0; font-weight:900; font-size:1.8rem; color:var(--sf-text)}
+.btn-sf-back{background:transparent;color:#64748b;border:1px solid #cbd5e1;border-radius:10px;padding:.55rem 1.1rem;font-weight:800;font-size:.85rem;text-decoration:none;transition:all .2s ease;display:inline-flex;align-items:center;gap:.4rem}
+.btn-sf-back:hover{background:#f1f5f9;border-color:#0f2b48;color:#0f2b48}
+body.dark-mode .btn-sf-back{color:#c9a96a;border-color:#4a1a32}
+body.dark-mode .btn-sf-back:hover{background:rgba(255,199,0,.08);border-color:#ffc700;color:#ffc700}
+.sf-card{
+    background:var(--sf-card); border:1px solid var(--sf-border); border-radius:16px; 
+    padding:20px 24px; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,.1)
+}
+body.dark-mode .sf-card{backdrop-filter:blur(20px)}
+.sf-input, .sf-select{
+    width:100%; border:1px solid var(--sf-border); background:#f8fafc; color:var(--sf-text);
+    border-radius:12px; padding:.65rem .9rem; font-size:.9rem; outline:none; transition:.2s
+}
+.sf-input:focus, .sf-select:focus{
+    border-color:var(--sf-accent); box-shadow:0 0 0 3px rgba(0,242,254,.15)
+}
+body.dark-mode .sf-input, body.dark-mode .sf-select{background:rgba(0,0,0,.25); color:var(--sf-text)}
+.btn-sf{
+    display:inline-flex; align-items:center; gap:8px; font-weight:800; border-radius:50px; 
+    padding:.55rem 1.1rem; font-size:.85rem; text-decoration:none; transition:.2s; border:0;
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); color:#061324;
+}
+.btn-sf:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,242,254,.3)}
+.btn-sf-outline{
+    background:transparent; color:var(--sf-text); border:1px solid var(--sf-border)
+}
+.btn-sf-outline:hover{
+    background:linear-gradient(135deg, var(--sf-accent), var(--sf-accent2)); 
+    color:#061324; border-color:transparent
+}
+.btn-sf-success{
+    background:linear-gradient(135deg, #10b981, #059669); color:#fff
+}
+.btn-sf-success:hover{box-shadow:0 8px 20px rgba(16,185,129,.3)}
+.sf-table-wrap{
+    background:var(--sf-card); border:1px solid var(--sf-border); border-radius:16px; 
+    overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.1)
+}
+body.dark-mode .sf-table-wrap{backdrop-filter:blur(20px)}
+.sf-table{width:100%; border-collapse:collapse; color:var(--sf-text)}
+.sf-table thead th{
+    text-align:left; font-size:.7rem; font-weight:900; text-transform:uppercase; letter-spacing:.6px;
+    padding:14px 18px; background:#f8fafc; border-bottom:2px solid var(--sf-border); color:var(--sf-muted);
+    border-right:1px solid var(--sf-border)
+}
+body.dark-mode .sf-table thead th{background:rgba(0,0,0,.25)}
+.sf-table thead th:last-child{border-right:0}
+.sf-table tbody td{
+    padding:14px 18px; border-bottom:1px solid var(--sf-border); font-size:.9rem;
+    border-right:1px solid var(--sf-border)
+}
+.sf-table tbody td:last-child{border-right:0}
+.sf-table tbody tr:last-child td{border-bottom:0}
+.sf-table tbody tr:hover td{background:rgba(0,242,254,.05)}
+body.dark-mode .sf-table tbody tr:hover td{background:rgba(250,204,21,.06)}
+.sf-ref{
+    font-family:'Courier New', monospace; font-size:.8rem; font-weight:900; 
+    background:linear-gradient(135deg, #0b2240, #061324);
+    color:#00f2fe;
+    padding:4px 10px; border-radius:8px; border:1px solid rgba(0,242,254,.3);
+    letter-spacing:.5px;
+    box-shadow:0 0 10px rgba(0,242,254,.15)
+}
+body.dark-mode .sf-ref{
+    background:linear-gradient(135deg, #2d0b1e, #17040e);
+    color:#facc15;
+    border:1px solid rgba(250,204,21,.3);
+    box-shadow:0 0 10px rgba(250,204,21,.15)
+}
+.sf-badge{
+    font-size:.7rem; font-weight:900; padding:6px 12px; border-radius:8px; 
+    text-transform:uppercase; letter-spacing:.4px; display:inline-flex; align-items:center; gap:5px;
+    border:1px solid transparent; transition:.2s
+}
+.sf-badge.approved{background:#059669; color:#ffffff; border-color:#047857}
+.sf-badge.pending{background:#d97706; color:#ffffff; border-color:#b45309}
+.sf-badge.rejected{background:#dc2626; color:#ffffff; border-color:#b91c1c}
+.sf-badge.default{background:#64748b; color:#ffffff; border-color:#475569}
+body.dark-mode .sf-badge.approved{background:#34d399; color:#061324; border-color:#10b981}
+body.dark-mode .sf-badge.pending{background:#fbbf24; color:#061324; border-color:#f59e0b}
+body.dark-mode .sf-badge.rejected{background:#f87171; color:#061324; border-color:#ef4444}
+.sf-empty{text-align:center; padding:4rem 2rem; color:var(--sf-muted)}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <h2><i class="bi bi-search"></i> Advanced Document Search</h2>
-    
-    <!-- Search Form -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-12">
-                    <input type="text" name="q" class="form-control" placeholder="Search by title, reference, or description..." value="{{ query }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        {% for status in statuses %}
-                            <option value="{{ status.id }}" {% if selected_status == status.id|stringformat:"s" %}selected{% endif %}>{{ status.status_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select name="department" class="form-select">
-                        <option value="">All Departments</option>
-                        {% for dept in departments %}
-                            <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.dept_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="date_from" class="form-control" placeholder="From Date" value="{{ date_from }}">
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="date_to" class="form-control" placeholder="To Date" value="{{ date_to }}">
-                </div>
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
-                    <a href="{% url 'advanced_search' %}" class="btn btn-secondary">Clear</a>
-                </div>
-            </form>
+<div class="sf-wrap">
+  <div class="container">
+    <div class="sf-header">
+        <div class="sf-header-left">
+            <div class="sf-header-icon"><i class="bi bi-search"></i></div>
+            <h4>Advanced Search</h4>
         </div>
-    </div>
-    
-    <!-- Results -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between">
-            <h5>Results ({{ documents.count }})</h5>
-            <a href="{% url 'export_excel' %}" class="btn btn-success btn-sm">
-                <i class="bi bi-file-excel"></i> Export to Excel
+        <div class="d-flex gap-2">
+            {% if request.user.role == 'admin' %}
+            <a href="{% url 'admin_workspace' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+            {% elif request.user.role == 'clerk' %}
+            <a href="{% url 'clerk_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+            {% elif request.user.role == 'supervisor' %}
+            <a href="{% url 'supervisor_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+            {% elif request.user.role == 'staff' %}
+            <a href="{% url 'staff_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+            {% elif request.user.role == 'student' %}
+            <a href="{% url 'student_dashboard' %}" class="btn-sf-back"><i class="bi bi-arrow-left"></i>Back</a>
+            {% endif %}
+            <a href="{% url 'export_excel' %}" class="btn-sf-success">
+                <i class="bi bi-file-excel"></i> Export Excel
             </a>
         </div>
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Reference</th>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Department</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for doc in documents %}
-                    <tr>
-                        <td><code>{{ doc.reference_no }}</code></td>
-                        <td>{{ doc.title|truncatechars:30 }}</td>
-                        <td><span class="badge bg-secondary">{{ doc.status.status_name|default:"Pending" }}</span></td>
-                        <td>{{ doc.department.dept_name|default:"-" }}</td>
-                        <td>{{ doc.created_at|date:"d M Y" }}</td>
-                        <td>
-                            <a href="{% url 'document_detail' doc.id %}" class="btn btn-sm btn-outline-primary">View</a>
-                            <a href="{% url 'export_document' doc.id %}" class="btn btn-sm btn-outline-success">PDF</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4">No documents found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
     </div>
+    <div class="sf-card">
+        <form method="get" class="row g-3">
+            <div class="col-12">
+                <input type="text" name="q" class="sf-input" 
+                       placeholder="Search by title, reference, or description..." value="{{ query }}">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="sf-select">
+                    <option value="">All Statuses</option>
+                    {% for status in statuses %}
+                        <option value="{{ status.id }}" {% if selected_status == status.id|stringformat:"s" %}selected{% endif %}>
+                            {{ status.status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="department" class="sf-select">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
+                            {{ dept.dept_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3"><input type="date" name="date_from" class="sf-input" value="{{ date_from }}"></div>
+            <div class="col-md-3"><input type="date" name="date_to" class="sf-input" value="{{ date_to }}"></div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn-sf"><i class="bi bi-search"></i> Search</button>
+                <a href="{% url 'advanced_search' %}" class="btn-sf-outline"><i class="bi bi-x-lg"></i> Clear</a>
+            </div>
+        </form>
+    </div>
+    <div class="sf-table-wrap">
+        <div class="d-flex justify-content-between align-items-center p-3" style="border-bottom:1px solid var(--sf-border)">
+            <h5 style="margin:0; font-weight:900; color:var(--sf-text)">Results <span style="color:var(--sf-accent)">({{ documents.count }})</span></h5>
+        </div>
+        <table class="sf-table">
+            <thead>
+                <tr>
+                    <th>REFERENCE</th>
+                    <th>TITLE</th>
+                    <th>STATUS</th>
+                    <th>DEPARTMENT</th>
+                    <th>DATE</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td><span class="sf-ref">{{ doc.reference_no }}</span></td>
+                    <td style="font-weight:700">{{ doc.title|truncatechars:30 }}</td>
+                    <td>
+                        {% if doc.status %}
+                            {% with code=doc.status_code %}
+                            <span class="sf-badge {% if code == 'approved' or code == 'completed' %}approved{% elif code == 'pending' or code == 'review' %}pending{% elif code == 'rejected' %}rejected{% else %}default{% endif %}">
+                                {{ doc.status.status_name }}
+                            </span>
+                            {% endwith %}
+                        {% else %}
+                            <span class="sf-badge pending">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ doc.department.dept_name|default:"-" }}</td>
+                    <td class="text-muted">{{ doc.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'document_detail' doc.id %}" class="btn-sf-outline" style="padding:.4rem .8rem; font-size:.8rem">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{% url 'export_document' doc.id %}" class="btn-sf-success" style="padding:.4rem .8rem; font-size:.8rem">
+                                <i class="bi bi-file-pdf"></i> PDF
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="sf-empty">
+                        <i class="bi bi-search d-block" style="font-size:3rem; color:var(--sf-accent); opacity:.6; margin-bottom:1rem"></i>
+                        No documents found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -6,308 +6,186 @@
     <title>{% block title %}SmartFlow — TelOne Registry Workflow System{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* ============================================================
+           SMARTFLOW BASE LAYOUT — PREMIUM EDITION
+           Day: deep-blue + cyan accent | Night: burgundy + gold accent
+           ============================================================ */
         :root {
-            --blue-deep: #0d3b6e;
-            --blue-mid: #1a73e8;
-            --blue-brand: #2563eb;
-            --blue-light: #7ec8f7;
-            --accent: #00c6ff;
+            --blue-deep: #0d3b6e; --blue-mid: #1a73e8; --blue-brand: #2563eb;
+            --blue-light: #7ec8f7; --accent: #00c6ff; --accent2: #4facfe;
+            --gold: #facc15; --burgundy: #2d0b1e;
+            --text: #0f172a; --bg: #f4f7fb;
+
+            /* Unified theme tokens */
+            --sf-accent: var(--accent);
+            --sf-accent-soft: rgba(0, 198, 255, 0.15);
+            --sf-accent-border: rgba(0, 198, 255, 0.30);
+            --sf-nav-grad: linear-gradient(135deg, var(--blue-deep) 0%, #0a2040 100%);
+            --sf-surface: #ffffff;
+            --sf-surface-border: rgba(15, 23, 42, 0.08);
         }
+
+        body.dark-mode {
+            --sf-accent: var(--gold);
+            --sf-accent-soft: rgba(250, 204, 21, 0.15);
+            --sf-accent-border: rgba(250, 204, 21, 0.30);
+            --sf-nav-grad: linear-gradient(135deg, var(--burgundy) 0%, #17040e 100%);
+            --sf-surface: #2d050d;
+            --sf-surface-border: rgba(250, 204, 21, 0.30);
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #f4f7fb;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s ease, color 0.3s ease;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; display: flex; flex-direction: column;
+            transition: background .4s ease, color .4s ease;
         }
+
+        /* NAVBAR */
         .navbar-custom {
-            background: rgba(13, 59, 110, 0.97);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: var(--sf-nav-grad);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,.15);
+            position: relative; overflow: hidden;
+            transition: background .4s ease, border-color .4s ease;
         }
+        body.dark-mode .navbar-custom { border-bottom: 2px solid var(--gold) !important; }
+
+        .navbar-custom::before{
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(120deg, transparent, var(--sf-accent), transparent);
+            opacity:.1; animation:shimmer 4s infinite; pointer-events: none;
+        }
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
         .navbar-brand-custom {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: white !important;
+            font-size: 1.6rem; font-weight: 900; color: white !important;
+            display: inline-flex; align-items: center; gap: .4rem;
+            background:linear-gradient(90deg, #fff, var(--blue-light));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip: text;
         }
-        .navbar-brand-custom span {
-            color: var(--blue-light);
+        body.dark-mode .navbar-brand-custom {
+            background: linear-gradient(90deg, var(--gold), #fff7cc);
+            -webkit-background-clip: text; background-clip: text;
         }
         .navbar-brand-custom .shield {
-            margin-right: 0.4rem;
-            filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.4));
+            -webkit-text-fill-color: initial;
+            filter: drop-shadow(0 0 10px rgba(37, 99, 235, .5));
         }
-        .footer-custom {
-            background: #0a2040;
-            color: rgba(255, 255, 255, 0.5);
-            text-align: center;
-            padding: 1.5rem 2rem;
-            font-size: 0.8rem;
-            margin-top: auto;
-        }
-        .footer-custom span {
-            color: var(--blue-light);
-        }
-        main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .alert {
-            border-radius: 12px;
-            border: none;
-        }
-        
-        .dropdown-menu {
-            background-color: #0d3b6e !important;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .dropdown-item {
-            color: white !important;
-        }
-        .dropdown-item:hover {
-            background-color: #1a73e8 !important;
-            color: white !important;
-        }
-        .dropdown-menu .dropdown-divider {
-            border-color: rgba(255,255,255,0.1);
-        }
+
         .nav-link {
-            color: rgba(255,255,255,0.85) !important;
-            font-weight: 500;
+            color: rgba(255,255,255,.9) !important; font-weight: 600;
+            transition: all .3s; position: relative;
         }
-        .nav-link:hover {
-            color: white !important;
+        .nav-link:hover {color: white !important; transform: translateY(-2px)}
+        .nav-link::after{
+            content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px;
+            background:var(--sf-accent); transition:width .3s; border-radius: 2px;
         }
-        
-        /* Toggler icon white for dark navbar */
+        .nav-link:hover::after{width:100%}
+        body.dark-mode .nav-link {color: rgba(250, 204, 21, .9) !important}
+        body.dark-mode .nav-link:hover {color: #ffffff !important}
+
+        /* Theme toggle button */
+        .sf-theme-toggle {
+            width: 38px; height: 38px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.25);
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            transition: all .25s ease;
+        }
+        .sf-theme-toggle:hover {
+            background: var(--sf-accent);
+            border-color: var(--sf-accent);
+            color: #04233a;
+            transform: rotate(-15deg) scale(1.05);
+        }
+        body.dark-mode .sf-theme-toggle {
+            border-color: var(--gold); color: var(--gold);
+        }
+        body.dark-mode .sf-theme-toggle:hover { background: var(--gold); color: #000; }
+
+        .dropdown-menu {
+            background: rgba(13, 59, 110, .98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.2); border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.35);
+        }
+        .dropdown-item {color: white !important; font-weight: 500; border-radius: 8px; transition: all .2s;}
+        .dropdown-item:hover {background: linear-gradient(90deg, var(--blue-mid), var(--sf-accent)) !important}
+        body.dark-mode .dropdown-menu {background: #2d050d !important; border: 2px solid var(--gold) !important}
+        body.dark-mode .dropdown-item:hover {background: var(--gold) !important; color: #000 !important; font-weight: 700}
+
+        .navbar-custom .navbar-toggler { border-color: rgba(255,255,255,.3); }
         .navbar-custom .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e")
         }
-        
+
+        .footer-custom {
+            background: linear-gradient(180deg, #0a2040 0%, #061324 100%);
+            color: rgba(255, 255, 255, 0.6); text-align: center; padding: 1.5rem 2rem;
+            font-size: 0.8rem; margin-top: auto; border-top: 1px solid rgba(255,255,255,.1)
+        }
+        .footer-custom span {color: var(--blue-light); font-weight: 700}
+        body.dark-mode .footer-custom {background: #1a0a0e !important; border-top: 2px solid var(--gold) !important}
+        body.dark-mode .footer-custom span{color: var(--gold) !important}
+
+        main {flex-grow: 1; display: flex; flex-direction: column}
+        .alert {border-radius: 14px; border: none; backdrop-filter: blur(10px)}
+
+        /* DARK MODE surfaces */
+        body.dark-mode {background: #1a0a0e !important; color: #ffffff !important}
+        body.dark-mode .navbar-brand-custom span {color: #ffffff !important}
+
+        body.dark-mode .card {background: var(--sf-surface) !important; border: 2px solid var(--gold) !important}
+        body.dark-mode .card-header {background: #4a0e1a !important; color: var(--gold) !important; border-bottom: 2px solid var(--gold) !important}
+
+        body.dark-mode label, body.dark-mode .form-label, body.dark-mode .text-dark {color: #ffffff !important}
+        body.dark-mode .form-control, body.dark-mode .form-select {
+            background: rgba(250, 204, 21, .05) !important; color: #ffffff !important; border: 2px solid var(--gold) !important
+        }
+        body.dark-mode .form-control:focus{box-shadow: 0 0 0 .25rem rgba(250, 204, 21, .25) !important}
+
+        body.dark-mode .table {color: #ffffff !important}
+        body.dark-mode th{background-color: #4a0e1a !important; color: var(--gold) !important; border-bottom: 2px solid var(--gold) !important}
+        body.dark-mode td{color: #ffffff !important; border-bottom: 1px solid rgba(250, 204, 21, .15) !important}
+        body.dark-mode .table-hover tbody tr:hover {background: rgba(250, 204, 21, .08) !important}
+
+        body.dark-mode .bi:not(.text-danger) {color: var(--gold) !important}
+
+        body.dark-mode .btn-outline-light {color: var(--gold) !important; border-color: var(--gold) !important}
+        body.dark-mode .btn-outline-light:hover {background: var(--gold) !important; color: #000 !important}
+        body.dark-mode .btn-primary {background: var(--gold) !important; color: #000 !important; border: 2px solid var(--gold) !important; font-weight: 800 !important}
+
         @media print {
-            .navbar, .footer-custom, .btn, .card-header .btn, .nav-link, .dropdown, .no-print {
-                display: none !important;
-            }
-            body {
-                background: white;
-                color: black;
-                margin: 0;
-                padding: 0;
-            }
-            .card {
-                border: none;
-                box-shadow: none;
-                padding: 0;
-                margin: 0;
-            }
-            .container {
-                width: 100%;
-                max-width: 100%;
-                padding: 0;
-                margin: 0;
-            }
-            @page {
-                margin: 2cm;
-                size: A4;
-            }
-        }
-        
-        /* == NIGHT MODE  == */
-        body.dark-mode { 
-            background: #1a0a0e !important; 
-            color: #ffffff !important; 
-        }
-        
-        /* Global Navigation Overrides */
-        body.dark-mode .navbar-custom { 
-            background: rgba(45, 5, 13, 0.98) !important; 
-            border-bottom: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .navbar-brand-custom { 
-            color: #ffc700 !important; 
-        }
-        body.dark-mode .navbar-brand-custom span { 
-            color: #ffffff !important; 
-        }
-        body.dark-mode .nav-link { 
-            color: rgba(255, 199, 0, 0.85) !important; 
-        }
-        body.dark-mode .nav-link:hover { 
-            color: #ffffff !important; 
-        }
-        
-        /* Cards */
-        body.dark-mode .card { 
-            background: #2d050d !important; 
-            border: 2px solid #ffc700 !important; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important; 
-        }
-        body.dark-mode .card-header { 
-            background: #4a0e1a !important; 
-            color: #ffc700 !important; 
-            border-bottom: 2px solid #ffc700 !important; 
-        }
-        
-        /* Form Inputs & Accessibility Fixes */
-        body.dark-mode label,
-        body.dark-mode .form-label,
-        body.dark-mode .text-dark { 
-            color: #ffffff !important; 
-        }
-        body.dark-mode .form-control, 
-        body.dark-mode .form-select { 
-            background: rgba(255, 199, 0, 0.05) !important; 
-            color: #ffffff !important; 
-            border: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.4) !important;
-        }
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            box-shadow: 0 0 0 0.25rem rgba(255, 199, 0, 0.25) !important;
-            border-color: #ffc700 !important;
-        }
-
-        /* Tables */
-        body.dark-mode .table { 
-            color: #ffffff !important; 
-        }
-        body.dark-mode th,
-        body.dark-mode thead th { 
-            color: #ffc700 !important; 
-            font-weight: 700 !important;
-            background-color: #4a0e1a !important;
-            border-bottom: 2px solid #ffc700 !important;
-        }
-        body.dark-mode td { 
-            background-color: transparent !important;
-            color: #ffffff !important;
-            border-bottom: 1px solid rgba(255, 199, 0, 0.15) !important;
-        }
-        body.dark-mode .table-light { 
-            background: #4a0e1a !important; 
-            color: #ffc700 !important; 
-        }
-        body.dark-mode .table-hover tbody tr:hover { 
-            background: rgba(255, 199, 0, 0.08) !important; 
-        }
-        
-        /* Dropdowns */
-        body.dark-mode .dropdown-menu { 
-            background: #2d050d !important; 
-            border: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .dropdown-item { 
-            color: #ffffff !important; 
-        }
-        body.dark-mode .dropdown-item:hover { 
-            background: #ffc700 !important; 
-            color: #000000 !important; 
-            font-weight: 600;
-        }
-        body.dark-mode .dropdown-divider {
-            border-color: rgba(255, 199, 0, 0.3) !important;
-        }
-        
-        /* Layout Elements & Footers */
-        body.dark-mode .bg-light { 
-            background: #2d050d !important; 
-        }
-        body.dark-mode .text-muted { 
-            color: rgba(255, 255, 255, 0.6) !important; 
-        }
-        body.dark-mode .footer-custom { 
-            background: #1a0a0e !important; 
-            border-top: 2px solid #ffc700 !important; 
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-        body.dark-mode .footer-custom span {
-            color: #ffc700 !important;
-        }
-        body.dark-mode .list-group-item { 
-            background: #2d050d !important; 
-            color: #ffffff !important; 
-            border-color: rgba(255, 199, 0, 0.3) !important; 
-        }
-        body.dark-mode .alert { 
-            background: #2d050d !important; 
-            color: #ffffff !important; 
-            border: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .modal-content { 
-            background: #2d050d !important; 
-            color: #ffffff !important; 
-            border: 2px solid #ffc700 !important;
-        }
-        
-        /* Specific Bootstrap Icons Target — Safe styling that won't break font rendering classes */
-        body.dark-mode .bi:not(.text-danger) { 
-            color: #ffc700 !important; 
-        }
-
-        /* Buttons Mapping */
-        body.dark-mode .btn-outline-light {
-            color: #ffc700 !important;
-            border-color: #ffc700 !important;
-        }
-        body.dark-mode .btn-outline-light:hover {
-            background: #ffc700 !important;
-            color: #000000 !important;
-        }
-        body.dark-mode .btn-outline-secondary { 
-            color: #ffffff; 
-            border-color: #ffc700; 
-        }
-        body.dark-mode .btn-outline-secondary:hover { 
-            background: #ffc700; 
-            color: #000000; 
-        }
-        body.dark-mode .btn-primary { 
-            background: #ffc700 !important; 
-            color: #000000 !important;
-            border: 2px solid #ffc700 !important; 
-            font-weight: 700 !important;
-        }
-        body.dark-mode .btn-primary:hover {
-            background: #e6b400 !important;
-        }
-        body.dark-mode .btn-success { 
-            background: #198754 !important; 
-            border: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .btn-danger { 
-            background: #dc3545 !important; 
-            border: 2px solid #ffc700 !important; 
-        }
-        body.dark-mode .btn-warning { 
-            background: #ffc700 !important; 
-            border: 2px solid #ffc700 !important; 
-            color: #000000 !important; 
-        }
-        body.dark-mode .btn-warning:hover { 
-            background: #e6b400 !important; 
+            .navbar, .footer-custom, .btn, .no-print {display: none !important}
+            body {background: white; color: black}
+            @page {margin: 2cm; size: A4}
         }
     </style>
-    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container">
-            <a class="navbar-brand navbar-brand-custom d-flex align-items-center gap-2" href="{% url 'landing_page' %}">
-                <i class="bi bi-shield-check text-danger"></i>Smart<span>Flow</span>
+            <a class="navbar-brand navbar-brand-custom" href="{% url 'landing_page' %}">
+                <i class="bi bi-shield-check text-danger shield"></i>SmartFlow
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
-                        
+
                         {% if user.role == 'admin' and request.session.admin_verified %}
                         <li class="nav-item me-2">
                             <a class="btn btn-warning btn-sm text-dark fw-bold px-3" href="{% url 'admin_launchpad' %}">
@@ -328,16 +206,15 @@
                             <a class="nav-link" href="{% url 'notifications' %}" style="position: relative;">
                                 <i class="bi bi-bell me-1"></i> Notifications
                                 {% if unread > 0 %}
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem; margin-top: 2px;">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem">
                                         {{ unread }}
                                     </span>
                                 {% endif %}
                             </a>
                         </li>
-                        
-                        <!-- THEME TOGGLE BUTTON -->
+
                         <li class="nav-item">
-                            <button class="btn btn-sm btn-outline-light me-1" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                            <button class="btn btn-sm sf-theme-toggle me-2" onclick="toggleDarkMode()" title="Toggle Dark Mode">
                                 <i class="bi" id="themeIcon"></i>
                             </button>
                         </li>
@@ -349,16 +226,14 @@
                             </a>
                         </li>
                         {% endif %}
-                        
+
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">
                                 <i class="bi bi-box-arrow-right me-1"></i> Logout
                             </a>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'learn_more' %}"><i class="bi bi-info-circle me-1"></i> Learn More</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'learn_more' %}"><i class="bi bi-info-circle me-1"></i> Learn More</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i class="bi bi-person-plus me-1"></i> Register</a>
                             <ul class="dropdown-menu">
@@ -395,33 +270,38 @@
     </main>
 
     <footer class="footer-custom d-flex flex-wrap justify-content-center align-items-center gap-2">
-        &copy; 2026 
+        &copy; 2026
         <span class="d-inline-flex align-items-center gap-1">
             <i class="bi bi-shield-check text-danger"></i> SmartFlow
-        </span> 
-        — TelOne Registry Department — 
+        </span>
+        — TelOne Registry Department —
         Developed by <span>Munashe Muza (T2420016)</span>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         function updateThemeIcon() {
             const icon = document.getElementById('themeIcon');
             if (icon) {
-                icon.className = document.body.classList.contains('dark-mode') ? 'bi bi-sun' : 'bi bi-moon';
+                icon.className = document.body.classList.contains('dark-mode') ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
             }
         }
-        
+
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
             updateThemeIcon();
+
+            // Notify child pages to refresh charts/tables
+            if (typeof updateChartsForTheme === 'function') setTimeout(updateChartsForTheme, 50);
+            if (typeof updateStaffTheme === 'function') setTimeout(updateStaffTheme, 50);
         }
-        
+
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
         }
-        
+
         document.addEventListener('DOMContentLoaded', updateThemeIcon);
     </script>
     {% block extra_js %}{% endblock %}

@@ -1,22 +1,261 @@
 {% extends 'registry/base.html' %}
-{% block content %}
-<div class="sf-wrapper">
+{% load static %}
 
-    <!-- Student AI Panel -->
-    <div class="sf-panel">
-        <div class="sf-panel-head">
-            <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+{% block title %}AI Assistant — SmartFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* =================================================================
+       STUDENT AI PANEL
+    ================================================================= */
+    .sf-ai-wrapper {
+        min-height: calc(100vh - 160px);
+        padding: 1.5rem 0;
+    }
+
+    .sf-ai-panel {
+        background: var(--sf-bg-card, rgba(15, 43, 72, 0.04));
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12)) !important;
+        border-radius: 20px;
+        color: var(--sf-navy, #0f2b48);
+        max-width: 900px;
+        margin: 0 auto;
+        box-shadow: 0 8px 32px rgba(15, 43, 72, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sf-ai-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sf-cyan, #00b8d9), var(--sf-blue, #2f6fed));
+    }
+
+    .sf-ai-head {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .sf-ai-title {
+        color: var(--sf-navy, #0f2b48);
+        font-weight: 800;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .sf-dot {
+        color: var(--sf-cyan, #00b8d9);
+    }
+
+    /* Buttons */
+    .sf-btn-action-primary {
+        background: linear-gradient(135deg, var(--sf-cyan, #00b8d9), var(--sf-blue, #2f6fed));
+        color: #ffffff !important;
+        border: none;
+        border-radius: 50px;
+        padding: 0.45rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 10px rgba(0, 184, 217, 0.2);
+    }
+    .sf-btn-action-primary:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
+
+    .sf-btn-action-outline {
+        background: transparent;
+        border: 1.5px solid var(--sf-blue, #2f6fed);
+        color: var(--sf-blue, #2f6fed);
+        border-radius: 50px;
+        padding: 0.45rem 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .sf-btn-action-outline:hover {
+        background: var(--sf-blue, #2f6fed);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+    }
+
+    /* Body & Document Selector */
+    .sf-ai-body {
+        padding: 1.5rem;
+    }
+
+    .sf-muted {
+        color: var(--sf-slate, #64748b) !important;
+    }
+
+    .sf-doc-picker select.form-select {
+        background: rgba(0, 184, 217, 0.05);
+        color: var(--sf-navy, #0f2b48);
+        border: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.2));
+        border-radius: 10px;
+        font-weight: 600;
+    }
+    .sf-doc-picker select.form-select:focus {
+        border-color: var(--sf-cyan, #00b8d9);
+        box-shadow: 0 0 0 0.2rem rgba(0, 184, 217, 0.25);
+    }
+
+    /* AI Content Blocks */
+    .sf-output {
+        line-height: 1.6;
+    }
+
+    .sf-ai-block {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: rgba(0, 184, 217, 0.04);
+        border-radius: 12px;
+        border-left: 4px solid var(--sf-cyan, #00b8d9);
+    }
+
+    .sf-tag {
+        display: inline-block;
+        background: rgba(0, 184, 217, 0.12);
+        color: var(--sf-blue, #2f6fed);
+        border: 1px solid rgba(0, 184, 217, 0.25);
+        border-radius: 20px;
+        padding: 0.2rem 0.65rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin: 2px;
+    }
+
+    .sf-ai-error {
+        background: rgba(220, 38, 38, 0.1);
+        border-left: 4px solid var(--sf-rejected, #dc2626);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: #dc2626;
+    }
+
+    .sf-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .sf-empty-alert {
+        background: rgba(0, 184, 217, 0.08);
+        border: 1px solid rgba(0, 184, 217, 0.25);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        color: var(--sf-blue, #2f6fed);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* =================================================================
+       NIGHT MODE BURGUNDY / GOLD OVERRIDES
+    ================================================================= */
+    body.dark-mode {
+        --sf-navy: #f5e6d3;
+        --sf-navy-deep: #31071c;
+        --sf-cyan: #facc15;
+        --sf-blue: #c084fc;
+        --sf-teal: #facc15;
+        --sf-white: #f5e6d3;
+        --sf-slate: #c4b5a0;
+        --sf-bg-card: rgba(45, 11, 30, 0.85);
+        --sf-bg-card-border: rgba(245, 230, 211, 0.2);
+    }
+
+    body.dark-mode .sf-ai-title { color: #facc15 !important; }
+    body.dark-mode .sf-dot { color: #facc15 !important; }
+    
+    body.dark-mode .sf-btn-action-primary {
+        background: linear-gradient(135deg, #facc15, #c084fc) !important;
+        color: #31071c !important;
+    }
+
+    body.dark-mode .sf-btn-action-outline {
+        border-color: #c084fc !important;
+        color: #c084fc !important;
+    }
+    body.dark-mode .sf-btn-action-outline:hover {
+        background: #c084fc !important;
+        color: #31071c !important;
+    }
+
+    body.dark-mode .sf-doc-picker select.form-select {
+        background: rgba(250, 204, 21, 0.05) !important;
+        color: #f5e6d3 !important;
+        border-color: rgba(245, 230, 211, 0.2) !important;
+    }
+    body.dark-mode .sf-doc-picker select.form-select option {
+        background: #31071c !important;
+        color: #f5e6d3 !important;
+    }
+
+    body.dark-mode .sf-ai-block {
+        background: rgba(250, 204, 21, 0.04) !important;
+        border-left-color: #facc15 !important;
+    }
+
+    body.dark-mode .sf-tag {
+        background: rgba(250, 204, 21, 0.15) !important;
+        color: #facc15 !important;
+        border-color: rgba(250, 204, 21, 0.3) !important;
+    }
+
+    body.dark-mode .sf-empty-alert {
+        background: rgba(250, 204, 21, 0.08) !important;
+        border-color: rgba(250, 204, 21, 0.25) !important;
+        color: #facc15 !important;
+    }
+
+    body.dark-mode .sf-ai-error {
+        background: rgba(255, 107, 107, 0.15) !important;
+        color: #ff6b6b !important;
+        border-left-color: #ff6b6b !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sf-ai-wrapper">
+    <div class="sf-ai-panel">
+        
+        <div class="sf-ai-head">
+            <h5 class="sf-ai-title">
                 <i class="bi bi-robot sf-dot"></i> SmartFlow AI Assistant | Gemini 2.5 Flash
             </h5>
             {% if document %}
             <div class="d-flex gap-2">
-                <button class="btn sf-btn-sm" onclick="runGemini('{{ doc_id }}', 'review')"><i class="bi bi-lightning-charge me-1"></i>Quick Review</button>
-                <button class="btn sf-btn-sm sf-btn--outline" onclick="runGemini('{{ doc_id }}', 'bulk')"><i class="bi bi-file-earmark-bar-graph me-1"></i>Full Analysis</button>
+                <button class="btn sf-btn-action-primary" onclick="runGemini('{{ doc_id }}', 'review')">
+                    <i class="bi bi-lightning-charge"></i> Quick Review
+                </button>
+                <button class="btn sf-btn-action-outline" onclick="runGemini('{{ doc_id }}', 'bulk')">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Full Analysis
+                </button>
             </div>
             {% endif %}
         </div>
 
-        <div class="sf-panel-body">
+        <div class="sf-ai-body">
 
             {% if user_documents %}
             <div class="sf-doc-picker mb-4">
@@ -40,11 +279,11 @@
             </div>
             {% else %}
 
-            <p class="sf-muted mb-3">Reviewing: <strong style="color:#fff;">{{ document.title }}</strong></p>
+            <p class="sf-muted mb-3">Reviewing: <strong class="text-reset">{{ document.title }}</strong></p>
 
             <div id="ai-results-wrapper" class="d-none">
-                <div id="ai-loading-spinner" class="sf-spinner-wrap d-none">
-                    <div class="spinner-border spinner-border-sm" role="status" style="color: var(--sf-gold);">
+                <div id="ai-loading-spinner" class="d-flex align-items-center mb-3 d-none">
+                    <div class="spinner-border spinner-border-sm sf-dot" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                     <span class="sf-muted ms-2 small"><i class="bi bi-hourglass-split me-1"></i>Gemini is thinking...</span>
@@ -53,10 +292,10 @@
             </div>
 
             <div id="ai-empty-state" class="sf-empty">
-                <i class="bi bi-stars fa-2x mb-3 opacity-25" style="color: var(--sf-gold);" aria-hidden="true"></i>
+                <i class="bi bi-stars fa-2x mb-3 opacity-25 sf-dot" aria-hidden="true"></i>
                 <h6 class="fw-semibold sf-muted">Powered by Gemini 2.5 Flash</h6>
                 <p class="sf-muted small mx-auto" style="max-width: 400px;">
-                    Run a quick check or full logbook analysis. No admin stats here, just AI.
+                    
                 </p>
             </div>
 
@@ -65,51 +304,7 @@
     </div>
 </div>
 
-<style>
-:root{
-  --sf-bg: #1a0a14; /* Deep burgundy */
-  --sf-panel: rgba(45, 11, 30, 0.85); /* Burgundy glass */
-  --sf-gold: #ffc700; /* Primary gold */
-  --sf-gold-light: #ffd700;
-  --sf-burgundy: #7c1f3f;
-  --sf-text: #ffffff;
-  --sf-muted: #c9a96a; /* Muted gold */
-  --sf-radius-xl: 16px;
-  --sf-radius-lg: 10px;
-}
-.sf-wrapper{background: var(--sf-bg); min-height: 100vh; color: var(--sf-text); font-family: 'Segoe UI', Roboto, sans-serif; padding: 1.5rem;}
-.sf-muted{ color: var(--sf-muted)!important; }
-.sf-panel{background: var(--sf-panel); border: 1px solid rgba(255,199,0,0.15); border-radius: var(--sf-radius-xl); color: var(--sf-text); max-width: 900px; margin: 0 auto; backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0,0,0,0.4);}
-.sf-panel-head{ padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,199,0,0.1); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;}
-.sf-dot{ color: var(--sf-gold); }
-
-.sf-btn-sm{background: linear-gradient(135deg, var(--sf-gold), var(--sf-gold-light)); color: #2d0b1e; border: none; border-radius: var(--sf-radius-lg); padding: 0.5rem 1rem; font-weight: 700; font-size: 0.875rem; transition: all 0.2s ease;}
-.sf-btn--outline{background: transparent; border: 1.5px solid var(--sf-gold); color: var(--sf-gold);}
-@media (hover: hover) and (pointer: fine){
-  .sf-btn-sm:hover{ transform: translateY(-1px); box-shadow: 0 0 16px rgba(255,199,0,0.4); }
-  .sf-btn--outline:hover{ background: rgba(255,199,0,0.1); }
-}
-.sf-btn-sm:focus-visible{ outline: 2px solid var(--sf-gold-light); outline-offset: 2px; }
-
-.sf-spinner-wrap{ display:flex; align-items:center; margin-bottom:1rem; }
-.sf-output{ line-height: 1.6; }
-.sf-ai-block{ margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.04); border-radius: 10px; border-left: 3px solid var(--sf-gold); }
-.sf-ai-list li{ margin-bottom: 0.25rem; }
-.sf-tag{display:inline-block; background: rgba(255,199,0,0.15); color: var(--sf-gold); border: 1px solid rgba(255,199,0,0.3); border-radius: 20px; padding: 0.25rem 0.7rem; font-size: 0.85rem; font-weight: 600; margin: 2px;}
-.sf-ai-error{background: rgba(255,107,107,0.1); border-left: 3px solid #ff6b6b; border-radius: 8px; padding: 0.75rem 1rem; color: #ffb3b3; white-space: pre-wrap;}
-.sf-empty{ text-align:center; padding: 3rem 1rem; }
-.sf-empty-alert{ background: rgba(255,199,0,0.08); border: 1px solid rgba(255,199,0,0.25); border-radius: 10px; padding: 1rem 1.25rem; color: #ffd700; font-size: 0.9rem; }
-.sf-doc-picker select.form-select{ background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,199,0,0.2); border-radius: var(--sf-radius-lg); }
-.sf-doc-picker select.form-select:focus{ border-color: var(--sf-gold); box-shadow: 0 0 0 0.2rem rgba(255,199,0,0.2); }
-.sf-doc-picker select.form-select option{ background: #1a0a14; color: #fff; }
-
-/* Light mode override if needed */
-body:not(.dark-mode) .sf-wrapper{ background: #F7F8FA; }
-body:not(.dark-mode) .sf-panel{ background: #fff; border: 1px solid #eee; }
-</style>
-
 <script>
-// ===== SmartFlow + Gemini 2.5 Flash =====
 const escapeHtml = (str) => String(str)
  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -145,7 +340,7 @@ const renderReview = (data) => {
   let html = `<div class="sf-ai-block"><strong><i class="bi bi-text-paragraph me-1"></i>SUMMARY:</strong><br>${summary}</div>`;
 
   if (Array.isArray(data.key_points) && data.key_points.length) {
-    html += `<div class="sf-ai-block"><strong><i class="bi bi-list-check me-1"></i>KEY POINTS:</strong><ul class="sf-ai-list ps-3 mb-0">`;
+    html += `<div class="sf-ai-block"><strong><i class="bi bi-list-check me-1"></i>KEY POINTS:</strong><ul class="ps-3 mb-0">`;
     html += data.key_points.map(s => `<li>${escapeHtml(s)}</li>`).join('');
     html += `</ul></div>`;
   }
@@ -175,7 +370,7 @@ const renderBulk = (data) => {
   return `
     <div class="sf-ai-block"><strong><i class="bi bi-journal-text me-1"></i>SUMMARY:</strong><br>${escapeHtml(summary.summary || 'N/A')}</div>
     <div class="sf-ai-block"><strong><i class="bi bi-check2-circle me-1"></i>GRAMMAR & STYLE:</strong>${scoreText}<br>${escapeHtml(grammar.overall_feedback || 'N/A')}</div>
-    <div class="sf-ai-block"><strong><i class="bi bi-lightbulb me-1"></i>IMPROVEMENTS:</strong><ul class="sf-ai-list ps-3 mb-0">${fixesHtml}</ul></div>
+    <div class="sf-ai-block"><strong><i class="bi bi-lightbulb me-1"></i>IMPROVEMENTS:</strong><ul class="ps-3 mb-0">${fixesHtml}</ul></div>
     <div class="sf-ai-block"><strong><i class="bi bi-tags me-1"></i>TAGS:</strong><br>${tagList.length ? tagList.map(t => `<span class="sf-tag">${escapeHtml(t)}</span>`).join('') : '<span class="sf-muted">None</span>'}</div>
   `;
 };

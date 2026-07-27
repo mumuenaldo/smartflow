@@ -37,10 +37,6 @@
         flex: 1;
     }
 
-    
-    /* DARK MODE FOR TRACK REQUEST  */
-    
-
     body.dark-mode .card {
         background: #2d0b1e !important; 
         border: 1px solid #4a1a32 !important;
@@ -192,7 +188,7 @@
     }
 
     body.dark-mode .text-center .bg-light h6 {
-        color: #ffc700 !important; /* Gold */
+        color: #ffc700 !important;
     }
 
     body.dark-mode .text-center .bg-light p {
@@ -263,7 +259,6 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold" style="color: var(--blue-deep);">
@@ -276,13 +271,11 @@
                 </a>
             </div>
 
-            <!-- Document Details Card -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h4 class="fw-bold mb-0">{{ doc.title }}</h4>
                         <div class="d-flex gap-2">
-                            <!-- Priority Badge -->
                             {% if doc.priority %}
                                 <span class="badge 
                                     {% if doc.priority == 'low' %}bg-success
@@ -295,15 +288,28 @@
                                     {% elif doc.priority == 'urgent' %}<i class="bi bi-lightning-fill me-1"></i>Urgent{% endif %}
                                 </span>
                             {% endif %}
-                            <!-- Status Badge -->
-                            <span class="badge 
-                                {% if doc.status.status_code == 'approved' %}bg-success
-                                {% elif doc.status.status_code == 'rejected' %}bg-danger
-                                {% elif doc.status.status_code == 'in_review' %}bg-info
-                                {% elif doc.status_code == 'pending' %}bg-warning text-dark
-                                {% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
-                                {{ doc.status_name|default:"Processing" }}
-                            </span>
+                            
+                            {% if doc.status.status_code == 'processed' or doc.status.status_code == 'approved' %}
+                                <span class="badge bg-success fs-6 px-3 py-2 shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Processed & Ready
+                                </span>
+                            {% elif doc.status.status_code == 'rejected' %}
+                                <span class="badge bg-danger fs-6 px-3 py-2 shadow-sm">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Request Rejected
+                                </span>
+                            {% elif doc.status.status_code == 'in_review' %}
+                                <span class="badge bg-info text-dark fs-6 px-3 py-2 shadow-sm">
+                                    <i class="bi bi-hourglass-split me-1"></i> Under Review
+                                </span>
+                            {% elif doc.status.status_code == 'cancelled' %}
+                                <span class="badge bg-secondary fs-6 px-3 py-2 shadow-sm">
+                                    <i class="bi bi-dash-circle-fill me-1"></i> Cancelled
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark fs-6 px-3 py-2 shadow-sm">
+                                    <i class="bi bi-clock-fill me-1"></i> {{ doc.status.status_name|default:"Pending" }}
+                                </span>
+                            {% endif %}
                         </div>
                     </div>
                     
@@ -330,7 +336,6 @@
                         </div>
                     </div>
 
-                    <!-- Attachments -->
                     {% if doc.file_path %}
                     <div class="mb-4">
                         <h6 class="fw-bold"><i class="bi bi-paperclip me-2"></i> Attachment</h6>
@@ -340,23 +345,21 @@
                     </div>
                     {% endif %}
 
-                    <!-- QR CODE DISPLAY -->
                     {% if doc.qr_code %}
-                    <div class="text-center mt-4 p-3 bg-light rounded">
+                    <div class="text-center mt-4 p-3 bg-light rounded shadow-sm">
                         <h6 class="fw-bold"><i class="bi bi-qr-code-scan me-2"></i>Scan to Verify</h6>
-                        <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid">
-                        <p class="text-muted small mt-2">Reference: <strong>{{ doc.reference_no }}</strong></p>
-                        <p class="text-muted small">Scan this QR code to verify the document status</p>
+                        <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid bg-white p-2 rounded border my-2">
+                        <p class="text-muted small mt-1 mb-0">Reference: <strong>{{ doc.reference_no }}</strong></p>
+                        <p class="text-muted small">Scan this QR code to verify the document status live</p>
                     </div>
                     {% else %}
                     <div class="text-center mt-4 p-3 bg-light rounded">
-                        <p class="text-muted">QR code not available for this request.</p>
+                        <p class="text-muted mb-0">QR code not available for this request.</p>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Workflow Timeline -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white">
                     <h5 class="fw-bold mb-0">
@@ -368,13 +371,12 @@
                         {% for workflow in workflows %}
                         <div class="timeline-item">
                             <div class="timeline-badge 
-                                {% if workflow.status == 'approved' %}bg-success
+                                {% if workflow.status == 'processed' or workflow.status == 'approved' %}bg-success
                                 {% elif workflow.status == 'rejected' %}bg-danger
                                 {% elif workflow.status == 'in_review' %}bg-info
-                                {% elif workflow.status == 'processed' %}bg-secondary
                                 {% else %}bg-warning{% endif %}">
                                 <i class="bi 
-                                    {% if workflow.status == 'approved' %}bi-check-lg
+                                    {% if workflow.status == 'processed' or workflow.status == 'approved' %}bi-check-lg
                                     {% elif workflow.status == 'rejected' %}bi-x-lg
                                     {% elif workflow.status == 'in_review' %}bi-eye
                                     {% else %}bi-clock{% endif %}"></i>
@@ -387,8 +389,9 @@
                                 <p class="text-muted small mb-0">
                                     Status: 
                                     <span class="badge 
-                                        {% if workflow.status == 'approved' %}bg-success
+                                        {% if workflow.status == 'processed' or workflow.status == 'approved' %}bg-success
                                         {% elif workflow.status == 'rejected' %}bg-danger
+                                        {% elif workflow.status == 'in_review' %}bg-info
                                         {% else %}bg-secondary{% endif %}">
                                         {{ workflow.get_status_display }}
                                     </span>
@@ -411,8 +414,7 @@
                 </div>
             </div>
 
-            <!-- Cancel Request Button -->
-            {% if doc.status_code == 'pending' %}
+            {% if doc.status.status_code == 'pending' %}
             <form method="post" action="{% url 'cancel_request' doc.id %}" class="d-inline" 
                   onsubmit="return confirm('Are you sure you want to cancel this request? This action cannot be undone.');">
                 {% csrf_token %}
@@ -422,7 +424,6 @@
             </form>
             {% endif %}
 
-            <!-- Comments Section -->
             {% if comments %}
             <div class="card shadow-sm border-0 mt-4">
                 <div class="card-header bg-white">

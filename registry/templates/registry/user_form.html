@@ -1,277 +1,149 @@
 {% extends 'registry/base.html' %}
-
 {% block title %}{{ action }} User — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    input, select, textarea {
-        width: 100%;
-        padding: 8px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 6px;
-    }
-    input:focus, select:focus, textarea:focus {
-        border-color: #7c1f3f; 
-        outline: none;
-        box-shadow: 0 0 5px rgba(124, 31, 63, 0.3);
-    }
+/* ===== DAY MODE ===== */
+.sf-manage{padding:2rem 0;min-height:calc(100vh - 160px);background:#f8fafc}
+.sf-form-card{background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(15, 43, 72, 0.08)}
+.sf-form-header{background:linear-gradient(135deg,#0f2b48,#1a3d60);color:#fff;padding:1.2rem 1.5rem;border-radius:16px 16px 0 0;font-weight:900}
+.sf-form-header .bi{color:#00b8d9}
+.sf-form-body{padding:1.8rem}
 
-    
-    /* DARK MODE FOR USER FORM PAGE  */
-    
+.sf-label{font-weight:900;color:#0f2b48;font-size:.85rem;margin-bottom:.5rem;display:block}
+.sf-input{width:100%;padding:.75rem 1rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#1e293b;font-size:.9rem;transition:.2s}
+.sf-input:focus{border-color:#00b8d9;box-shadow:0 0 0 3px rgba(0,184,217,.15);outline:0}
+.sf-input::placeholder{color:#94a3b8}
 
-    body.dark-mode .card {
-        background: #2d0b1e !important; 
-        border: 1px solid #4a1a32 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
+.sf-btn-primary{background:linear-gradient(135deg,#00b8d9,#0f2b48);color:#fff;border:0;border-radius:10px;padding:.75rem 1.5rem;font-weight:900;box-shadow:0 4px 12px rgba(0,184,217,.3)}
+.sf-btn-primary:hover{background:linear-gradient(135deg,#0891b2,#0f2b48)}
+.sf-btn-secondary{background:#fff;color:#0f2b48;border:1px solid #cbd5e1;border-radius:10px;padding:.75rem 1.5rem;font-weight:900;text-decoration:none}
+.sf-btn-secondary:hover{background:#f8fafc}
 
-    body.dark-mode .card-header {
-        background: #3a1428 !important; 
-        border-bottom: 1px solid #4a1a32 !important;
-        color: #ffc700 !important; 
-    }
+.sf-error{color:#ef4444;font-size:.8rem;margin-top:.3rem}
+.sf-alert{background:#fee2e2;border:1px solid #fecaca;color:#b91c1c;padding:.8rem 1rem;border-radius:10px;margin-bottom:1rem}
+.sf-divider{border-color:#e2e8f0;margin:1.5rem 0}
 
-    body.dark-mode .card-header.bg-primary {
-        background: #3a1428 !important;
-    }
+/* ===== NIGHT MODE - BURGUNDY + GOLD ===== */
+body.dark-mode .sf-manage{background:#17040e}
+body.dark-mode .sf-form-card{background:#2d0b1e;border:1px solid #4a1a32}
+body.dark-mode .sf-form-header{background:linear-gradient(135deg,#4a1a32,#2d0b1e);color:#ffc700}
+body.dark-mode .sf-form-header .bi{color:#ffc700}
+body.dark-mode .sf-form-body{color:#e2e8f0}
 
-    body.dark-mode .card-body {
-        background: #2d0b1e !important;
-        color: #ffffff;
-    }
+body.dark-mode .sf-label{color:#ffc700}
+body.dark-mode .sf-input{background:#3a1428;color:#ffffff;border:1px solid #4a1a32}
+body.dark-mode .sf-input:focus{border-color:#ffc700;box-shadow:0 0 0 3px rgba(255,199,0,.2)}
+body.dark-mode .sf-input::placeholder{color:#c9a96a}
+body.dark-mode .sf-input option{background:#3a1428;color:#ffffff}
 
-    body.dark-mode .form-label {
-        color: #ffffff !important; 
-    }
+body.dark-mode .sf-btn-primary{background:linear-gradient(135deg,#ffc700,#d4af37);color:#2d0b1e}
+body.dark-mode .sf-btn-primary:hover{background:#ffd700}
+body.dark-mode .sf-btn-secondary{background:#3a1428;color:#ffc700;border:1px solid #ffc700}
+body.dark-mode .sf-btn-secondary:hover{background:#4a1a32}
 
-    body.dark-mode .form-control {
-        background: #3a1428 !important; 
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .form-control:focus {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border-color: #ffc700 !important; 
-        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
-    }
-
-    body.dark-mode .form-control::placeholder {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode .form-select {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode .form-select:focus {
-        border-color: #ffc700 !important;
-        box-shadow: 0 0 0 3px rgba(255, 199, 0, 0.2) !important;
-    }
-
-    body.dark-mode .form-select option {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .btn-primary {
-        background: #ffc700 !important; 
-        border: 1px solid #ffc700 !important;
-        color: #2d0b1e !important; 
-    }
-
-    body.dark-mode .btn-primary:hover {
-        background: #ffd700 !important; 
-        border-color: #ffd700 !important;
-        color: #2d0b1e !important;
-    }
-
-    body.dark-mode .btn-outline-secondary {
-        color: #ffc700;
-        border-color: #ffc700;
-    }
-
-    body.dark-mode .btn-outline-secondary:hover {
-        background: #ffc700;
-        color: #2d0b1e;
-    }
-
-    body.dark-mode hr {
-        border-color: #4a1a32 !important;
-    }
-
-    body.dark-mode .text-danger {
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .alert {
-        background: #3a1428 !important;
-        border-color: #4a1a32 !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .alert-danger {
-        border-color: #ff6b6b !important;
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .shadow-sm {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    body.dark-mode .small {
-        color: #c9a96a !important; 
-    }
-
-    body.dark-mode input,
-    body.dark-mode select,
-    body.dark-mode textarea {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-        border: 1px solid #4a1a32 !important;
-    }
-
-    body.dark-mode input:focus,
-    body.dark-mode select:focus,
-    body.dark-mode textarea:focus {
-        border-color: #ffc700 !important;
-        box-shadow: 0 0 5px rgba(255, 199, 0, 0.3) !important;
-    }
-
-    body.dark-mode input::placeholder,
-    body.dark-mode textarea::placeholder {
-        color: #c9a96a !important;
-    }
-
-    body.dark-mode select option {
-        background: #3a1428 !important;
-        color: #ffffff !important;
-    }
+body.dark-mode .sf-error{color:#ff6b6b}
+body.dark-mode .sf-alert{background:rgba(255,107,107,.15);border:1px solid #ff6b6b;color:#ff6b6b}
+body.dark-mode .sf-divider{border-color:#4a1a32}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-person-badge me-2"></i>
-                        {{ action }} User
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        
-                        <div class="row">
-                            <!-- Username -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">Username *</label>
-                                {{ form.username }}
-                                {% if form.username.errors %}
-                                    <div class="text-danger small">{{ form.username.errors }}</div>
-                                {% endif %}
+<div class="sf-manage">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="sf-form-card">
+                    <div class="sf-form-header">
+                        <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i>{{ action }} User</h4>
+                    </div>
+                    <div class="sf-form-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="sf-alert">
+                                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="sf-label">Username</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}<div class="sf-error">{{ form.username.errors }}</div>{% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="sf-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}<div class="sf-error">{{ form.email.errors }}</div>{% endif %}
+                                </div>
                             </div>
                             
-                            <!-- Email -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">Email *</label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger small">{{ form.email.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <!-- First Name -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">First Name *</label>
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}
-                                    <div class="text-danger small">{{ form.first_name.errors }}</div>
-                                {% endif %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="sf-label">First Name</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}<div class="sf-error">{{ form.first_name.errors }}</div>{% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="sf-label">Last Name</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}<div class="sf-error">{{ form.last_name.errors }}</div>{% endif %}
+                                </div>
                             </div>
                             
-                            <!-- Last Name -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">Last Name *</label>
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}
-                                    <div class="text-danger small">{{ form.last_name.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <!-- Role -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.role.id_for_label }}" class="form-label fw-bold">Role *</label>
-                                {{ form.role }}
-                                {% if form.role.errors %}
-                                    <div class="text-danger small">{{ form.role.errors }}</div>
-                                {% endif %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.role.id_for_label }}" class="sf-label">Role</label>
+                                    {{ form.role }}
+                                    {% if form.role.errors %}<div class="sf-error">{{ form.role.errors }}</div>{% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.department.id_for_label }}" class="sf-label">Department</label>
+                                    {{ form.department }}
+                                    {% if form.department.errors %}<div class="sf-error">{{ form.department.errors }}</div>{% endif %}
+                                </div>
                             </div>
                             
-                            <!-- Department -->
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.department.id_for_label }}" class="form-label fw-bold">Department</label>
-                                {{ form.department }}
-                                {% if form.department.errors %}
-                                    <div class="text-danger small">{{ form.department.errors }}</div>
-                                {% endif %}
+                            {% if action == 'Create' %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.password1.id_for_label }}" class="sf-label">Password</label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}<div class="sf-error">{{ form.password1.errors }}</div>{% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.password2.id_for_label }}" class="sf-label">Confirm Password</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}<div class="sf-error">{{ form.password2.errors }}</div>{% endif %}
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Password Fields (only for create, not for edit) -->
-                        {% if action == 'Create' %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">Password *</label>
-                                {{ form.password1 }}
-                                {% if form.password1.errors %}
-                                    <div class="text-danger small">{{ form.password1.errors }}</div>
-                                {% endif %}
-                            </div>
+                            {% endif %}
                             
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">Confirm Password *</label>
-                                {{ form.password2 }}
-                                {% if form.password2.errors %}
-                                    <div class="text-danger small">{{ form.password2.errors }}</div>
-                                {% endif %}
+                            <hr class="sf-divider">
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="sf-btn-primary"><i class="bi bi-save me-2"></i> {{ action }} User</button>
+                                <a href="{% url 'manage_users' %}" class="sf-btn-secondary"><i class="bi bi-x-circle me-1"></i> Cancel</a>
                             </div>
-                        </div>
-                        {% endif %}
-                        
-                        <hr>
-                        
-                        <div class="d-flex gap-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-2"></i> {{ action }} User
-                            </button>
-                            <a href="{% url 'manage_users' %}" class="btn btn-outline-secondary">
-                                <i class="bi bi-x-circle me-1"></i> Cancel
-                            </a>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input, select, textarea').forEach(function(el) {
+        el.classList.add('sf-input');
+    });
+});
+</script>
 {% endblock %}

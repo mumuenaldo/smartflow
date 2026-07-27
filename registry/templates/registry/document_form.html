@@ -5,325 +5,441 @@
 
 {% block extra_css %}
 <style>
-    
-    /* ===== NIGHT MODE OVERRIDES ====== */
-    
+    .sf-register {
+        --sf-accent: #00f2fe;
+        --sf-accent-soft: rgba(0, 242, 254, 0.15);
+        --sf-accent-border: rgba(0, 242, 254, 0.30);
+        --sf-ink: #ffffff;
+        --sf-muted: #94a3b8;
+        --sf-faint: #64748b;
+        --sf-card: rgba(255, 255, 255, 0.04);
+        --sf-card-border: rgba(255, 255, 255, 0.08);
+        --sf-field: rgba(255, 255, 255, 0.05);
 
-    body.dark-mode .page-header h4 {
-        color: #ffffff !important;
+        padding: 2.5rem 0;
+        min-height: calc(100vh - 160px);
+        background:
+            radial-gradient(1200px 600px at 85% -10%, rgba(0, 242, 254, 0.10), transparent 60%),
+            linear-gradient(180deg, #0b2240 0%, #061324 100%);
+        color: var(--sf-ink);
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s ease, color 0.3s ease;
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
     }
 
-    body.dark-mode .card {
-        background: #1a0a0e !important;
-        border: 2px solid #D4AF37 !important;
+    body.dark-mode .sf-register {
+        --sf-accent: #facc15;
+        --sf-accent-soft: rgba(250, 204, 21, 0.15);
+        --sf-accent-border: rgba(250, 204, 21, 0.30);
+        background:
+            radial-gradient(1200px 600px at 85% -10%, rgba(250, 204, 21, 0.10), transparent 60%),
+            linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
     }
 
-    body.dark-mode .card-header {
-        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important; 
-        border-bottom: 3px solid #D4AF37 !important; 
-        color: #D4AF37 !important; 
+    .sf-register .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.18;
+        background: var(--sf-accent);
+    }
+    .sf-register .orb-1 { width: 460px; height: 460px; top: -150px; right: -100px; }
+    .sf-register .orb-2 { width: 360px; height: 360px; bottom: -160px; left: -120px; opacity: 0.10; }
+
+    .sf-register .container { position: relative; z-index: 1; }
+
+    .sf-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 1.75rem;
+    }
+    .sf-page-header .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .sf-page-header .icon-badge {
+        width: 56px; height: 56px;
+        flex-shrink: 0;
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem;
+        color: #040d1a;
+        background: var(--sf-accent);
+        box-shadow: 0 6px 18px var(--sf-accent-soft);
+    }
+    body.dark-mode .sf-page-header .icon-badge { color: #12020a; }
+    .sf-page-header h4 { margin: 0; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
+    .sf-page-header p { margin: 2px 0 0 0; color: var(--sf-muted); font-size: 0.88rem; font-weight: 500; }
+
+    .sf-glass-card {
+        position: relative;
+        background: var(--sf-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--sf-card-border);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+    }
+    .sf-glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--sf-accent);
+    }
+    .sf-glass-card .card-head {
+        padding: 1.25rem 1.75rem;
+        border-bottom: 1px solid var(--sf-card-border);
+        background: rgba(255, 255, 255, 0.01);
         font-weight: 700;
+        font-size: 1rem;
+    }
+    .sf-glass-card .card-head .bi { color: var(--sf-accent); margin-right: 8px; }
+    .sf-glass-card .card-inner { padding: 2rem; }
+
+    .sf-register .form-label {
+        color: var(--sf-ink) !important;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .sf-register .form-text { color: var(--sf-muted) !important; font-size: 0.78rem; margin-top: 0.35rem; }
+
+    .sf-register .form-control,
+    .sf-register .form-select,
+    .sf-register textarea {
+        background: var(--sf-field) !important;
+        border: 1px solid var(--sf-card-border) !important;
+        color: var(--sf-ink) !important;
+        border-radius: 10px !important;
+        padding: 0.7rem 0.9rem !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sf-register .form-control:focus,
+    .sf-register .form-select:focus,
+    .sf-register textarea:focus {
+        outline: none;
+        border-color: var(--sf-accent) !important;
+        box-shadow: 0 0 0 3px var(--sf-accent-soft) !important;
+        background: rgba(255, 255, 255, 0.07) !important;
+    }
+    .sf-register .form-control::placeholder { color: var(--sf-faint); }
+    .sf-register .form-select option { background: #0b2240; color: #ffffff; }
+    body.dark-mode .sf-register .form-select option { background: #2d0b1e; }
+
+    .sf-register .form-control:disabled,
+    .sf-register .form-select:disabled {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-color: rgba(255, 255, 255, 0.06) !important;
+        color: var(--sf-faint) !important;
     }
 
-    body.dark-mode .card-body {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .form-label {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .form-text,
-    body.dark-mode .text-muted {
-        color: rgba(255, 255, 255, 0.75) !important;
-    }
-
-    /* FORM INPUTS & DROPDOWNS - NIGHT MODE */
-    body.dark-mode .form-control,
-    body.dark-mode .form-select {
-        background-color: rgba(212, 175, 55, 0.06) !important;
-        color: #ffffff !important;
-        border: 2px solid #D4AF37 !important;
-    }
-
-    /* Style options inside select dropdowns for dark mode */
-    body.dark-mode .form-select option {
-        background-color: #1a0a0e !important;
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .form-control:focus,
-    body.dark-mode .form-select:focus {
-        background-color: rgba(212, 175, 55, 0.1) !important;
-        color: #ffffff !important;
-        border-color: #D4AF37 !important;
-        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
-    }
-
-    body.dark-mode .form-control:disabled,
-    body.dark-mode .form-select:disabled {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border-color: rgba(212, 175, 55, 0.3) !important;
-        color: rgba(255, 255, 255, 0.5) !important;
-    }
-
-    /* BUTTONS - NIGHT MODE */
-    body.dark-mode .btn-primary {
-        background: #8b1a3a !important; 
-        border: 1px solid #D4AF37 !important;
-        color: #ffffff !important;
+    .sf-register input[type="file"]::file-selector-button {
+        background: var(--sf-accent);
+        color: #040d1a;
+        border: none;
+        border-radius: 8px;
+        padding: 0.4rem 0.9rem;
+        margin-right: 12px;
         font-weight: 700;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    body.dark-mode .sf-register input[type="file"]::file-selector-button { color: #12020a; }
+    .sf-register input[type="file"]::file-selector-button:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+    .sf-register .form-check-label { color: var(--sf-ink); }
+    .sf-register .form-check-input {
+        background-color: var(--sf-field);
+        border-color: var(--sf-card-border);
+    }
+    .sf-register .form-check-input:checked {
+        background-color: var(--sf-accent);
+        border-color: var(--sf-accent);
     }
 
-    body.dark-mode .btn-primary:hover {
-        background: #4a0e1a !important;
+    .sf-register .alert-danger {
+        background: rgba(239, 68, 68, 0.12) !important;
+        border: 1px solid rgba(239, 68, 68, 0.35) !important;
+        color: #fca5a5 !important;
+        border-radius: 12px;
     }
+    .sf-register .alert-danger .bi { color: #f87171 !important; }
 
-    body.dark-mode .btn-outline-secondary {
-        border: 2px solid #D4AF37 !important;
-        background: transparent !important;
-        color: #D4AF37 !important;
-        font-weight: 700;
-    }
-
-    body.dark-mode .btn-outline-secondary:hover {
-        background: #D4AF37 !important;
-        color: #1a0a0e !important;
-    }
-
-    body.dark-mode hr {
-        border-color: rgba(212, 175, 55, 0.2);
+    .sf-register hr {
+        border: none;
+        border-top: 1px solid var(--sf-card-border);
         opacity: 1;
     }
 
-    /* BOOTSTRAP ICONS */
-    body.dark-mode .bi { color: #D4AF37 !important; }
-    body.dark-mode .btn .bi { color: inherit !important; }
-    body.dark-mode .card-header .bi { color: #D4AF37 !important; }
-    
-    /* Form Check Toggles */
-    body.dark-mode .form-check-input:checked {
-        background-color: #8b1a3a !important;
-        border-color: #D4AF37 !important;
+    .sf-btn-primary {
+        background: var(--sf-accent);
+        color: #040d1a;
+        font-weight: 700;
+        border: none;
+        border-radius: 50px;
+        padding: 0.7rem 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    body.dark-mode .sf-btn-primary { color: #12020a; }
+    .sf-btn-primary:hover {
+        transform: translateY(-2px);
+        color: #040d1a;
+        box-shadow: 0 10px 28px var(--sf-accent-soft);
+    }
+    body.dark-mode .sf-btn-primary:hover { color: #12020a; }
+
+    .sf-btn-secondary {
+        background: transparent;
+        border: 1px solid var(--sf-card-border);
+        color: var(--sf-ink);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 0.7rem 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+    .sf-btn-secondary:hover {
+        border-color: var(--sf-accent);
+        color: var(--sf-accent);
+        background: var(--sf-accent-soft);
+    }
+
+    @media (max-width: 600px) {
+        .sf-page-header { flex-direction: column; align-items: flex-start; }
+        .sf-glass-card .card-inner { padding: 1.4rem; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header d-flex align-items-center justify-content-between mb-4">
-  <h4><i class="bi bi-file-earmark-plus me-2"></i>Register New Document</h4>
-  <a href="{% url 'document_list' %}" class="btn btn-sm btn-outline-secondary">
-    <i class="bi bi-arrow-left me-1"></i>Back to Documents
-  </a>
-</div>
+<div class="sf-register">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white py-3">
-        <span class="fw-bold" style="color:#0d3b6e;">
-          <i class="bi bi-pencil-square me-2"></i>Document Details
-        </span>
-      </div>
-      <div class="card-body p-4">
-        <form method="post" enctype="multipart/form-data" novalidate>
-          {% csrf_token %}
-
-          {% if form.errors %}
-            <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
-              <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-              <div>
-                <strong>Registration Failed:</strong> Please correct the errors marked below, or check your missing fields.
-                <ul class="mb-0 mt-1 small">
-                  {% for field, errors in form.errors.items %}
-                    <li><strong>{{ field|title }}:</strong> {{ errors.0 }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div>
-          {% endif %}
-
-          <div class="row g-3">
-
-            <!-- Title -->
-            <div class="col-md-8">
-              <label class="form-label fw-semibold">Document Title <span class="text-danger"></span></label>
-              {% if form.title.field.widget.attrs.class %}
-                {{ form.title }}
-              {% else %}
-                <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}" required>
-              {% endif %}
-              {% if form.title.errors %}
-                <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
-              {% endif %}
-            </div>
-
-            <!-- Reference Number & Auto Gen Toggle -->
-            <div class="col-md-4">
-              <div class="d-flex justify-content-between align-items-center">
-                <label class="form-label fw-semibold mb-1">Reference Number</label>
-                <div class="form-check form-switch mb-1">
-                  <input class="form-check-input" type="checkbox" id="autoGenRef" name="auto_generate_ref">
-                  <label class="form-check-label small fw-semibold text-muted" for="autoGenRef">Auto</label>
+    <div class="container">
+        <div class="sf-page-header">
+            <div class="header-left">
+                <div class="icon-badge"><i class="bi bi-file-earmark-plus-fill"></i></div>
+                <div>
+                    <h4>Register New Document</h4>
+                    <p>Create a new registry file entry</p>
                 </div>
-              </div>
-              
-              {% if form.reference_no.field.widget.attrs.class %}
-                {{ form.reference_no }}
-              {% else %}
-                <input type="text" name="reference_no" id="id_reference_no" class="form-control" value="{{ form.reference_no.value|default:'' }}">
-              {% endif %}
-              
-              {% if form.reference_no.errors %}
-                <div class="text-danger small mt-1">{{ form.reference_no.errors.0 }}</div>
-              {% endif %}
             </div>
-
-            <!-- Document Type Dropdown Selection -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Document Type</label>
-              {% if form.document_type.field.widget.input_type == 'select' and form.document_type.field.choices %}
-                {{ form.document_type }}
-              {% else %}
-                <select name="document_type" id="id_document_type" class="form-select">
-                  <option value="" {% if not form.document_type.value %}selected{% endif %}>Select Document Type...</option>
-                  <option value="Policy" {% if form.document_type.value == 'Policy' %}selected{% endif %}>Policy Document</option>
-                  <option value="Invoice" {% if form.document_type.value == 'Invoice' %}selected{% endif %}>Invoice / Receipt</option>
-                  <option value="Memorandum" {% if form.document_type.value == 'Memorandum' %}selected{% endif %}>Internal Memorandum</option>
-                  <option value="Report" {% if form.document_type.value == 'Report' %}selected{% endif %}>Academic / Project Report</option>
-                  <option value="Letter" {% if form.document_type.value == 'Letter' %}selected{% endif %}>Official Letter</option>
-                </select>
-              {% endif %}
-              {% if form.document_type.errors %}
-                <div class="text-danger small mt-1">{{ form.document_type.errors.0 }}</div>
-              {% endif %}
-            </div>
-
-            <!-- Department -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Department <span class="text-danger"></span></label>
-              {% if form.department.field.widget.input_type == 'select' or form.department.field.choices %}
-                {{ form.department }}
-              {% else %}
-                <select name="department" id="id_department" class="form-select" required>
-                  <option value="">Select Department...</option>
-                  {% for choice_id, choice_label in form.department.field.choices %}
-                    {% if choice_id %}
-                      <option value="{{ choice_id }}" {% if form.department.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
-                    {% endif %}
-                  {% endfor %}
-                </select>
-              {% endif %}
-              {% if form.department.errors %}
-                <div class="text-danger small mt-1">{{ form.department.errors.0 }}</div>
-              {% endif %}
-            </div>
-
-            <!-- ADDED: Priority Level Row Dropdown -->
-            <div class="col-md-6">
-              <label class="form-label fw-semibold">Priority Level <span class="text-danger"></span></label>
-              {% if form.priority.field.widget.input_type == 'select' or form.priority.field.choices %}
-                {{ form.priority }}
-              {% else %}
-                <select name="priority" id="id_priority" class="form-select" required>
-                  <option value="">Select Priority Level...</option>
-                  {% for choice_id, choice_label in form.priority.field.choices %}
-                    <option value="{{ choice_id }}" {% if form.priority.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
-                  {% endfor %}
-                </select>
-              {% endif %}
-              {% if form.priority.errors %}
-                <div class="text-danger small mt-1">{{ form.priority.errors.0 }}</div>
-              {% endif %}
-            </div>
-
-            <!-- Requires Approval Checkbox Wrapper -->
-            <div class="col-md-6 d-flex align-items-center mt-4 pt-2">
-              <div class="form-check form-switch">
-                {{ form.requires_approval }}
-                <label class="form-check-label fw-semibold ms-2" for="id_requires_approval">Requires Verification/Approval?</label>
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div class="col-12">
-              <label class="form-label fw-semibold">Description</label>
-              {% if form.description.field.widget.attrs.class %}
-                {{ form.description }}
-              {% else %}
-                <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
-              {% endif %}
-            </div>
-
-            <!-- File Upload -->
-            <div class="col-12">
-              <label class="form-label fw-semibold">
-                <i class="bi bi-paperclip me-1"></i>Attach File (PDF, DOCX)
-              </label>
-              {% if form.file_path.field.widget.attrs.class %}
-                {{ form.file_path }}
-              {% else %}
-                <input type="file" name="file_path" id="id_file_path" class="form-control">
-              {% endif %}
-              <div class="form-text">Optional — max 10MB</div>
-            </div>
-
-          </div>
-
-          <hr class="my-4">
-
-          <div class="d-flex gap-2 justify-content-end">
-            <a href="{% url 'document_list' %}" class="btn btn-outline-secondary">
-              <i class="bi bi-x-lg me-1"></i>Cancel
+            <a href="{% url 'document_list' %}" class="sf-btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Documents
             </a>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="bi bi-check-lg me-1"></i>Register Document
-            </button>
-          </div>
+        </div>
 
-        </form>
-      </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="sf-glass-card">
+                    <div class="card-head">
+                        <i class="bi bi-pencil-square"></i>Document Details
+                    </div>
+                    <div class="card-inner">
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+
+                            {% if form.errors %}
+                                <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                                    <div>
+                                        <strong>Registration Failed:</strong> Please correct the errors marked below, or check your missing fields.
+                                        <ul class="mb-0 mt-1 small">
+                                            {% for field, errors in form.errors.items %}
+                                                <li><strong>{{ field|title }}:</strong> {{ errors.0 }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="row g-3">
+
+                                <div class="col-md-8">
+                                    <label class="form-label fw-semibold">Document Title <span class="text-danger"></span></label>
+                                    {% if form.title.field.widget.attrs.class %}
+                                        {{ form.title }}
+                                    {% else %}
+                                        <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}" required>
+                                    {% endif %}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label fw-semibold mb-1">Reference Number</label>
+                                        <div class="form-check form-switch mb-1">
+                                            <input class="form-check-input" type="checkbox" id="autoGenRef" name="auto_generate_ref">
+                                            <label class="form-check-label small fw-semibold" for="autoGenRef">Auto</label>
+                                        </div>
+                                    </div>
+                                    {% if form.reference_no.field.widget.attrs.class %}
+                                        {{ form.reference_no }}
+                                    {% else %}
+                                        <input type="text" name="reference_no" id="id_reference_no" class="form-control" value="{{ form.reference_no.value|default:'' }}">
+                                    {% endif %}
+                                    {% if form.reference_no.errors %}
+                                        <div class="text-danger small mt-1">{{ form.reference_no.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Document Type</label>
+                                    {% if form.document_type.field.widget.input_type == 'select' and form.document_type.field.choices %}
+                                        {{ form.document_type }}
+                                    {% else %}
+                                        <select name="document_type" id="id_document_type" class="form-select">
+                                            <option value="" {% if not form.document_type.value %}selected{% endif %}>Select Document Type...</option>
+                                            <option value="Policy" {% if form.document_type.value == 'Policy' %}selected{% endif %}>Policy Document</option>
+                                            <option value="Invoice" {% if form.document_type.value == 'Invoice' %}selected{% endif %}>Invoice / Receipt</option>
+                                            <option value="Memorandum" {% if form.document_type.value == 'Memorandum' %}selected{% endif %}>Internal Memorandum</option>
+                                            <option value="Report" {% if form.document_type.value == 'Report' %}selected{% endif %}>Academic / Project Report</option>
+                                            <option value="Letter" {% if form.document_type.value == 'Letter' %}selected{% endif %}>Official Letter</option>
+                                        </select>
+                                    {% endif %}
+                                    {% if form.document_type.errors %}
+                                        <div class="text-danger small mt-1">{{ form.document_type.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Department <span class="text-danger"></span></label>
+                                    {% if form.department.field.widget.input_type == 'select' or form.department.field.choices %}
+                                        {{ form.department }}
+                                    {% else %}
+                                        <select name="department" id="id_department" class="form-select" required>
+                                            <option value="">Select Department...</option>
+                                            {% for choice_id, choice_label in form.department.field.choices %}
+                                                {% if choice_id %}
+                                                    <option value="{{ choice_id }}" {% if form.department.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                    {% if form.department.errors %}
+                                        <div class="text-danger small mt-1">{{ form.department.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Priority Level <span class="text-danger"></span></label>
+                                    {% if form.priority.field.widget.input_type == 'select' or form.priority.field.choices %}
+                                        {{ form.priority }}
+                                    {% else %}
+                                        <select name="priority" id="id_priority" class="form-select" required>
+                                            <option value="">Select Priority Level...</option>
+                                            {% for choice_id, choice_label in form.priority.field.choices %}
+                                                <option value="{{ choice_id }}" {% if form.priority.value == choice_id %}selected{% endif %}>{{ choice_label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                    {% if form.priority.errors %}
+                                        <div class="text-danger small mt-1">{{ form.priority.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 d-flex align-items-center mt-4 pt-2">
+                                    <div class="form-check form-switch">
+                                        {{ form.requires_approval }}
+                                        <label class="form-check-label fw-semibold ms-2" for="id_requires_approval">Requires Verification/Approval?</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Description</label>
+                                    {% if form.description.field.widget.attrs.class %}
+                                        {{ form.description }}
+                                    {% else %}
+                                        <textarea name="description" id="id_description" class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="bi bi-paperclip me-1"></i>Attach File (PDF, DOCX)
+                                    </label>
+                                    {% if form.file_path.field.widget.attrs.class %}
+                                        {{ form.file_path }}
+                                    {% else %}
+                                        <input type="file" name="file_path" id="id_file_path" class="form-control">
+                                    {% endif %}
+                                    <div class="form-text">Optional — max 10MB</div>
+                                </div>
+
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{% url 'document_list' %}" class="sf-btn-secondary">
+                                    <i class="bi bi-x-lg"></i> Cancel
+                                </a>
+                                <button type="submit" class="sf-btn-primary">
+                                    <i class="bi bi-check-lg"></i> Register Document
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Dynamic Class Injection for native Django widgets if missing form classes
-    const textInputs = document.querySelectorAll('#id_title, #id_reference_no, #id_file_path');
-    textInputs.forEach(input => input.classList.add('form-control'));
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#id_title, #id_reference_no, #id_file_path')
+            .forEach(function (input) { input.classList.add('form-control'); });
 
-    const selectInputs = document.querySelectorAll('#id_document_type, #id_department, #id_priority');
-    selectInputs.forEach(select => select.classList.add('form-select'));
+        document.querySelectorAll('#id_document_type, #id_department, #id_priority')
+            .forEach(function (select) { select.classList.add('form-select'); });
 
-    const textAreas = document.querySelectorAll('#id_description');
-    textAreas.forEach(area => area.classList.add('form-control'));
+        document.querySelectorAll('#id_description')
+            .forEach(function (area) { area.classList.add('form-control'); });
 
-    const checkInputs = document.querySelectorAll('#id_requires_approval');
-    checkInputs.forEach(check => check.classList.add('form-check-input'));
+        document.querySelectorAll('#id_requires_approval')
+            .forEach(function (check) { check.classList.add('form-check-input'); });
 
-    // Auto Generation Toggle Mechanism
-    const autoGenToggle = document.getElementById('autoGenRef');
-    const refInput = document.getElementById('id_reference_no');
+        var autoGenToggle = document.getElementById('autoGenRef');
+        var refInput = document.getElementById('id_reference_no');
 
-    if(autoGenToggle && refInput) {
-      if(autoGenToggle.checked) {
-        refInput.value = '';
-        refInput.placeholder = '[ Auto-Generated on Save ]';
-        refInput.disabled = true;
-      }
+        if (autoGenToggle && refInput) {
+            if (autoGenToggle.checked) {
+                refInput.value = '';
+                refInput.placeholder = '[ Auto-Generated on Save ]';
+                refInput.disabled = true;
+            }
 
-      autoGenToggle.addEventListener('change', function() {
-        if(this.checked) {
-          refInput.value = '';
-          refInput.placeholder = '[ Auto-Generated on Save ]';
-          refInput.disabled = true;
-        } else {
-          refInput.placeholder = '';
-          refInput.disabled = false;
+            autoGenToggle.addEventListener('change', function () {
+                if (this.checked) {
+                    refInput.value = '';
+                    refInput.placeholder = '[ Auto-Generated on Save ]';
+                    refInput.disabled = true;
+                } else {
+                    refInput.placeholder = '';
+                    refInput.disabled = false;
+                }
+            });
         }
-      });
-    }
-  });
+    });
 </script>
 {% endblock %}

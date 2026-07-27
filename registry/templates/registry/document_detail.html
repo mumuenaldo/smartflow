@@ -1,353 +1,410 @@
 {% extends 'registry/base.html' %}
 {% load static %}
 
-{% block title %}Document Details — SmartFlow{% endblock %}
+{% block title %}{{ doc.title|default:"Document Details" }} — SmartFlow{% endblock %}
 
 {% block extra_css %}
 <style>
-    .timeline {
-        position: relative;
-        padding-left: 30px;
+    :root {
+        --sf-navy: #0f2b48;
+        --sf-cyan: #00b8d9;
+        --sf-blue: #2f6fed;
+        --sf-slate: #475569;
+        
+        --sf-bg-wrapper: #f1f5f9;
+        --sf-bg-card: #ffffff;
+        --sf-bg-card-border: rgba(15, 43, 72, 0.12);
+        --sf-bg-subtle: #f8fafc;
+        --sf-tile-bg: rgba(0, 184, 217, 0.06);
+        --sf-tile-border: rgba(0, 184, 217, 0.25);
+        --sf-text-main: #0f2b48;
+        --sf-shadow: 0 12px 32px rgba(15, 43, 72, 0.08), 0 2px 6px rgba(15, 43, 72, 0.04);
+        
+        --sf-radius-lg: 16px;
+        --sf-radius-md: 12px;
     }
-    .timeline-item {
-        display: flex;
-        margin-bottom: 20px;
-        position: relative;
+
+    body.dark-mode {
+        --sf-navy: #f8fafc;
+        --sf-cyan: #facc15;
+        --sf-blue: #c084fc;
+        --sf-slate: #cbd5e1;
+        
+        --sf-bg-wrapper: #12050e;
+        --sf-bg-card: rgba(38, 12, 26, 0.95);
+        --sf-bg-card-border: rgba(250, 204, 21, 0.25);
+        --sf-bg-subtle: rgba(255, 255, 255, 0.05);
+        --sf-tile-bg: rgba(255, 255, 255, 0.03);
+        --sf-tile-border: rgba(250, 204, 21, 0.25);
+        --sf-text-main: #f8fafc;
+        --sf-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
     }
-    .timeline-item:not(:last-child)::before {
+
+    .sf-details-wrapper {
+        min-height: calc(100vh - 160px);
+        padding: 2rem 0;
+        color: var(--sf-text-main);
+    }
+
+    .sf-card {
+        background: var(--sf-bg-card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--sf-bg-card-border) !important;
+        border-radius: var(--sf-radius-lg);
+        box-shadow: var(--sf-shadow);
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 1.75rem;
+    }
+
+    .sf-card::before {
         content: '';
         position: absolute;
-        left: 15px;
-        top: 35px;
-        bottom: -20px;
-        width: 2px;
-        background: #dee2e6;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sf-cyan), var(--sf-blue));
     }
-    .timeline-badge {
+
+    .sf-card-header {
+        background: var(--sf-bg-subtle);
+        border-bottom: 1px solid var(--sf-bg-card-border) !important;
+        padding: 1.25rem 1.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sf-card-title {
+        color: var(--sf-navy);
+        font-weight: 800;
+        font-size: 1.15rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .sf-dot {
+        color: var(--sf-cyan);
+    }
+
+    .sf-muted {
+        color: var(--sf-slate) !important;
+    }
+
+    .sf-tile {
+        background: var(--sf-tile-bg);
+        border: 1px solid var(--sf-tile-border);
+        border-left: 4px solid var(--sf-cyan);
+        border-radius: var(--sf-radius-md);
+        padding: 1rem 1.15rem;
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sf-tile:hover {
+        transform: translateY(-2px);
+    }
+
+    .sf-tile-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--sf-slate);
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+
+    .sf-tile-value {
+        color: var(--sf-navy);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .sf-desc-box {
+        background: var(--sf-bg-subtle);
+        border: 1px solid var(--sf-bg-card-border);
+        border-radius: var(--sf-radius-md);
+        padding: 1.15rem 1.25rem;
+        line-height: 1.65;
+        color: var(--sf-text-main);
+    }
+
+    .sf-btn-primary {
+        background: linear-gradient(135deg, var(--sf-cyan), var(--sf-blue));
+        color: #ffffff !important;
+        border: none;
+        border-radius: 50px;
+        padding: 0.55rem 1.35rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 14px rgba(0, 184, 217, 0.3);
+    }
+    .sf-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 184, 217, 0.45);
+        color: #ffffff !important;
+    }
+
+    .sf-btn-outline {
+        background: #ffffff;
+        border: 1.5px solid var(--sf-blue);
+        color: var(--sf-blue) !important;
+        border-radius: 50px;
+        padding: 0.55rem 1.35rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .sf-btn-outline:hover {
+        background: var(--sf-blue);
+        color: #ffffff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(47, 111, 237, 0.25);
+    }
+
+    .sf-timeline {
+        position: relative;
+        padding-left: 10px;
+    }
+    .sf-timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+        padding-left: 28px;
+    }
+    .sf-timeline-item:last-child {
+        padding-bottom: 0;
+    }
+    .sf-timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 28px;
+        bottom: 0;
+        width: 2px;
+        background: var(--sf-bg-card-border);
+    }
+    .sf-timeline-item:last-child::before {
+        display: none;
+    }
+    .sf-timeline-badge {
+        position: absolute;
+        left: -11px;
+        top: 0;
         width: 32px;
         height: 32px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
         color: white;
-    }
-    .timeline-content {
-        flex: 1;
-    }
-
-    
-    /* ===== NIGHT MODE OVERRIDES ===== */
-
-    body.dark-mode .card {
-        background: #1a0a0e !important;
-        border: 2px solid #D4AF37 !important;
+        font-size: 0.875rem;
+        border: 2px solid var(--sf-bg-card);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
 
-    body.dark-mode .card-header {
-        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important; /* BURGUNDY */
-        border-bottom: 3px solid #D4AF37 !important; /* SOFT METALLIC GOLD */
-        color: #D4AF37 !important; 
-        font-weight: 700;
+    .sf-form-control {
+        background: var(--sf-bg-subtle);
+        color: var(--sf-navy);
+        border: 1.5px solid var(--sf-bg-card-border);
+        border-radius: var(--sf-radius-md);
+        padding: 0.85rem 1.15rem;
+        font-size: 0.95rem;
+    }
+    .sf-form-control:focus {
+        background: #ffffff;
+        color: var(--sf-navy);
+        border-color: var(--sf-cyan);
+        box-shadow: 0 0 0 0.25rem rgba(0, 184, 217, 0.18);
     }
 
-    body.dark-mode .card-header.bg-primary {
-        background: linear-gradient(135deg, #4a0e1a 0%, #8b1a3a 100%) !important;
-    }
-
-    body.dark-mode .card-body {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .bg-light {
-        background: rgba(212, 175, 55, 0.06) !important;
-        border: 1px solid rgba(212, 175, 55, 0.2) !important;
-    }
-
-    body.dark-mode .text-muted,
-    body.dark-mode .small,
-    body.dark-mode .helptext {
-        color: rgba(255, 255, 255, 0.75) !important;
-    }
-
-    body.dark-mode .fw-bold {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .border-bottom {
-        border-color: rgba(212, 175, 55, 0.2) !important;
-    }
-
-    /* SYSTEM STATUS BADGES - NIGHT */
-    body.dark-mode .badge {
-        color: #ffffff !important;
-    }
-
-    body.dark-mode .badge.bg-success {
-        background: #0f7b3a !important;
-        border: 1px solid #2ecc71;
-    }
-
-    body.dark-mode .badge.bg-danger {
-        background: #a1222a !important;
-        border: 1px solid #e74c3c;
-    }
-
-    body.dark-mode .badge.bg-warning {
-        background: #b8860b !important;
-        border: 1px solid #D4AF37;
-    }
-
-    body.dark-mode .badge.bg-info {
-        background: #0d5c7a !important;
-        border: 1px solid #17a2b8;
-    }
-
-    body.dark-mode .badge.bg-secondary {
-        background: #3a3a4a !important;
-        border: 1px solid #5a5a6a;
-    }
-
-    body.dark-mode .badge.bg-light {
-        background: rgba(212, 175, 55, 0.15) !important;
-        color: #D4AF37 !important;
-        border: 1px solid #D4AF37;
-        font-weight: 700;
-    }
-
-    /* ACTIONS & BUTTONS - NIGHT */
-    body.dark-mode .btn-outline-primary {
-        color: #D4AF37 !important;
-        border: 2px solid #D4AF37 !important;
-        font-weight: 700;
-    }
-
-    body.dark-mode .btn-outline-primary:hover {
-        background: #D4AF37 !important;
-        color: #1a0a0e !important;
-    }
-
-    body.dark-mode .btn-success {
-        background: #28a745 !important;
-        border: none !important;
-        color: #ffffff !important;
-        font-weight: 700;
-    }
-
-    body.dark-mode .btn-success:hover {
-        background: #218838 !important;
-    }
-
-    body.dark-mode .btn-warning {
-        background: #D4AF37 !important; 
-        border: none !important;
-        color: #1a0a0e !important;
+    .sf-tag-ref {
+        background: rgba(0, 184, 217, 0.12);
+        color: var(--sf-navy);
+        border: 1px solid rgba(0, 184, 217, 0.3);
+        border-radius: 20px;
+        padding: 0.35rem 0.85rem;
+        font-size: 0.825rem;
         font-weight: 800;
+        letter-spacing: 0.5px;
     }
 
-    body.dark-mode .btn-warning:hover {
-        background: #bc962e !important;
+    body.dark-mode .sf-tile-value,
+    body.dark-mode .sf-desc-box,
+    body.dark-mode .sf-desc-box p,
+    body.dark-mode .sf-timeline-item strong,
+    body.dark-mode .sf-tile p,
+    body.dark-mode .sf-tile strong,
+    body.dark-mode .sf-tile {
+        color: #f8fafc !important;
     }
 
-    body.dark-mode .btn-primary {
-        background: #8b1a3a !important;  
-        border: 1px solid #D4AF37 !important;
+    body.dark-mode .sf-tile-label,
+    body.dark-mode .sf-muted,
+    body.dark-mode .sf-timeline-item small {
+        color: #cbd5e1 !important;
+    }
+
+    body.dark-mode .sf-desc-box {
+        background: rgba(0, 0, 0, 0.35) !important;
+        border: 1px solid rgba(250, 204, 21, 0.2) !important;
+    }
+
+    body.dark-mode .sf-form-control {
+        background: rgba(0, 0, 0, 0.35) !important;
         color: #ffffff !important;
-        font-weight: 700;
+        border-color: rgba(250, 204, 21, 0.3) !important;
     }
 
-    body.dark-mode .btn-primary:hover {
-        background: #4a0e1a !important;
+    body.dark-mode .sf-form-control::placeholder {
+        color: rgba(248, 250, 252, 0.5) !important;
     }
 
-    body.dark-mode .btn-secondary {
-        border: 2px solid #D4AF37 !important;
+    body.dark-mode .sf-form-control:focus {
+        background: rgba(0, 0, 0, 0.5) !important;
+        color: #ffffff !important;
+        border-color: #facc15 !important;
+        box-shadow: 0 0 0 0.25rem rgba(250, 204, 21, 0.2) !important;
+    }
+
+    body.dark-mode .sf-btn-primary {
+        background: linear-gradient(135deg, #facc15, #c084fc) !important;
+        color: #31071c !important;
+        box-shadow: 0 4px 14px rgba(250, 204, 21, 0.25);
+    }
+
+    body.dark-mode .sf-btn-outline {
         background: transparent !important;
-        color: #D4AF37 !important;
-        font-weight: 700;
+        border-color: #c084fc !important;
+        color: #c084fc !important;
     }
 
-    body.dark-mode .btn-secondary:hover {
-        background: #D4AF37 !important;
-        color: #1a0a0e !important;
+    body.dark-mode .sf-btn-outline:hover {
+        background: #c084fc !important;
+        color: #31071c !important;
     }
 
-    /* TEXT FIELDS & FORM INPUTS - NIGHT */
-    body.dark-mode .text-dark {
-        color: #ffffff !important;
+    body.dark-mode .sf-tag-ref {
+        background: rgba(250, 204, 21, 0.15);
+        color: #facc15;
+        border-color: rgba(250, 204, 21, 0.3);
     }
 
-    body.dark-mode .text-primary {
-        color: #D4AF37 !important;
+    @keyframes sf-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
     }
-
-    body.dark-mode .text-success {
-        color: #4cff91 !important;
-    }
-
-    body.dark-mode .text-danger {
-        color: #ff6b6b !important;
-    }
-
-    body.dark-mode .text-warning {
-        color: #D4AF37 !important;
-    }
-
-    body.dark-mode .form-control {
-        background: rgba(212, 175, 55, 0.06) !important;
-        color: #ffffff !important;
-        border: 2px solid #D4AF37 !important;
-    }
-
-    body.dark-mode .form-control:focus {
-        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
-    }
-
-    body.dark-mode .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.4);
-    }
-
-    /* TIMELINE & UTILITIES - NIGHT */
-    body.dark-mode .timeline-item:not(:last-child)::before {
-        background: rgba(212, 175, 55, 0.3);
-    }
-
-    body.dark-mode .timeline-badge.bg-warning {
-        background: #b8860b !important;
-        border: 1px solid #D4AF37;
-    }
-
-    body.dark-mode .comment-item {
-        border-color: rgba(212, 175, 55, 0.2) !important;
-    }
-
-    body.dark-mode hr {
-        border-color: rgba(212, 175, 55, 0.2);
-        opacity: 1;
-    }
-    
-    /* Specific Bootstrap Icons */
-    body.dark-mode .bi { color: #D4AF37 !important; }
-    body.dark-mode .badge .bi, body.dark-mode .btn .bi { color: inherit !important; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .6; }
-    }
+    .sf-pulse { animation: sf-pulse 1.2s infinite; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container sf-details-wrapper">
     <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <!-- Document Header -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        <i class="bi bi-file-text me-2"></i> Document Details
-                    </h4>
-                    <span class="badge bg-light text-dark">{{ doc.reference_no }}</span>
+        <div class="col-lg-9 mx-auto">
+            
+            <div class="card sf-card">
+                <div class="sf-card-header">
+                    <h5 class="sf-card-title">
+                        <i class="bi bi-file-earmark-text sf-dot"></i> Document Details
+                    </h5>
+                    <span class="sf-tag-ref">{{ doc.reference_no }}</span>
                 </div>
-                <div class="card-body">
-                    <!-- Title -->
-                    <h3 class="fw-bold mb-3">{{ doc.title }}</h3>
-                    
-                    <!-- Status Badge -->
-                    <div class="mb-3">
-                        <span class="badge 
-                            {% if doc.status.status_code == 'approved' %}bg-success
-                            {% elif doc.status.status_code == 'rejected' %}bg-danger
-                            {% elif doc.status.status_code == 'in_review' %}bg-info
-                            {% elif doc.status_code == 'pending' %}bg-warning text-dark
-                            {% else %}bg-secondary{% endif %} fs-6 px-3 py-2">
-                            <i class="bi 
-                                {% if doc.status_code == 'approved' %}bi-check-circle
-                                {% elif doc.status_code == 'rejected' %}bi-x-circle
-                                {% elif doc.status.status_code == 'in_review' %}bi-eye
-                                {% elif doc.status_code == 'pending' %}bi-clock
-                                {% else %}bi-file-text{% endif %} me-1">
-                            </i>
-                            {{ doc.status_name|default:"Processing" }}
-                        </span>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                        <h2 class="fw-bold mb-0" style="color: var(--sf-navy); font-size: 1.85rem;">
+                            {{ doc.title }}
+                        </h2>
+                        
+                        {% if doc.status.status_code == 'processed' or doc.status.status_code == 'approved' %}
+                            <span class="badge bg-success px-3 py-2 rounded-pill fs-6 shadow-sm">
+                                <i class="bi bi-check-circle-fill me-1"></i> Processed & Ready
+                            </span>
+                        {% elif doc.status.status_code == 'rejected' %}
+                            <span class="badge bg-danger px-3 py-2 rounded-pill fs-6 shadow-sm">
+                                <i class="bi bi-x-circle-fill me-1"></i> Request Rejected
+                            </span>
+                        {% elif doc.status.status_code == 'in_review' %}
+                            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fs-6 shadow-sm">
+                                <i class="bi bi-hourglass-split me-1"></i> Under Review
+                            </span>
+                        {% elif doc.status.status_code == 'cancelled' %}
+                            <span class="badge bg-secondary px-3 py-2 rounded-pill fs-6 shadow-sm">
+                                <i class="bi bi-dash-circle-fill me-1"></i> Cancelled
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6 shadow-sm">
+                                <i class="bi bi-clock-fill me-1"></i> {{ doc.status.status_name|default:"Pending" }}
+                            </span>
+                        {% endif %}
                     </div>
                     
-                    <!-- Description -->
                     <div class="mb-4">
-                        <h6 class="fw-bold">Description</h6>
-                        <p class="text-muted">{{ doc.description|default:"No description provided." }}</p>
+                        <h6 class="fw-bold sf-muted text-uppercase small tracking-wide mb-2">Description</h6>
+                        <div class="sf-desc-box">
+                            <p class="mb-0">{{ doc.description|default:"No description provided." }}</p>
+                        </div>
                     </div>
                     
-                    <!-- Document Info Grid -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Document Type</small>
-                                <strong class="text-dark">{{ doc.document_type|default:"Not specified" }}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Document Type</span>
+                                <span class="sf-tile-value">{{ doc.document_type|default:"Academic Transcript" }}</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Department</small>
-                                <strong class="text-dark">{{ doc.department.dept_name|default:"Not assigned" }}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Department</span>
+                                <span class="sf-tile-value">{{ doc.department.dept_name|default:"Not assigned" }}</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Submitted By</small>
-                                <strong class="text-dark">{{ doc.submitted_by.get_full_name|default:doc.submitted_by.username }}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Submitted By</span>
+                                <span class="sf-tile-value">{{ doc.submitted_by.get_full_name|default:doc.submitted_by.username }}</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Submitted On</small>
-                                <strong class="text-dark">{{ doc.created_at|date:"d M Y, H:i" }}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Submitted On</span>
+                                <span class="sf-tile-value">{{ doc.created_at|date:"d M Y, H:i" }}</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Last Updated</small>
-                                <strong class="text-dark">{{ doc.updated_at|date:"d M Y, H:i" }}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Last Updated</span>
+                                <span class="sf-tile-value">{{ doc.updated_at|date:"d M Y, H:i" }}</span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded">
-                                <small class="text-muted d-block">Requires Approval</small>
-                                <strong class="text-dark">{% if doc.requires_approval %}Yes{% else %}No{% endif %}</strong>
+                        <div class="col-md-4 col-6">
+                            <div class="sf-tile">
+                                <span class="sf-tile-label">Approval Required</span>
+                                <span class="sf-tile-value">{% if doc.requires_approval %}Yes{% else %}No{% endif %}</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- QR Code -->
-                    {% if doc.qr_code %}
-                    <div class="text-center mb-4 p-3 bg-light rounded">
-                        <h6 class="fw-bold text-dark"><i class="bi bi-qr-code-scan me-1"></i> Scan to Verify</h6>
-                        <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid bg-white p-2 rounded shadow-sm">
-                        <p class="text-muted small mt-2">Reference: <strong class="text-dark">{{ doc.reference_no }}</strong></p>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Attachment -->
-                    {% if doc.file_path %}
-                    <div class="mb-4">
-                        <h6 class="fw-bold">Attachment</h6>
-                        <a href="{{ doc.file_path.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                            <i class="bi bi-download me-1"></i> Download File
-                        </a>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Priority Badge -->
                     {% if doc.priority %}
-                    <div class="mb-3">
-                        <h6 class="fw-bold">Priority</h6>
+                    <div class="mb-4">
+                        <h6 class="fw-bold sf-muted text-uppercase small tracking-wide mb-2">Priority Level</h6>
                         <span class="badge 
                             {% if doc.priority == 'low' %}bg-success
                             {% elif doc.priority == 'medium' %}bg-warning text-dark
                             {% elif doc.priority == 'high' %}bg-danger
-                            {% elif doc.priority == 'urgent' %}bg-danger{% endif %} px-3 py-2"
-                            {% if doc.priority == 'urgent' %}style="animation: pulse 1s infinite;"{% endif %}>
+                            {% elif doc.priority == 'urgent' %}bg-danger sf-pulse{% endif %} px-3 py-2 rounded-pill fs-6 shadow-sm">
                             <i class="bi 
                                 {% if doc.priority == 'low' %}bi-arrow-down-circle
                                 {% elif doc.priority == 'medium' %}bi-dash-circle
@@ -357,125 +414,148 @@
                         </span>
                     </div>
                     {% endif %}
+
+                    <div class="row g-3 mb-4">
+                        {% if doc.qr_code %}
+                        <div class="col-md-6">
+                            <div class="sf-tile text-center p-3">
+                                <h6 class="fw-bold mb-2"><i class="bi bi-qr-code-scan me-1 sf-dot"></i> Verification QR</h6>
+                                <img src="{{ doc.qr_code.url }}" alt="QR Code" width="130" height="130" class="img-fluid bg-white p-2 rounded shadow-sm border">
+                                <p class="sf-muted small mt-2 mb-0">Ref: <strong>{{ doc.reference_no }}</strong></p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if doc.file_path %}
+                        <div class="col-md-6">
+                            <div class="sf-tile d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <i class="bi bi-file-earmark-arrow-down fa-2x sf-dot mb-2"></i>
+                                <h6 class="fw-bold mb-3">Attached Document</h6>
+                                <a href="{{ doc.file_path.url }}" class="btn sf-btn-outline" target="_blank">
+                                    <i class="bi bi-download"></i> Download File
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                     
-                    <!-- Action Buttons -->
-                    <hr>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <!-- Export PDF Button -->
-                        <a href="{% url 'export_document' doc.id %}" class="btn btn-success">
-                            <i class="bi bi-file-pdf me-1"></i> Export PDF
+                    <hr class="my-4" style="border-color: var(--sf-bg-card-border);">
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <a href="{% url 'export_document' doc.id %}" class="btn sf-btn-primary">
+                            <i class="bi bi-file-pdf"></i> Export PDF
                         </a>
                         
-                        <!-- Print Button -->
-                        <button onclick="window.print()" class="btn btn-secondary">
-                            <i class="bi bi-printer me-1"></i> Print
+                        <button onclick="window.print()" class="btn sf-btn-outline">
+                            <i class="bi bi-printer"></i> Print
                         </button>
                         
                         {% if user.role == 'clerk' or user.role == 'admin' %}
-                            <a href="{% url 'document_assign' doc.id %}" class="btn btn-warning">
-                                <i class="bi bi-person-plus me-1"></i> Assign
+                            <a href="{% url 'document_assign' doc.id %}" class="btn sf-btn-outline">
+                                <i class="bi bi-person-plus"></i> Assign
                             </a>
                         {% endif %}
                         
                         {% if user.role == 'supervisor' or user.role == 'admin' %}
-                            <a href="{% url 'approval_view' doc.id %}" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i> Review & Approve
+                            <a href="{% url 'approval_view' doc.id %}" class="btn sf-btn-primary">
+                                <i class="bi bi-check-circle"></i> Review & Approve
                             </a>
                         {% endif %}
                         
-                        <a href="{% url 'document_list' %}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <a href="{% url 'document_list' %}" class="btn sf-btn-outline ms-auto">
+                            <i class="bi bi-arrow-left"></i> Back to List
                         </a>
                     </div>
                 </div>
             </div>
             
-            <!-- Workflow Timeline -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-diagram-3 me-2"></i> Workflow Progress
+            <div class="card sf-card">
+                <div class="sf-card-header">
+                    <h5 class="sf-card-title">
+                        <i class="bi bi-diagram-3 sf-dot"></i> Workflow Progress
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4 p-md-5">
                     {% if workflows %}
-                        <div class="timeline">
+                        <div class="sf-timeline">
                             {% for workflow in workflows %}
-                            <div class="timeline-item">
-                                <div class="timeline-badge 
-                                    {% if workflow.status == 'approved' %}bg-success
+                            <div class="sf-timeline-item">
+                                <div class="sf-timeline-badge 
+                                    {% if workflow.status == 'processed' or workflow.status == 'approved' %}bg-success
                                     {% elif workflow.status == 'rejected' %}bg-danger
                                     {% elif workflow.status == 'in_review' %}bg-info
                                     {% else %}bg-warning{% endif %}">
                                     <i class="bi 
-                                        {% if workflow.status == 'approved' %}bi-check-lg
+                                        {% if workflow.status == 'processed' or workflow.status == 'approved' %}bi-check-lg
                                         {% elif workflow.status == 'rejected' %}bi-x-lg
                                         {% elif workflow.status == 'in_review' %}bi-eye
                                         {% else %}bi-clock{% endif %}"></i>
                                 </div>
-                                <div class="timeline-content ms-3">
-                                    <div class="d-flex justify-content-between">
-                                        <strong class="text-dark">{{ workflow.current_step }}</strong>
-                                        <small class="text-muted">{{ workflow.started_at|date:"d M Y, H:i" }}</small>
+                                <div class="ms-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong style="color: var(--sf-navy); font-size: 1.05rem;">{{ workflow.current_step }}</strong>
+                                        <small class="sf-muted">{{ workflow.started_at|date:"d M Y, H:i" }}</small>
                                     </div>
-                                    <small class="d-block mt-1">Status: {{ workflow.get_status_display }}</small>
+                                    <div class="small sf-muted mt-1">Status: {{ workflow.get_status_display }}</div>
                                     {% if workflow.assigned_to %}
-                                        <div><small>Assigned to: {{ workflow.assigned_to.get_full_name|default:workflow.assigned_to.username }}</small></div>
+                                        <div class="small sf-muted">Assigned to: {{ workflow.assigned_to.get_full_name|default:workflow.assigned_to.username }}</div>
                                     {% endif %}
                                     {% if workflow.completed_at %}
-                                        <small class="text-muted d-block mt-1">Completed: {{ workflow.completed_at|date:"d M Y, H:i" }}</small>
+                                        <div class="small sf-muted mt-1"><i class="bi bi-check2-all me-1"></i>Completed: {{ workflow.completed_at|date:"d M Y, H:i" }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted text-center py-3">No workflow history yet.</p>
+                        <div class="text-center py-4 sf-muted">
+                            <i class="bi bi-clock-history fa-2x mb-2 d-block opacity-50"></i>
+                            <p class="mb-0">No workflow history recorded for this document yet.</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>
             
-            <!-- Comments Section -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-chat-dots me-2"></i> Comments & Feedback
+            <div class="card sf-card">
+                <div class="sf-card-header">
+                    <h5 class="sf-card-title">
+                        <i class="bi bi-chat-dots sf-dot"></i> Comments & Feedback
                     </h5>
                 </div>
-                <div class="card-body">
-                    <!-- Comment Form -->
+                <div class="card-body p-4 p-md-5">
                     <form method="post" class="mb-4">
                         {% csrf_token %}
                         <input type="hidden" name="comment_submit" value="1">
-                        <div class="mb-2">
-                            <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
+                        <div class="mb-3">
+                            <textarea name="comment" class="form-control sf-form-control" rows="3" placeholder="Add an official note or feedback..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-sm btn-primary">
-                            <i class="bi bi-send me-1"></i> Post Comment
+                        <button type="submit" class="btn sf-btn-primary">
+                            <i class="bi bi-send"></i> Post Comment
                         </button>
                     </form>
                     
-                    <!-- Comments List -->
                     {% if comments %}
-                        <div class="comments-list">
+                        <div class="d-flex flex-column gap-3">
                             {% for comment in comments %}
-                            <div class="comment-item mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
-                                <div class="d-flex justify-content-between">
-                                    <strong class="text-dark">
-                                        <i class="bi bi-person-circle me-1"></i>
+                            <div class="sf-tile p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong style="color: var(--sf-navy);">
+                                        <i class="bi bi-person-circle me-1 sf-dot"></i>
                                         {{ comment.user.get_full_name|default:comment.user.username }}
                                     </strong>
-                                    <small class="text-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
+                                    <small class="sf-muted">{{ comment.created_at|date:"d M Y, H:i" }}</small>
                                 </div>
-                                <p class="mb-0 mt-1 text-dark">{{ comment.comment }}</p>
+                                <p class="mb-0 mt-2">{{ comment.comment }}</p>
                             </div>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted text-center py-3">No comments yet. Be the first to comment!</p>
+                        <div class="text-center py-3 sf-muted">
+                            <p class="mb-0">No comments posted yet. Be the first to leave a feedback entry.</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>
+
         </div>
     </div>
 </div>
