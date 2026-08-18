@@ -306,6 +306,44 @@
         50% { opacity: 0.5; }
     }
     .sf-pulse { animation: sf-pulse 1.2s infinite; }
+
+    .escalation-alert {
+        border-left: 4px solid;
+        padding: 1rem 1.25rem;
+        border-radius: var(--sf-radius-md);
+        margin-bottom: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .escalation-level-1 {
+        background: rgba(245, 158, 11, 0.12);
+        border-color: #f59e0b;
+        color: #b45309;
+    }
+    .escalation-level-2 {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: #ef4444;
+        color: #b91c1c;
+    }
+    .escalation-level-3 {
+        background: rgba(0, 0, 0, 0.15);
+        border-color: #1f2937;
+        color: #111827;
+    }
+    body.dark-mode .escalation-level-1 {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+    }
+    body.dark-mode .escalation-level-2 {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+    }
+    body.dark-mode .escalation-level-3 {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e5e7eb;
+    }
 </style>
 {% endblock %}
 
@@ -350,6 +388,30 @@
                             </span>
                         {% endif %}
                     </div>
+
+                    {% if doc.escalation_level > 0 %}
+                    <div class="escalation-alert escalation-level-{{ doc.escalation_level }}">
+                        <i class="bi 
+                            {% if doc.escalation_level == 1 %}bi-exclamation-triangle
+                            {% elif doc.escalation_level == 2 %}bi-exclamation-diamond
+                            {% else %}bi-exclamation-octagon{% endif %} 
+                            fs-4"></i>
+                        <div>
+                            <strong>Escalation Level {{ doc.escalation_level }}</strong>
+                            {% if doc.escalation_level == 1 %}
+                                — ⏳ Idle for 24 hours. Staff notified.
+                            {% elif doc.escalation_level == 2 %}
+                                — 🚨 Idle for 48 hours. Supervisor notified.
+                            {% elif doc.escalation_level == 3 %}
+                                — 🔴 Idle for 72 hours. Admin alerted! URGENT.
+                            {% endif %}
+                            {% if doc.escalated_at %}
+                            <br>
+                            <small>Escalated on: {{ doc.escalated_at|date:"d M Y, H:i" }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
                     
                     <div class="mb-4">
                         <h6 class="fw-bold sf-muted text-uppercase small tracking-wide mb-2">Description</h6>
@@ -422,6 +484,8 @@
                                 <h6 class="fw-bold mb-2"><i class="bi bi-qr-code-scan me-1 sf-dot"></i> Verification QR</h6>
                                 <img src="{{ doc.qr_code.url }}" alt="QR Code" width="130" height="130" class="img-fluid bg-white p-2 rounded shadow-sm border">
                                 <p class="sf-muted small mt-2 mb-0">Ref: <strong>{{ doc.reference_no }}</strong></p>
+                                <p class="sf-muted small mt-1 mb-0">Scan this QR code to verify the document status live</p>
+                                <p class="small text-break mt-1" style="color: var(--sf-cyan); font-weight: 600;">{{ SITE_URL }}</p>
                             </div>
                         </div>
                         {% endif %}

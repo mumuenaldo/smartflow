@@ -11,10 +11,17 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ─────────────────────────────────────────────
+# SITE CONFIGURATION
+# ─────────────────────────────────────────────
+SITE_URL = os.getenv('SITE_URL', 'http://192.168.1.31:8000')
+DOMAIN_NAME = os.getenv('DOMAIN_NAME', '192.168.1.31:8000')
+
+# ─────────────────────────────────────────────
 # SECURITY
+# ─────────────────────────────────────────────
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '192.168.1.31']
 
 # ─────────────────────────────────────────────
 # INSTALLED APPS
@@ -61,6 +68,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'registry.context_processors.notification_count',
+                'registry.context_processors.site_url',
             ],
         },
     },
@@ -161,7 +169,6 @@ else:
 # CHANNELS / WEBSOCKET CONFIGURATION
 # ─────────────────────────────────────────────
 ASGI_APPLICATION = 'smartflow_project.asgi.application'
-
 
 CHANNEL_LAYERS = {
     "default": {

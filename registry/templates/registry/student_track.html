@@ -351,6 +351,8 @@
                         <img src="{{ doc.qr_code.url }}" alt="QR Code" width="150" height="150" class="img-fluid bg-white p-2 rounded border my-2">
                         <p class="text-muted small mt-1 mb-0">Reference: <strong>{{ doc.reference_no }}</strong></p>
                         <p class="text-muted small">Scan this QR code to verify the document status live</p>
+                        <!-- ✅ FIXED: QR Code Domain -->
+                        <p class="small text-break mt-1" style="color: var(--sf-cyan); font-weight: 600;">{{ SITE_URL }}</p>
                     </div>
                     {% else %}
                     <div class="text-center mt-4 p-3 bg-light rounded">

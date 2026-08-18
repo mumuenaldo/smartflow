@@ -1,9 +1,11 @@
+from django.conf import settings  # ⭐ ADD THIS IMPORT
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 import qrcode
 from django.core.files.base import ContentFile
 from io import BytesIO
 import uuid
+
 # ─────────────────────────────────────────────
 # CUSTOM USER MANAGER 
 # ─────────────────────────────────────────────
@@ -130,7 +132,6 @@ class Document(models.Model):
     
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    # 1. Added blank=True here so Django forms don't yell at you for leaving it empty!
     reference_no = models.CharField(max_length=50, unique=True, blank=True)
     document_type = models.CharField(max_length=100, blank=True)
     file_path = models.FileField(upload_to='documents/', blank=True, null=True)
@@ -152,7 +153,7 @@ class Document(models.Model):
     
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
-    escalation_level = models.IntegerField(default=0)  # 0=none, 1=staff, 2=supervisor, 3=admin
+    escalation_level = models.IntegerField(default=0)
     escalated_at = models.DateTimeField(null=True, blank=True)
     
     student_requester = models.ForeignKey(
@@ -176,24 +177,21 @@ class Document(models.Model):
             return self.status.status_name
         return "In Progress"
 
-    # QR CODE GENERATION
+    # ✅ QR CODE GENERATION — FIXED!
     def generate_qr_code(self):
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
-        qr.add_data(f"https://yourdomain.com/verify/{self.reference_no}")
+        qr.add_data(f"{settings.SITE_URL}/verify/{self.reference_no}")
         qr.make(fit=True)
         img = qr.make_image(fill_color="#0d3b6e", back_color="white")
         buffer = BytesIO()
         img.save(buffer, format='PNG')
         self.qr_code.save(f"qr_{self.reference_no}.png", ContentFile(buffer.getvalue()), save=False)
 
-    # 2. OVERRIDE THE SAVE METHOD BELOW YOUR QR METHOD
     def save(self, *args, **kwargs):
-        # Auto-generate the reference number if it wasn't typed in
         if not self.reference_no:
             unique_suffix = str(uuid.uuid4()).upper()[:6]
             self.reference_no = f"SF-2026-{unique_suffix}"
             
-        # Automatically trigger the QR code creation since we now have a reference number
         if not self.qr_code:
             self.generate_qr_code()
 
@@ -201,6 +199,9 @@ class Document(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+# ─────────────────────────────────────────────
 # 5. WORKFLOW
 # ─────────────────────────────────────────────
 class Workflow(models.Model):
@@ -267,7 +268,7 @@ class Notification(models.Model):
         ('reminder', 'Reminder'),
         ('system', 'System'),
         ('status_update', 'Status Update'),
-        ('escalation', 'Escalation'),  # NEW
+        ('escalation', 'Escalation'),
     ]
     user = models.ForeignKey(
         User, on_delete=models.CASCADE,

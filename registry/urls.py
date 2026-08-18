@@ -69,6 +69,11 @@ urlpatterns = [
     path('documents/<int:pk>/approve/', views.approval_view, name='approval_view'),
 
     # ─────────────────────────────────────────────
+    # QR CODE VERIFICATION
+    # ─────────────────────────────────────────────
+    path('verify/<str:ref_no>/', views.verify_document, name='verify_document'),
+
+    # ─────────────────────────────────────────────
     # EXPORT
     # ─────────────────────────────────────────────
     path('document/<int:pk>/export/', views.export_document_pdf, name='export_document'),

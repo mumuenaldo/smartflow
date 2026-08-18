@@ -26,9 +26,6 @@ from django.utils import timezone
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
-# ─────────────────────────────────────────────
-# WEBSOCKET / CHANNELS IMPORTS FOR LIVE UPDATES
-# ─────────────────────────────────────────────
 try:
     from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
@@ -47,9 +44,6 @@ from .forms import (
 )
 from .models import Assignment, AuditLog, Comment, Department, Document, Notification, Status, User, Workflow
 
-# ─────────────────────────────────────────────
-# HELPER FUNCTIONS
-# ─────────────────────────────────────────────
 
 def log_action(request, action, entity_type, entity_id=None, details=''):
     if request.user.is_authenticated:
@@ -62,6 +56,7 @@ def log_action(request, action, entity_type, entity_id=None, details=''):
             details=details,
             ip_address=ip,
         )
+
 
 def notify_user(user, document, msg, ntype='system'):
     Notification.objects.create(
@@ -81,6 +76,7 @@ def notify_user(user, document, msg, ntype='system'):
     except Exception:
         pass
 
+
 def role_required(*roles):
     def decorator(view_func):
         @login_required
@@ -92,6 +88,7 @@ def role_required(*roles):
         return _wrapped
     return decorator
 
+
 def admin_key_required(view_func):
     @login_required
     def _wrapped(request, *args, **kwargs):
@@ -102,6 +99,7 @@ def admin_key_required(view_func):
             return redirect('admin_welcome')
         return view_func(request, *args, **kwargs)
     return _wrapped
+
 
 def add_tracking_entry(document, user, action, details, request=None):
     tracking_entry = {
@@ -159,6 +157,7 @@ def add_tracking_entry(document, user, action, details, request=None):
     
     return tracking_entry
 
+
 def get_greeting():
     current_hour = datetime.now().hour
     if current_hour < 12:
@@ -168,9 +167,6 @@ def get_greeting():
     else:
         return "Good evening"
 
-# ─────────────────────────────────────────────
-# PUBLIC PAGES
-# ─────────────────────────────────────────────
 
 def landing_page(request):
     if request.user.is_authenticated:
@@ -181,15 +177,14 @@ def landing_page(request):
         return redirect('dashboard')
     return render(request, 'registry/landing.html')
 
+
 def learn_more(request):
     return render(request, 'registry/learn_more.html')
+
 
 def role_selection(request):
     return render(request, 'registry/role_selection.html')
 
-# ─────────────────────────────────────────────
-# REGISTRATION VIEWS
-# ─────────────────────────────────────────────
 
 def register_student(request):
     if request.user.is_authenticated:
@@ -208,6 +203,7 @@ def register_student(request):
     
     return render(request, 'registry/register.html', {'form': form, 'role': 'Student'})
 
+
 def register_clerk(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -223,6 +219,7 @@ def register_clerk(request):
         return redirect('login')
     
     return render(request, 'registry/register.html', {'form': form, 'role': 'Registry Clerk'})
+
 
 def register_staff(request):
     if request.user.is_authenticated:
@@ -240,6 +237,7 @@ def register_staff(request):
     
     return render(request, 'registry/register.html', {'form': form, 'role': 'Staff Member'})
 
+
 def register_supervisor(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -255,6 +253,7 @@ def register_supervisor(request):
         return redirect('login')
     
     return render(request, 'registry/register.html', {'form': form, 'role': 'Supervisor'})
+
 
 def register_admin(request):
     if request.user.is_authenticated:
@@ -278,9 +277,6 @@ def register_admin(request):
     
     return render(request, 'registry/register.html', {'form': form, 'role': 'Administrator'})
 
-# ─────────────────────────────────────────────
-# AUTHENTICATION
-# ─────────────────────────────────────────────
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -304,6 +300,7 @@ def login_view(request):
     
     return render(request, 'registration/login.html', {'form': form})
 
+
 @login_required
 def logout_view(request):
     log_action(request, 'LOGOUT', 'User', request.user.id)
@@ -313,9 +310,6 @@ def logout_view(request):
     messages.success(request, 'You have been logged out successfully.')
     return redirect('landing_page')
 
-# ─────────────────────────────────────────────
-# DASHBOARD ROUTER
-# ─────────────────────────────────────────────
 
 @login_required
 def dashboard(request):
@@ -334,9 +328,6 @@ def dashboard(request):
     else:
         return redirect('landing_page')
 
-# ─────────────────────────────────────────────
-# STUDENT DASHBOARD
-# ─────────────────────────────────────────────
 
 @login_required
 @role_required('student')
@@ -389,6 +380,7 @@ def student_dashboard(request):
     
     return render(request, 'registry/student_dashboard.html', context)
 
+
 @login_required
 @role_required('student')
 def student_check_progress(request):
@@ -434,6 +426,7 @@ def student_check_progress(request):
 
     return render(request, 'registry/student_check_progress.html', context)
 
+
 @login_required
 @role_required('student')
 def student_my_requests(request):
@@ -446,6 +439,7 @@ def student_my_requests(request):
     }
     
     return render(request, 'registry/student_my_requests.html', context)
+
 
 @login_required
 @role_required('student')
@@ -531,6 +525,7 @@ def student_submit_request(request):
         'greeting': get_greeting(),
     })
 
+
 @login_required
 @role_required('student')
 def student_track_request(request, pk):
@@ -547,6 +542,7 @@ def student_track_request(request, pk):
         'greeting': get_greeting(),
     }
     return render(request, 'registry/student_track.html', context)
+
 
 @login_required
 @role_required('student')
@@ -565,6 +561,7 @@ def student_profile(request):
         'form': form,
         'greeting': get_greeting(),
     })
+
 
 @login_required
 @role_required('student')
@@ -599,6 +596,7 @@ def cancel_request(request, pk):
     messages.success(request, 'Your request has been cancelled successfully.')
     return redirect('student_dashboard')
 
+
 @login_required
 def change_password(request):
     if request.method == 'POST':
@@ -616,9 +614,6 @@ def change_password(request):
     
     return render(request, 'registry/change_password.html', {'form': form})
 
-# ─────────────────────────────────────────────
-# STAFF DASHBOARD
-# ─────────────────────────────────────────────
 
 @login_required
 @role_required('staff')
@@ -651,9 +646,6 @@ def staff_dashboard(request):
     }
     return render(request, 'registry/staff_dashboard.html', context)
 
-# ─────────────────────────────────────────────
-# CLERK DASHBOARD
-# ─────────────────────────────────────────────
 
 @login_required
 @role_required('clerk')
@@ -687,6 +679,7 @@ def clerk_dashboard(request):
     
     return render(request, 'registry/clerk_dashboard.html', context)
 
+
 @role_required('clerk', 'admin')
 def document_register(request):
     form = DocumentForm(request.POST or None, request.FILES or None)
@@ -718,6 +711,7 @@ def document_register(request):
         return redirect('document_list')
     
     return render(request, 'registry/document_form.html', {'form': form, 'action': 'Register'})
+
 
 @role_required('clerk', 'admin')
 def bulk_upload_documents(request):
@@ -775,9 +769,6 @@ def bulk_upload_documents(request):
         form = BulkUploadForm()
     return render(request, 'registry/bulk_upload.html', {'form': form})
 
-# ─────────────────────────────────────────────
-# SUPERVISOR DASHBOARD
-# ─────────────────────────────────────────────
 
 @login_required
 @role_required('supervisor')
@@ -845,6 +836,7 @@ def supervisor_dashboard(request):
         'status_filter': status_filter,
     }
     return render(request, 'registry/supervisor_dashboard.html', context)
+
 
 @login_required
 @role_required('supervisor')
@@ -914,6 +906,7 @@ def workflow_overview(request):
     
     return render(request, 'registry/workflow_overview.html', context)
 
+
 @role_required('supervisor', 'admin')
 def approval_view(request, pk):
     doc = get_object_or_404(Document, pk=pk)
@@ -977,9 +970,6 @@ def approval_view(request, pk):
     
     return render(request, 'registry/approval_form.html', {'form': form, 'doc': doc})
 
-# ─────────────────────────────────────────────
-# DOCUMENT MANAGEMENT
-# ─────────────────────────────────────────────
 
 @login_required
 def document_list(request):
@@ -997,6 +987,7 @@ def document_list(request):
         docs = docs.filter(Q(title__icontains=query) | Q(reference_no__icontains=query))
     
     return render(request, 'registry/document_list.html', {'docs': docs, 'query': query})
+
 
 @login_required
 def document_detail(request, pk):
@@ -1023,6 +1014,7 @@ def document_detail(request, pk):
         'comments': comments,
         'comment_form': comment_form,
     })
+
 
 @role_required('clerk', 'admin')
 def document_assign(request, pk):
@@ -1071,9 +1063,6 @@ def document_assign(request, pk):
     
     return render(request, 'registry/assign_form.html', {'form': form, 'doc': doc})
 
-# ─────────────────────────────────────────────
-# NOTIFICATIONS
-# ─────────────────────────────────────────────
 
 @login_required
 def notifications_view(request):
@@ -1088,9 +1077,6 @@ def notifications_view(request):
     }
     return render(request, 'registry/notifications.html', context)
 
-# ─────────────────────────────────────────────
-# REPORTS & ANALYTICS
-# ─────────────────────────────────────────────
 
 @role_required('supervisor', 'admin')
 def reports_view(request):
@@ -1113,6 +1099,7 @@ def reports_view(request):
         'total_rejected': total_rejected,
         'greeting': get_greeting(),
     })
+
 
 @role_required('supervisor', 'admin')
 def export_to_excel(request):
@@ -1138,6 +1125,7 @@ def export_to_excel(request):
     
     log_action(request, 'EXPORT_EXCEL', 'Document', None, 'Exported all documents to CSV')
     return response
+
 
 @login_required
 def export_document_pdf(request, pk):
@@ -1185,9 +1173,6 @@ def export_document_pdf(request, pk):
     log_action(request, 'EXPORT_PDF', 'Document', doc.id, 'Exported to PDF')
     return response
 
-# ─────────────────────────────────────────────
-# ADVANCED SEARCH
-# ─────────────────────────────────────────────
 
 @login_required
 def advanced_search(request):
@@ -1229,9 +1214,6 @@ def advanced_search(request):
     }
     return render(request, 'registry/advanced_search.html', context)
 
-# ─────────────────────────────────────────────
-# ADMIN MANAGEMENT
-# ─────────────────────────────────────────────
 
 @login_required
 @admin_key_required
@@ -1251,6 +1233,7 @@ def admin_welcome(request):
     
     return render(request, 'registry/admin_welcome.html', {'error': error})
 
+
 @login_required
 @admin_key_required
 def admin_launchpad(request):
@@ -1265,6 +1248,7 @@ def admin_launchpad(request):
         'unread': Notification.objects.filter(user=request.user, is_read=False).count(),
     }
     return render(request, 'registry/admin_launchpad.html', context)
+
 
 @login_required
 @admin_key_required
@@ -1281,6 +1265,7 @@ def admin_workspace(request):
     }
     return render(request, 'registry/admin_workspace.html', context)
 
+
 @login_required
 @admin_key_required
 def admin_dashboard(request):
@@ -1288,9 +1273,6 @@ def admin_dashboard(request):
         return redirect('dashboard')
     return check_progress(request)
 
-# ─────────────────────────────────────────────
-# CHECK PROGRESS VIEW
-# ─────────────────────────────────────────────
 
 @login_required
 @admin_key_required
@@ -1345,9 +1327,11 @@ def check_progress(request):
 
     return render(request, 'registry/check_progress.html', context)
 
-# ─────────────────────────────────────────────
-# AUDIT TRAIL
-# ─────────────────────────────────────────────
+
+def verify_document(request, ref_no):
+    doc = get_object_or_404(Document, reference_no=ref_no)
+    return redirect('document_detail', pk=doc.id)
+
 
 @role_required('admin')
 @admin_key_required
@@ -1355,15 +1339,13 @@ def audit_trail(request):
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
     return render(request, 'registry/audit_trail.html', {'logs': logs, 'greeting': get_greeting()})
 
-# ─────────────────────────────────────────────
-# USER MANAGEMENT
-# ─────────────────────────────────────────────
 
 @role_required('admin')
 @admin_key_required
 def manage_users(request):
     users = User.objects.select_related('department').all()
     return render(request, 'registry/manage_users.html', {'users': users, 'greeting': get_greeting()})
+
 
 @role_required('admin')
 @admin_key_required
@@ -1376,15 +1358,13 @@ def create_user(request):
         return redirect('manage_users')
     return render(request, 'registry/user_form.html', {'form': form, 'action': 'Create'})
 
-# ─────────────────────────────────────────────
-# DEPARTMENT MANAGEMENT
-# ─────────────────────────────────────────────
 
 @role_required('admin')
 @admin_key_required
 def manage_departments(request):
     depts = Department.objects.annotate(member_count=Count('members'))
     return render(request, 'registry/manage_departments.html', {'depts': depts, 'greeting': get_greeting()})
+
 
 @role_required('admin')
 @admin_key_required
@@ -1397,15 +1377,14 @@ def create_department(request):
         return redirect('manage_departments')
     return render(request, 'registry/department_form.html', {'form': form, 'action': 'Create'})
 
-# ─────────────────────────────────────────────
-# ERROR HANDLERS
-# ─────────────────────────────────────────────
 
 def handler404(request, exception):
     return render(request, 'errors/404.html', status=404)
 
+
 def handler500(request):
     return render(request, 'errors/500.html', status=500)
+
 
 def handler403(request, exception):
     return render(request, 'errors/403.html', status=403)
