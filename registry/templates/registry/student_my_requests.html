@@ -5,9 +5,7 @@
 
 {% block extra_css %}
 <style>
-    /* -----------------------------------------------------------------
-       SMARTFLOW 
-    ----------------------------------------------------------------- */
+    
     .sf-requests-wrapper {
         min-height: calc(100vh - 160px);
         padding: 1.5rem 0;
@@ -73,7 +71,7 @@
         background: linear-gradient(90deg, var(--sf-cyan, #00b8d9), var(--sf-blue, #2f6fed));
     }
 
-    /* Table & Strict Transparent Resets */
+    
     .sf-table-v2, 
     .sf-table-v2 > :not(caption) > * > * {
         background-color: transparent !important;
@@ -97,13 +95,14 @@
         vertical-align: middle;
     }
 
-    /* Vertical Column Lines */
+    
+    
     .sf-table-v2 th:not(:last-child),
     .sf-table-v2 td:not(:last-child) {
         border-right: 1px solid var(--sf-bg-card-border, rgba(15, 43, 72, 0.12)) !important;
     }
 
-    /* Code Reference Pills */
+    
     .sf-code-ref {
         color: var(--sf-navy, #0f2b48);
         background: rgba(0, 184, 217, 0.12);
@@ -167,9 +166,7 @@
     .status-rejected { background: rgba(220, 38, 38, 0.12); color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.3); }
     .status-in_review { background: rgba(47, 111, 237, 0.12); color: #2f6fed; border: 1px solid rgba(47, 111, 237, 0.3); }
 
-    /* -----------------------------------------------------------------
-       NIGHT MODE BURGUNDY FIX (Eliminates White Bleed)
-    ----------------------------------------------------------------- */
+    
     body.dark-mode {
         --sf-navy: #f5e6d3;
         --sf-navy-deep: #31071c;
@@ -184,7 +181,7 @@
 
     body.dark-mode .sf-page-title { color: #facc15 !important; }
     
-    /* Enforce Dark Background & Contrast Text on Table Rows */
+    
     body.dark-mode .sf-table-v2, 
     body.dark-mode .sf-table-v2 > :not(caption) > * > * {
         background-color: transparent !important;
@@ -226,7 +223,7 @@
         color: #31071c !important;
     }
 
-    /* Night Mode Status Overrides */
+     */
     body.dark-mode .status-pending { background: rgba(250, 204, 21, 0.15); color: #facc15; border-color: #facc15; }
     body.dark-mode .status-approved { background: rgba(76, 255, 145, 0.15); color: #4cff91; border-color: #4cff91; }
     body.dark-mode .status-rejected { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; border-color: #ff6b6b; }
@@ -245,7 +242,7 @@
             </a>
         </div>
 
-        <!-- Page Title & Header Action -->
+        
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="sf-page-title">
                 <i class="bi bi-files me-2"></i>My Requests
@@ -255,7 +252,7 @@
             </a>
         </div>
 
-        <!-- Main Glass Card Container -->
+       >
         <div class="sf-card-container">
             {% if my_requests %}
                 <div class="table-responsive">

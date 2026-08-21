@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <style>
-    /* ===STUDENT DASHBOARD=== */
+   
     
     .sf-home {
         min-height: calc(100vh - 120px);
@@ -46,7 +46,7 @@
         z-index: 1;
     }
     
-    /* ─── PREMIUM WELCOME CARD WITH PROFILE PIC ─── */
+    
     .sf-home .welcome-card {
         background: linear-gradient(135deg, #0f2b48 0%, #1a3d60 100%);
         border: 1px solid rgba(0, 242, 254, 0.2);
@@ -78,7 +78,7 @@
         background: #facc15;
     }
 
-    /* ─── PROFILE PICTURE - BIGGER SIZE ─── */
+    
     .profile-avatar-wrapper {
         position: relative;
         flex-shrink: 0;
@@ -125,7 +125,7 @@
         bottom: -38px;
     }
 
-    /* BIGGER PROFILE PICTURE - 100px */
+    /* PROFILE PICTURE */
     .profile-avatar {
         width: 100px;
         height: 100px;
@@ -167,7 +167,7 @@
         box-shadow: 0 0 40px rgba(250, 204, 21, 0.25);
     }
 
-    /* Online Status Dot - Bigger */
+    /* Online Status */
     .online-dot {
         position: absolute;
         bottom: 4px;
@@ -441,7 +441,7 @@
     .sf-subtitle i { color: #00f2fe; }
     body.dark-mode .sf-subtitle i { color: #facc15; }
 
-    /* ─── PREMIUM STATS CARDS WITH BOOTSTRAP ICONS ─── */
+  
     .sf-home .mini-stats {
         display: flex;
         justify-content: center;
@@ -551,14 +551,14 @@
 
 {% block content %}
 <div class="sf-home">
-    <!-- Blurry ambient background layout feature -->
+   
     <div class="orb"></div>
 
     <div class="container text-center">
-        <!-- Premium Welcome Card with Profile Picture -->
+
         <div class="welcome-card">
             <div class="welcome-header">
-                <!-- PROFILE PICTURE - LINK TO PROFILE PAGE -->
+                <
                 <a href="{% url 'student_profile' %}" class="profile-avatar-wrapper" title="Edit Profile">
                     {% if user.profile_picture %}
                         <img src="{{ user.profile_picture.url }}" 
@@ -601,7 +601,7 @@
             </div>
         </div>
 
-        <!-- PREMIUM OPERATIONS MENU - WITH BOOTSTRAP ICONS -->
+        
         <div class="circle-grid">
             <a href="{% url 'student_submit' %}" class="circle-btn">
                 <i class="bi bi-upload btn-icon"></i>
@@ -615,14 +615,14 @@
                 <i class="bi bi-clipboard btn-icon"></i>
                 <span class="label">Requests</span>
             </a>
-            <!-- ⭐ AI TOOLS - Clean (No "NEW" badge) -->
+            
             <a href="{% url 'student_ai_dashboard' %}" class="circle-btn ai-tools-btn">
                 <i class="bi bi-robot btn-icon"></i>
                 <span class="label">AI Tools</span>
             </a>
         </div>
 
-        <!-- Section Header Title for Counter Realignment -->
+       
         <div class="sf-subtitle">
             <i class="bi bi-bar-chart-line-fill"></i>
             Application Progress Overview
@@ -653,7 +653,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Premium counter entry sequence animation
+    
     document.querySelectorAll('.num').forEach(el => {
         const target = parseInt(el.getAttribute('data-count')) || 0;
         let count = 0;
@@ -674,12 +674,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Time Engine Module: Greeting Phrases & Live Clock Sequence 
+    
     function updateStudentDashboardTime() {
         const now = new Date();
         const hours = now.getHours();
         
-        // Context evaluations
+       
         let timePhrase = "Good morning";
         let iconClass = "bi-sun-fill";
         let addColorClass = "morning";
@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addColorClass = "evening";
         }
 
-        // Element injection handles
+      
         const textTarget = document.getElementById('dynamicGreeting');
         const iconTarget = document.getElementById('greetingIcon');
         
@@ -706,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
             iconTarget.className = "bi " + iconClass + " greeting-icon " + addColorClass;
         }
 
-        // Clock text construction
+        
         const padH = String(hours).padStart(2, '0');
         const padM = String(now.getMinutes()).padStart(2, '0');
         const padS = String(now.getSeconds()).padStart(2, '0');
@@ -717,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Trigger immediate updates and register steady interval loops
+   
     updateStudentDashboardTime();
     setInterval(updateStudentDashboardTime, 1000);
 });

@@ -5,15 +5,11 @@
 
 {% block extra_css %}
 <style>
-    /* ============================================
-       SUPERVISOR DASHBOARD WITH BOOTSTRAP ICONS
-       ============================================ */
-
-    /* ─── Main Content Canvas ─── */
+    
     .sf-supervisor {
         padding: 2.5rem 0;
         min-height: calc(100vh - 160px);
-        /* DAY MODE: Deep immersive ocean tech background */
+        
         background: linear-gradient(180deg, #0b2240 0%, #061324 100%);
         color: #ffffff;
         position: relative;
@@ -21,12 +17,12 @@
         transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* NIGHT MODE: Elegant deep rich burgundy canvas */
+   
     body.dark-mode .sf-supervisor {
         background: linear-gradient(180deg, #2d0b1e 0%, #17040e 100%);
     }
 
-    /* ─── Glowing Ambient Orbs ─── */
+
     .sf-supervisor .orb {
         position: absolute;
         border-radius: 50%;
@@ -39,7 +35,7 @@
     .sf-supervisor .orb-1 {
         width: 500px;
         height: 500px;
-        /* Day accent: Cyan/Teal | Night accent: Gold */
+        
         background: #00f2fe;
         top: -150px;
         right: -100px;
@@ -53,7 +49,7 @@
         z-index: 1;
     }
 
-    /* ─── Premium High-Contrast Cards ─── */
+  
     .sf-card-base {
         background: rgba(255, 255, 255, 0.04);
         backdrop-filter: blur(16px);
@@ -75,7 +71,7 @@
         box-shadow: 0 12px 40px 0 rgba(250, 204, 21, 0.15);
     }
 
-    /* ─── Immersive Welcome Banner ─── */
+    /* ─── Welcome Banner ─── */
     .sf-welcome-banner {
         /* DAY: Vibrant teal-glowing slate block */
         background: linear-gradient(135deg, #0f2b48 0%, #1a3d60 100%);
@@ -94,7 +90,7 @@
     }
     
     body.dark-mode .sf-welcome-banner {
-        /* NIGHT: High-fashion burgundy status block */
+        
         background: linear-gradient(135deg, #4c1130 0%, #31071c 100%);
         border: 1px solid rgba(250, 204, 21, 0.2);
     }
@@ -554,7 +550,7 @@
                 <span class="sub">Find documents quickly</span>
                 <span class="arrow">→</span>
             </a>
-            <!-- ⭐ AI TOOLS CARD -->
+            <!--  AI TOOLS CARD -->
             <a href="{% url 'supervisor_ai_dashboard' %}" class="sf-action-card sf-card-base ai-tools-card">
                 <div class="icon-wrap">
                     <i class="bi bi-robot icon"></i>

@@ -284,7 +284,7 @@
 <script>
     const isDark = document.body.classList.contains('dark-mode');
 
-    // Enhanced Chart Colors with gradients
+   
     const colors = isDark ? {
         pending: '#ffc700',
         inReview: '#c084fc',
@@ -303,7 +303,7 @@
         border: '#ffffff'
     };
 
-    // ─── LABEL -> STATUS_CODE MAP ───
+  
     const STATUS_LABEL_TO_CODE = {
         'pending': 'pending',
         'in review': 'in_review',
@@ -488,7 +488,7 @@
         `;
     }
 
-    // ─── APPLY FILTER FROM URL ───
+   
     {% if status_filter %}
     (function() {
         const codeToLabel = { pending: 'Pending', in_review: 'In Review', approved: 'Approved', rejected: 'Rejected' };

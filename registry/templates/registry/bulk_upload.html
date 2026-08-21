@@ -5,11 +5,7 @@
 
 {% block extra_css %}
 <style>
-    /* ============================================================
-       BULK UPLOAD — PREMIUM EDITION
-       Day mode: cyan accent | Night mode: gold accent
-       ============================================================ */
-
+    
     .sf-bulk {
         --sf-accent: #00f2fe;
         --sf-accent-soft: rgba(0, 242, 254, 0.15);
@@ -102,7 +98,7 @@
 
     .sf-glass-card .sf-card-body { padding: 2rem; }
 
-    /* Accent top rail */
+   
     .sf-glass-card::before {
         content: '';
         position: absolute;
@@ -111,7 +107,7 @@
         background: var(--sf-accent);
     }
 
-    /* Info / format alert */
+    
     .sf-info-alert {
         background: var(--sf-accent-soft);
         border: 1px solid var(--sf-accent-border);
@@ -141,7 +137,7 @@
         letter-spacing: 0.3px;
     }
 
-    /* Form fields (styles Django's {{ form.as_p }} output) */
+    /* Form fields */
     .sf-form p { margin-bottom: 1.25rem; }
     .sf-form label {
         display: block;

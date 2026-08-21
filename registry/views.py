@@ -1,9 +1,4 @@
-# ============================================
-# SMARTFLOW - COMPLETE VIEWS.PY
-# ============================================
-# Developed by Munashe Muza (T2420016)
-# TelOne Centre for Learning
-# ============================================
+
 
 import csv
 import io

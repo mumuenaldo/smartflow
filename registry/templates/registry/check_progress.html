@@ -7,9 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <style>
-/* ═══════════════════════════════════════════════════════
-   DESIGN TOKENS
-═══════════════════════════════════════════════════════ */
+
 :root {
     font-family: 'Inter','Segoe UI',system-ui,sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -65,9 +63,7 @@ body.dark-mode {
     --accent-bar:     linear-gradient(90deg,#ffd700,#ff1493);
 }
 
-/* ═══════════════════════════════════════════════════════
-   PAGE BACKGROUND
-═══════════════════════════════════════════════════════ */
+
 body {
     background: var(--bg-page) !important;
     transition: background 0.4s ease, color 0.3s ease;
@@ -87,9 +83,7 @@ body.dark-mode::before {
         radial-gradient(ellipse 55% 45% at 88% 92%, rgba(124,31,63,0.07)   0%, transparent 65%);
 }
 
-/* ═══════════════════════════════════════════════════════
-   ANALYTICS HEADER
-═══════════════════════════════════════════════════════ */
+/* ANALYTICS HEADER */
 .analytics-header {
     display: flex;
     justify-content: space-between;
@@ -112,9 +106,7 @@ body.dark-mode::before {
     margin: 0; transition: color 0.35s ease;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LIVE INDICATOR
-═══════════════════════════════════════════════════════ */
+/*LIVE INDICATOR */
 .live-indicator {
     display: inline-flex; align-items: center; gap: 7px;
     font-size: 0.8rem; font-weight: 700; margin-top: 0.65rem;
@@ -143,9 +135,7 @@ body.dark-mode::before {
     transition: color 0.35s;
 }
 
-/* ═══════════════════════════════════════════════════════
-   KPI STRIP
-═══════════════════════════════════════════════════════ */
+
 .sf-kpi-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -164,13 +154,13 @@ body.dark-mode::before {
     box-shadow: var(--shadow);
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
-/* Colour accent bar */
+
 .sf-kpi::before {
     content: '';
     position: absolute; top: 0; left: 0; right: 0;
     height: 4px; border-radius: 22px 22px 0 0;
 }
-/* Inset glass highlight */
+
 .sf-kpi::after {
     content: '';
     position: absolute; top: 0; left: 12px; right: 12px;
@@ -213,9 +203,7 @@ body.dark-mode .sf-kpi-review   .sf-kpi-icon { color: #d4c4a8; }
     color: var(--text-muted); transition: color 0.35s ease;
 }
 
-/* ═══════════════════════════════════════════════════════
-   SECTION DIVIDER
-═══════════════════════════════════════════════════════ */
+/* SECTION DIVIDER */
 .sf-section-label {
     font-size: 0.65rem; font-weight: 800;
     text-transform: uppercase; letter-spacing: 1.5px;
@@ -321,9 +309,7 @@ body.dark-mode .badge-count { color: var(--accent-gold); background: rgba(255,19
 }
 @keyframes glowPulse { 0%,100%{box-shadow:0 0 8px rgba(34,197,94,.6)} 50%{box-shadow:0 0 22px rgba(34,197,94,1)} }
 
-/* ═══════════════════════════════════════════════════════
-   ACTIVE FILTER BANNER
-═══════════════════════════════════════════════════════ */
+/* FILTER BANNER */
 .active-filter-banner {
     background: rgba(255,199,0,0.12);
     border: 1px solid rgba(255,199,0,0.40);
@@ -846,7 +832,7 @@ window.addEventListener('load', function () {
         }
     });
 
-    /* ── Apply URL-driven filter on load ── */
+    
     {% if status_filter %}
     (function(){
         const map = { pending:'Pending', in_review:'In Review', approved:'Approved', rejected:'Rejected' };
@@ -859,7 +845,7 @@ window.addEventListener('load', function () {
 
 /* ── LIVE CLOCK ── */
 const liveTimeEl = document.getElementById('liveTime');
-function formatNow() {
+function forer on load ── matNow() {
     return new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 }
 liveTimeEl.textContent = formatNow();
